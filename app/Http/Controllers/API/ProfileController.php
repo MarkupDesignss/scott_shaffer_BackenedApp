@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\UserProfile;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
@@ -45,4 +46,57 @@ class ProfileController extends Controller
             'data'    => $user
         ]);
     }
+
+    /**
+     * Update or create user profile (Progressive Profiling Step).
+    */
+
+   public function update(Request $request)
+    {
+        try {
+            // Validate request
+            $validated = $request->validate([
+                'user_id'        => 'required|exists:users,id',
+                'age_band'       => 'nullable|string',
+                'city'           => 'nullable|string',
+                'dining_budget'  => 'nullable|string',
+                'has_dogs'       => 'boolean',
+            ]);
+
+            $userId = $validated['user_id'];
+
+            // Check if profile exists
+            $profile = UserProfile::firstOrCreate(
+                ['user_id' => $userId],
+                [] // defaults, empty for now
+            );
+
+            // Update with new data
+            $profile->update($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile created/updated successfully',
+                'data'    => $profile
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Validation failed
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors'  => $e->errors()
+            ], 422);
+
+        } catch (\Exception $e) {
+            // Any other error
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
 }
