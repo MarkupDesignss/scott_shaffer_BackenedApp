@@ -31,7 +31,7 @@ class InterestController extends Controller
             'interests.*' => 'exists:interests,id',
         ]);
 
-        $user = Auth::user();
+        $user = $request->user();
 
         // Save user interests (replace old ones)
         $user->interests()->sync($request->interests);

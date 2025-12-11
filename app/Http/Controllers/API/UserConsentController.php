@@ -32,7 +32,7 @@ class UserConsentController extends Controller
             'campaign_marketing' => 'boolean',
         ]);
 
-        $user = Auth::user();
+        $user = $request->user();
 
         $consent = UserConsent::updateOrCreate(
             ['user_id' => $user->id],
@@ -54,7 +54,7 @@ class UserConsentController extends Controller
     // 3. Export User Data (GDPR-like)
     public function exportUserData(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
 
         $data = [
             'user' => $user,
