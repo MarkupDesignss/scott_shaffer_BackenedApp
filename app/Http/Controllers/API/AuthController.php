@@ -61,7 +61,7 @@ class AuthController extends Controller
     /**
      * Login (Generate OTP)
      */
-    public function login(Request $request)
+    public function requestOtp(Request $request)
     {
         $validated = $request->validate([
             // 'country_code' => 'required|string|max:5',
