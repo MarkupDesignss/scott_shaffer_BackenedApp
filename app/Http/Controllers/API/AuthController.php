@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -161,6 +162,20 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Logged out successfully'
+        ]);
+    }
+
+    // 4. Delete Account Request
+    public function deleteAccount(Request $request)
+    {
+        $user = Auth::user();
+
+        // Soft delete recommended
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your account has been deleted successfully.'
         ]);
     }
 }

@@ -66,19 +66,4 @@ class UserConsentController extends Controller
             'data' => $data
         ]);
     }
-
-
-    // 4. Delete Account Request
-    public function deleteAccount(Request $request)
-    {
-        $user = Auth::user();
-
-        // Soft delete recommended
-        $user->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Your account has been deleted successfully.'
-        ]);
-    }
 }
