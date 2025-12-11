@@ -14,6 +14,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Profile APIs
     Route::get('/profile', [ProfileController::class, 'getProfile']);
     Route::put('/profile', [ProfileController::class, 'updateProfile']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+
 
 
     // Get user consents
