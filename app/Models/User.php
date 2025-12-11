@@ -42,4 +42,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relationship with interests
+    public function interests()
+    {
+        return $this->belongsToMany(Intrest::class, 'user_interest', 'user_id', 'interest_id')
+            ->withTimestamps();
+    }
+    public function consent()
+    {
+        return $this->hasOne(UserConsent::class, 'user_id');
+    }
 }

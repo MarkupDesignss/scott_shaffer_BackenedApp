@@ -8,5 +8,5 @@ class UserConsent extends Model
 {
     protected $table = 'user_consents';
 
-    protected $g = [];
+    protected $guarded = [];
 }
