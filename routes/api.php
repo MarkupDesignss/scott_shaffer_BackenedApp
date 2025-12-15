@@ -38,3 +38,9 @@ Route::delete('/account/delete', [AuthController::class, 'deleteAccount']);
 
 // Progressive Profiling
 Route::put('/user_profile', [ProfileController::class, 'update']);
+
+Route::get('/auth/google', [AuthController::class, 'googleRedirect']);
+Route::get('/auth/google/callback', [AuthController::class, 'googleCallback']);
+
+Route::get('/auth/apple', [AuthController::class, 'appleRedirect']);
+Route::post('/auth/apple/callback', [AuthController::class, 'appleCallback']);

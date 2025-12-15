@@ -33,6 +33,9 @@ return new class extends Migration
                 ->comment('0 = Inactive, 1 = Active');
 
             $table->string('remember_token', 100)->nullable();
+            $table->string('google_id')->nullable();
+            $table->string('apple_id')->nullable();
+            $table->string('provider')->nullable();
 
             $table->timestamps();
         });
