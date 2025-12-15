@@ -578,9 +578,6 @@
 
             <div class="nav-section">Management</div>
 
-
-
-
             <div class="nav-divider"></div>
             <form method="POST" action="{{ route('admin.logout') }}" class="nav-item">
                 @csrf
