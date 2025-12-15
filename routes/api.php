@@ -4,11 +4,12 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserConsentController;
 use App\Http\Controllers\API\InterestController;
+use App\Http\Controllers\API\PasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public auth routes
-Route::post('/auth/signup', [AuthController::class, 'signup']);
+Route::post('/auth/register', [AuthController::class, 'signup']);
 Route::post('/auth/request-otp', [AuthController::class, 'requestOtp']);
 Route::post('/auth/verify-otp', [AuthController::class, 'verifyOtp']);
 

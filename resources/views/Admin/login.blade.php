@@ -1,91 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Login</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            margin: 0;
-            padding: 0;
+@extends('layouts.auth')
+
+@section('title', 'Login')
+<style>
+            .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, var(--primary-light), #ffffff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
         }
+</style>
 
-        .container {
-            width: 400px;
-            margin: 100px auto;
-            padding: 30px;
-            background: white;
-            box-shadow: 0px 0px 10px #ccc;
-            border-radius: 8px;
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-        }
-
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            margin-top: 5px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 20px;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            background: #007bff;
-            color: white;
-            font-size: 16px;
-        }
-
-        .error {
-            color: red;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .success {
-            color: green;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>Admin Login</h2>
-
-    @if(session('error'))
-        <div class="error">{{ session('error') }}</div>
+@section('content')
+<div class="login-form bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    {{-- <img src="/mai-beta/logo.png" style="margin-left: auto;margin-right: auto;"> --}}
+    <div class="logo">SS</div>
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Admin Login</h2>
+    @if ($errors->any())
+        <div class="text-red-500 mb-4 text-center">
+            {{ $errors->first() }}
+        </div>
     @endif
-
-    <form action="{{ route('admin.login.submit') }}" method="POST">
+    <form method="POST" action="{{ route('admin.login') }}">
         @csrf
-
-        <label>Email</label>
-        <input type="email" name="email" placeholder="Enter email" required>
-
-        <label>Password</label>
-        <input type="password" name="password" placeholder="Enter password" required>
-
-        <button type="submit">Login</button>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-gray-700">Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+            </div>
+            <div>
+                <label class="block text-gray-700">Password</label>
+                <input type="password" name="password" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+            </div>
+            <button type="submit" class="w-full bg-teal-500 text-white py-2 rounded hover:bg-teal-600 animate-pulse">Login</button>
+        </div>
     </form>
+    {{-- <a href="{{ route('admin.forgot-password-form') }}" class="block mt-4 text-center text-sm text-gray-600 hover:text-gray-800">Forgot Your Password?</a> --}}
 </div>
-
-</body>
-</html>
+@endsection

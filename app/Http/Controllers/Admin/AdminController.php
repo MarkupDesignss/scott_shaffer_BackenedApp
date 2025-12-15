@@ -3,29 +3,53 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-
+    /**
+     * Show admin login page
+     */
     public function showLogin()
     {
         return view('admin.login');
     }
 
+    /**
+     * Handle admin login
+     */
     public function login(Request $request)
     {
-        $admin = Admin::where('email', $request->email)->first();
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-        if (!$admin || !Hash::check($request->password, $admin->password)) {
-            return back()->with('error', 'Invalid email or password');
+        if (Auth::guard('admin')->attempt([
+            'email' => $request->email,
+            'password' => $request->password
+        ])) {
+            $request->session()->regenerate();
+
+            return redirect()->route('admin.dashboard');
         }
 
-        // Store admin session
-        session(['admin_id' => $admin->id]);
+        return back()->withErrors([
+            'email' => 'Invalid email or password'
+        ]);
+    }
 
-        return redirect('/admin/dashboard');
+    /**
+     * Admin logout
+     */
+    public function logout(Request $request)
+    {
+        Auth::guard('admin')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('admin.login');
     }
 }
