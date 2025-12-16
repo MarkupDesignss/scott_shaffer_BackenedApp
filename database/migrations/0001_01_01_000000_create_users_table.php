@@ -15,11 +15,11 @@ return new class extends Migration
             $table->bigIncrements('id');
 
             $table->string('full_name', 255);
-            $table->string('email', 255)->unique();
+            $table->string('email', 255)->unique()->nullable();
 
-            $table->string('country_code', 5);
-            $table->string('phone', 255);
-            $table->string('country', 255);
+            $table->string('country_code', 5)->nullable();
+            $table->string('phone', 255)->nullable();
+            $table->string('country', 255)->nullable();
 
             $table->tinyInteger('is_phone_verified')->default(0);
 

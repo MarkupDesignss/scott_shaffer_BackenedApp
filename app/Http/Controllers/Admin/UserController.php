@@ -11,21 +11,12 @@ class UserController extends Controller
 {
     public function users()
     {
-        $data['users'] = User::select(
-            'id',
-            'full_name',
-            'phone',
-            'email',
-            'country',
-            'status',
-            'created_at'
-        )
+        $data['users'] = User::with('interests')
             ->orderBy('id', 'desc')
             ->paginate(10);
 
-        // This month users count
-        $data['thisMonthUsers'] = User::whereMonth('created_at', Carbon::now()->month)
-            ->whereYear('created_at', Carbon::now()->year)
+        $data['thisMonthUsers'] = User::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
             ->count();
 
         return view('admin.user.index', compact('data'));
