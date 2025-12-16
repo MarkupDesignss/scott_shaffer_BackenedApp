@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\InterestController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::post('/reset-password', [AdminController::class, 'resetPassword'])
         ->name('reset.password');
+
+    // Interest
+    Route::resource('interest', InterestController::class);
+    Route::post(
+        'interest/{interest}/toggle-status',
+        [InterestController::class, 'toggleStatus']
+    )->name('interest.toggle-status');
 });
 
 

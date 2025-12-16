@@ -573,10 +573,14 @@
                 <span class="nav-label">Users</span>
             </a>
 
+            <a href="{{ route('admin.interest.index') }}"
+            class="nav-item {{ request()->routeIs('admin.interest.*') ? 'active' : '' }}">
+               <i class="nav-icon bi bi-heart-fill"></i>
+                <span class="nav-label">Interest</span>
+            </a>
 
-            <div class="nav-divider"></div>
 
-            <div class="nav-section">Management</div>
+
 
             <div class="nav-divider"></div>
             <form method="POST" action="{{ route('admin.logout') }}" class="nav-item">
