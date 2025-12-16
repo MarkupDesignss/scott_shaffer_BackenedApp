@@ -127,6 +127,7 @@
                             <th class="py-3 text-uppercase text-secondary text-xs font-weight-bold">User</th>
                             <th class="py-3 text-uppercase text-secondary text-xs font-weight-bold">Contact</th>
                             <th class="py-3 text-uppercase text-secondary text-xs font-weight-bold">Location</th>
+                            <th class="py-3 text-uppercase text-secondary text-xs font-weight-bold">Interests</th>
                             <th class="py-3 text-uppercase text-secondary text-xs font-weight-bold">Status</th>
                             <th class="py-3 text-uppercase text-secondary text-xs font-weight-bold text-end pe-4">Joined Date</th>
                         </tr>
@@ -169,6 +170,22 @@
                                     <span class="fw-medium">{{ $user->country }}</span>
                                 </div>
                             </td>
+
+                            <td class="py-3">
+                                @if($user->interests->isNotEmpty())
+                                    <div class="d-flex flex-wrap gap-1">
+                                        @foreach ($user->interests as $interest)
+                                            <span class="badge bg-info bg-opacity-10 text-info-emphasis fw-medium px-2 py-1">
+                                                {{ $interest->name }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <span class="text-muted small">No interests</span>
+                                @endif
+                            </td>
+
+
 
                             <td class="py-3">
                                 <span class="badge rounded-pill py-2 px-3 fw-normal d-flex align-items-center"

@@ -5,21 +5,54 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Policy;
 use App\Models\UserConsent;
 use Illuminate\Support\Facades\Auth;
 
 class UserConsentController extends Controller
 {
     // 1. Get Consent Details
-    public function show(Request $request)
+    public function index(Request $request)
     {
-        $user = $request->user();
-
-        $consent = UserConsent::where('user_id', $user->id)->first();
+        $policies = Policy::where('is_active', true)
+            ->orderBy('order')
+            ->get([
+                'id',
+                'name',
+                'description'
+            ]);
 
         return response()->json([
             'success' => true,
-            'data' => $consent
+            'message' => 'Policies fetched successfully',
+            'data'    => $policies
+        ]);
+    }
+
+    /**
+     * Get single policy by slug
+     * API: GET /api/policies/{slug}
+     */
+    public function show($slug)
+    {
+        $policy = Policy::where('slug', $slug)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$policy) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Policy not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'name'        => $policy->name,
+                'description' => $policy->description,
+                'version'     => $policy->version
+            ]
         ]);
     }
 
@@ -32,10 +65,10 @@ class UserConsentController extends Controller
             'campaign_marketing' => 'boolean',
         ]);
 
-        $user = $request->user();
+        $user_id = $request->user_id;
 
         $consent = UserConsent::updateOrCreate(
-            ['user_id' => $user->id],
+            ['user_id' => $user_id],
             [
                 'accepted_terms_privacy' => $request->accepted_terms_privacy ?? false,
                 'campaign_marketing' => $request->campaign_marketing ?? false,
