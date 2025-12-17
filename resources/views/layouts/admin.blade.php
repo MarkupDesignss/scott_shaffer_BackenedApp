@@ -527,6 +527,82 @@
         .sidebar-overlay.active {
             display: block;
         }
+        .has-submenu .submenu {
+            display: none;
+            padding-left: 15px;
+        }
+
+        .has-submenu.open .submenu {
+            display: block;
+        }
+
+        .submenu-item {
+            display: block;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .submenu-item.active {
+            font-weight: 600;
+            color: #0d6efd;
+        }
+
+        .submenu-arrow {
+            margin-left: auto;
+            font-size: 12px;
+        }
+        /* Parent Item */
+.sidebar-item > .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Arrow animation */
+.sidebar-item .arrow {
+    transition: transform 0.3s ease;
+}
+
+.sidebar-item.open .arrow {
+    transform: rotate(180deg);
+}
+
+/* Submenu */
+.submenu {
+    display: none;
+    padding-left: 40px;
+    margin-top: 5px;
+}
+
+.sidebar-item.open .submenu {
+    display: block;
+}
+
+/* Submenu links */
+.submenu li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 14px;
+    color: #6c757d;
+    transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.submenu li a:hover {
+    color: #0d6efd;
+}
+
+/* Active item */
+.submenu li a.active {
+    color: #0d6efd;
+    font-weight: 600;
+}
+
     </style>
 </head>
 <body>
@@ -578,17 +654,37 @@
                <i class="nav-icon bi bi-heart-fill"></i>
                 <span class="nav-label">Interest</span>
             </a>
-            <a href="{{ route('admin.catalog-categories.index') }}"
-            class="nav-item {{ request()->routeIs('admin.catalog-categories.*') ? 'active' : '' }}">
-                <i class="nav-icon bi bi-folder2-open"></i>
-                <span class="nav-label">Catalog Categories</span>
-            </a>
+            {{-- Catalog Management --}}
+            <li class="sidebar-item has-submenu
+                {{ request()->routeIs('admin.catalog-categories.*') || request()->routeIs('admin.catalog-items.*') ? 'open active' : '' }}"
+                 style="list-style: none;">
 
-            <a href="{{ route('admin.catalog-items.index') }}"
-            class="nav-item {{ request()->routeIs('admin.catalog-items.*') ? 'active' : '' }}">
-                <i class="nav-icon bi bi-box-seam"></i>
-                <span class="nav-label">Catalog Items</span>
-            </a>
+                <a href="javascript:void(0);" class="sidebar-link">
+                    <i class="bi bi-folder"></i>
+                    <span>Catalog Mgmt</span>
+                    <i class="bi bi-chevron-down ms-auto arrow"></i>
+                </a>
+
+                <ul class="submenu">
+                    <li>
+                        <a href="{{ route('admin.catalog-categories.index') }}"
+                        class="{{ request()->routeIs('admin.catalog-categories.*') ? 'active' : '' }}">
+                            <i class="bi bi-folder2-open"></i>
+                            <span>Categories</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('admin.catalog-items.index') }}"
+                        class="{{ request()->routeIs('admin.catalog-items.*') ? 'active' : '' }}">
+                            <i class="bi bi-box-seam"></i>
+                            <span>Items</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+
 
 
 
@@ -725,6 +821,17 @@
         // Observe elements you want to animate
         document.querySelectorAll('.stat-card, .content-card').forEach(el => {
             observer.observe(el);
+        });
+        document.querySelectorAll('.has-submenu > .nav-link').forEach(item => {
+            item.addEventListener('click', function () {
+                this.parentElement.classList.toggle('open');
+            });
+        });
+
+        document.querySelectorAll('.has-submenu > .sidebar-link').forEach(link => {
+            link.addEventListener('click', () => {
+                link.parentElement.classList.toggle('open');
+            });
         });
     </script>
 </body>

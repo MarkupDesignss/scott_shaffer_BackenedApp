@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\AdminPasswordOtp;
 use App\Mail\AdminResetOtpMail;
+use App\Models\CatalogCategory;
+use App\Models\CatalogItem;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +18,18 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
+
+    public function dashboard()
+    {
+        $data = [
+            'activeUsers'   => User::where('status', '1')->count(),
+            'inactiveUsers' => User::where('status', '0')->count(),
+            'totalCategories' => CatalogCategory::count(),
+            'totalItems'    => CatalogItem::count(),
+        ];
+
+        return view('admin.dashboard', $data);
+    }
     /**
      * Show admin login page
      */

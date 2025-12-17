@@ -29,7 +29,7 @@
     {{-- Page Header --}}
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h1 class="h3 fw-bold text-gray-800 mb-2">Users Management</h1>
+            <h1 class="h3 fw-bold text-gray-800 mb-2" style="font-size: 1.5rem;font-weight:800">Users Management</h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Dashboard</a></li>

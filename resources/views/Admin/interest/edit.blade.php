@@ -5,7 +5,7 @@
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-1">Edit Interest</h1>
+            <h1 class="h3 mb-1" style="font-size: 1.5rem;font-weight:800">Edit Interest</h1>
             <p class="text-muted mb-0">Update interest details and icon</p>
         </div>
         <a href="{{ route('admin.interest.index') }}" class="btn btn-outline-secondary">
