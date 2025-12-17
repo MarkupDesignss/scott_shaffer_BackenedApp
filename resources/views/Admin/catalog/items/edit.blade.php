@@ -8,7 +8,7 @@
                 <div class="card-header bg-white border-bottom py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h5 class="mb-0 fw-semibold">
+                            <h5 class="mb-0 " style="font-size: 1.5rem;font-weight:800">
                                 <i class="fas fa-edit me-2 text-warning"></i>Edit Catalog Item
                             </h5>
                             <p class="text-muted mb-0">Update item details</p>

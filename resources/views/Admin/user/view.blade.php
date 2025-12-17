@@ -7,7 +7,7 @@
 
     {{-- BASIC USER INFO --}}
     <div class="card mb-4">
-        <div class="card-header">Basic Information</div>
+        <div class="card-header"  style="font-size: 1.5rem;font-weight:800">Basic Information</div>
         <div class="card-body">
             <table class="table table-bordered">
                 <tr>

@@ -50,9 +50,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])
+        ->name('dashboard');
+
+    // Route::get('/dashboard', function () {
+    //     return view('admin.dashboard');
+    // })->name('dashboard');
 
     // User
     Route::get('/users', [UserController::class, 'users'])->name('user.index');
