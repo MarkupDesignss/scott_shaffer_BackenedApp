@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\UserConsentController;
 use App\Http\Controllers\API\InterestController;
 use App\Http\Controllers\API\PasswordController;
@@ -28,8 +29,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [ProfileController::class, 'getProfile']);
     Route::put('/update_profile', [ProfileController::class, 'updateProfile']);
 
-    // User intrest
-    Route::get('/user/interests', [InterestController::class, 'getUserInterests']);
+    // Category
+    Route::get('catalog/categories/{id}', [CategoryController::class, 'categoriesByInterest']);
+    Route::get('catalog/items', [CategoryController::class, 'items']);
 });
 
 // User Details

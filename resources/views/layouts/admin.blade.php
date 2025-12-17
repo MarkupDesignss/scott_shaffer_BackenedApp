@@ -76,21 +76,21 @@
         }
 
         .logo {
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             border-radius: 10px;
             background: linear-gradient(45deg, var(--primary-light), #ffffff);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--primary-dark);
-            font-weight: 700;
-            font-size: 1.2rem;
+            font-weight: 500;
+            font-size: 1.1rem;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .brand-text {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: white;
             letter-spacing: -0.5px;
@@ -100,8 +100,8 @@
         .menu-toggle {
             background: rgba(255, 255, 255, 0.15);
             border: none;
-            width: 44px;
-            height: 44px;
+            width: 34px;
+            height: 34px;
             border-radius: 10px;
             display: flex;
             flex-direction: column;
@@ -200,7 +200,7 @@
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 0.85rem 1rem;
+            padding: 0.4rem 0.7rem;
             border-radius: 10px;
             color: #64748b;
             text-decoration: none;
@@ -578,6 +578,18 @@
                <i class="nav-icon bi bi-heart-fill"></i>
                 <span class="nav-label">Interest</span>
             </a>
+            <a href="{{ route('admin.catalog-categories.index') }}"
+            class="nav-item {{ request()->routeIs('admin.catalog-categories.*') ? 'active' : '' }}">
+                <i class="nav-icon bi bi-folder2-open"></i>
+                <span class="nav-label">Catalog Categories</span>
+            </a>
+
+            <a href="{{ route('admin.catalog-items.index') }}"
+            class="nav-item {{ request()->routeIs('admin.catalog-items.*') ? 'active' : '' }}">
+                <i class="nav-icon bi bi-box-seam"></i>
+                <span class="nav-label">Catalog Items</span>
+            </a>
+
 
 
 

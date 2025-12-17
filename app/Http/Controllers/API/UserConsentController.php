@@ -4,99 +4,161 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Policy;
 use App\Models\UserConsent;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class UserConsentController extends Controller
 {
-    // 1. Get Consent Details
-    public function index(Request $request)
+    /**
+     * 1. Get all active policies
+     * GET: /api/policies
+     */
+    public function index()
     {
-        $policies = Policy::where('is_active', true)
-            ->orderBy('order')
-            ->get([
-                'id',
-                'name',
-                'description'
-            ]);
+        try {
+            $policies = Policy::where('is_active', true)
+                ->orderBy('order')
+                ->get([
+                    'id',
+                    'name',
+                    'description'
+                ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Policies fetched successfully',
-            'data'    => $policies
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Policies fetched successfully',
+                'data'    => $policies
+            ], 200);
+        } catch (\Throwable $th) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch policies',
+            ], 500);
+        }
     }
 
     /**
-     * Get single policy by slug
-     * API: GET /api/policies/{slug}
+     * 2. Get single policy by slug
+     * GET: /api/policies/{slug}
      */
-    public function show($slug)
+    public function show(string $slug)
     {
-        $policy = Policy::where('slug', $slug)
-            ->where('is_active', true)
-            ->first();
+        try {
+            $policy = Policy::where('slug', $slug)
+                ->where('is_active', true)
+                ->first();
 
-        if (!$policy) {
+            if (!$policy) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Policy not found',
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data'    => [
+                    'name'        => $policy->name,
+                    'description' => $policy->description,
+                    'version'     => $policy->version,
+                ],
+            ], 200);
+        } catch (\Throwable $th) {
+
             return response()->json([
                 'success' => false,
-                'message' => 'Policy not found'
-            ], 404);
+                'message' => 'Failed to fetch policy',
+                'reason'  => $th->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'data'    => [
-                'name'        => $policy->name,
-                'description' => $policy->description,
-                'version'     => $policy->version
-            ]
-        ]);
     }
 
-
-    // 2. Update/Store Consent
+    /**
+     * 3. Update / Store User Consent
+     * POST/PUT: /api/user-consent
+     */
     public function update(Request $request)
     {
-        $request->validate([
-            'accepted_terms_privacy' => 'boolean',
-            'campaign_marketing' => 'boolean',
-        ]);
+        try {
+            $user = $request->user_id;
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
 
-        $user_id = $request->user_id;
+            $validated = $request->validate([
+                'accepted_terms_privacy' => 'nullable|boolean',
+                'campaign_marketing'     => 'nullable|boolean',
+            ]);
 
-        $consent = UserConsent::updateOrCreate(
-            ['user_id' => $user_id],
-            [
-                'accepted_terms_privacy' => $request->accepted_terms_privacy ?? false,
-                'campaign_marketing' => $request->campaign_marketing ?? false,
-                'accepted_at' => now()
-            ]
-        );
+            $consent = UserConsent::updateOrCreate(
+                ['user_id' => $user],
+                [
+                    'accepted_terms_privacy' => $validated['accepted_terms_privacy'] ?? false,
+                    'campaign_marketing'     => $validated['campaign_marketing'] ?? false,
+                    'accepted_at'            => now(),
+                ]
+            );
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Consent updated successfully.',
-            'data' => $consent
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Consent updated successfully',
+                'data'    => $consent,
+            ], 200);
+        } catch (ValidationException $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors'  => $e->errors(),
+            ], 422);
+        } catch (\Throwable $th) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update consent',
+                'reason'  => $th->getMessage()
+            ], 500);
+        }
     }
 
-
-    // 3. Export User Data (GDPR-like)
+    /**
+     * 4. Export User Data (GDPR-like)
+     * GET: /api/user-data/export
+     */
     public function exportUserData(Request $request)
     {
-        $user = $request->user();
+        try {
+            $user = Auth::user();
 
-        $data = [
-            'user' => $user,
-            'consent' => $user->consent ?? null,
-        ];
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
 
-        return response()->json([
-            'success' => true,
-            'data' => $data
-        ]);
+            $data = [
+                'user'    => $user,
+                'consent' => $user->consent ?? null,
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data'    => $data,
+            ], 200);
+        } catch (\Throwable $th) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to export user data',
+                'reason'  => $th->getMessage()
+            ], 500);
+        }
     }
 }

@@ -83,7 +83,7 @@
                             <th>Name</th>
                             <th>Icon</th>
                             <th>Status</th>
-                            <th class="text-end pe-4">Actions</th>
+                            <th class="text-center pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -1,5 +1,28 @@
 @extends('layouts.admin')
 
+<style>
+    .btn-active {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+
+    .btn-inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .btn-active:hover {
+        background-color: #a7f3d0;
+        color: #065f46;
+    }
+
+    .btn-inactive:hover {
+        background-color: #fecaca;
+        color: #991b1b;
+    }
+</style>
 @section('content')
 <div class="container-fluid py-4">
 
@@ -130,12 +153,13 @@
                             <th class="py-3 text-uppercase text-secondary text-xs font-weight-bold">Interests</th>
                             <th class="py-3 text-uppercase text-secondary text-xs font-weight-bold">Status</th>
                             <th class="py-3 text-uppercase text-secondary text-xs font-weight-bold text-end pe-4">Joined Date</th>
+                            <th class="py-3 text-uppercase text-secondary text-xs font-weight-bold text-end pe-4">Action</th>
                         </tr>
                     </thead>
 
                     <tbody class="border-top-0">
                         @forelse ($data['users'] as $user)
-                        <tr class="border-bottom">
+                        <tr class="border-bottom" >
                             <td class="ps-4 py-3">
                                 <span class="fw-bold text-gray-600">
                                     {{ $loop->iteration + ($data['users']->currentPage() - 1) * $data['users']->perPage() }}
@@ -185,19 +209,28 @@
                                 @endif
                             </td>
 
-
-
-                            <td class="py-3">
-                                <span class="badge rounded-pill py-2 px-3 fw-normal d-flex align-items-center"
-                                      style="width: fit-content; background-color: {{ $user->status ? '#d1fae5' : '#fee2e2' }}; color: {{ $user->status ? '#065f46' : '#991b1b' }};">
-                                    <i class="fas fa-circle me-1" style="font-size: 8px;"></i>
-                                    {{ $user->status ? 'Active' : 'Inactive' }}
-                                </span>
+                            <td>
+                                <form method="POST" action="{{ route('admin.user.toggle-status', $user->id) }}" class="toggle-status-form">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm status-btn {{ $user->status ? 'btn-active' : 'btn-inactive' }}">
+                                        <i class="bi {{ $user->status ? 'bi-toggle-on' : 'bi-toggle-off' }} me-1"></i>
+                                        {{ $user->status ? 'Active' : 'Inactive' }}
+                                    </button>
+                                </form>
                             </td>
 
                             <td class="py-3 text-end pe-4">
                                 <div class="text-gray-800 fw-medium">{{ $user->created_at->format('d M Y') }}</div>
                                 <small class="text-muted">{{ $user->created_at->format('h:i A') }}</small>
+                            </td>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="py-5">
+                                    <i class="fas fa-view fa-3x text-gray-300 mb-3"></i>
+                                    <a href="{{ route('admin.users.view', $user->id) }}"
+                                        class="btn btn-sm btn-primary">
+                                            View
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         @empty
@@ -213,6 +246,8 @@
                                 </div>
                             </td>
                         </tr>
+
+
                         @endforelse
                     </tbody>
                 </table>
@@ -235,3 +270,34 @@
 
 </div>
 @endsection
+
+
+<script>
+        // Add animation to status toggle buttons
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusButtons = document.querySelectorAll('.status-btn');
+
+        statusButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Add a small animation
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Add fade-in effect to table rows
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(10px)';
+            row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+
+            setTimeout(() => {
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, index * 50);
+        });
+    });
+</script>
