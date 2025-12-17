@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\InterestController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CatalogCategoryController;
+use App\Http\Controllers\Admin\CatalogItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -42,13 +44,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::post('/reset-password', [AdminController::class, 'resetPassword'])
         ->name('reset.password');
-
-    // Interest
-    Route::resource('interest', InterestController::class);
-    Route::post(
-        'interest/{interest}/toggle-status',
-        [InterestController::class, 'toggleStatus']
-    )->name('interest.toggle-status');
 });
 
 
@@ -59,6 +54,34 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
         return view('admin.dashboard');
     })->name('dashboard');
 
+    // User
     Route::get('/users', [UserController::class, 'users'])->name('user.index');
+    Route::post(
+        'user/{id}/toggle-status',
+        [UserController::class, 'toggleStatus']
+    )->name('user.toggle-status');
+    Route::get('/users/{id}/view', [UserController::class, 'viewUser'])
+        ->name('users.view');
+
+    // Interest
+    Route::resource('interest', InterestController::class);
+    Route::post(
+        'interest/{interest}/toggle-status',
+        [InterestController::class, 'toggleStatus']
+    )->name('interest.toggle-status');
+
+    //Catalog
+    Route::resource('catalog-items', CatalogItemController::class);
+    Route::patch(
+        '/items/{id}/toggle-status',
+        [CatalogItemController::class, 'toggleStatus']
+    )->name('items.toggle-status');
+    Route::resource('catalog-categories', CatalogCategoryController::class);
+    Route::patch(
+        '/catalog-categories/{id}/toggle-status',
+        [CatalogCategoryController::class, 'toggleStatus']
+    )->name('catalog-categories.toggle-status');
+
+
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
 });

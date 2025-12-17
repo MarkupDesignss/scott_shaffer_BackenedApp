@@ -21,4 +21,25 @@ class UserController extends Controller
 
         return view('admin.user.index', compact('data'));
     }
+
+    public function toggleStatus($id)
+    {
+        $user = User::findOrFail($id);
+        // dd($user);
+        $user->update([
+            'status' => !$user->status
+        ]);
+
+        return back()->with('success', 'Status updated.');
+    }
+
+    public function viewUser($id)
+    {
+        $user = User::with([
+            'interests',        // user_interests table
+            'profile'           // user_profiles table
+        ])->findOrFail($id);
+
+        return view('admin.user.view', compact('user'));
+    }
 }

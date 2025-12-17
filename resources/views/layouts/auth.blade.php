@@ -74,7 +74,7 @@
 <body class="bg-gray-200 flex items-center justify-center min-h-screen relative">
     <div class="wave"></div>
     @yield('content')
-    
+
     @stack('scripts')
 </body>
 </html>
