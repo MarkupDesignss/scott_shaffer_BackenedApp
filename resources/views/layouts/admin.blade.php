@@ -615,8 +615,8 @@
                 <span></span>
             </button>
             <div class="logo-container">
-                <div class="logo">SS</div>
-                <div class="brand-text">Scott Shaffer Admin</div>
+                <!-- <div class="logo"></div> -->
+                <div class="brand-text">Scott Shafer Admin</div>
             </div>
         </div>
 
@@ -661,7 +661,7 @@
 
                 <a href="javascript:void(0);" class="sidebar-link">
                     <i class="bi bi-folder"></i>
-                    <span>Catalog Mgmt</span>
+                    <span>Catalog Mgmt.</span>
                     <i class="bi bi-chevron-down ms-auto arrow"></i>
                 </a>
 
