@@ -286,13 +286,15 @@ class AuthController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Account deleted successfully'
+                'message' => 'Account and related data deleted successfully'
             ]);
         } catch (\Throwable $th) {
+
+            logger()->error($th);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Unable to delete account',
-                'error'   => $th->getMessage(),
+                'message' => 'Unable to delete account'
             ], 500);
         }
     }

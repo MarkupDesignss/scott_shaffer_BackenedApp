@@ -31,12 +31,12 @@ class ListItemController extends Controller
                 ], 422);
             }
 
-            if (!empty($validated['catalog_item_id']) && !empty($validated['custom_text'])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Only one of catalog_item_id or custom_text is allowed'
-                ], 422);
-            }
+            // if (!empty($validated['catalog_item_id']) && !empty($validated['custom_text'])) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Only one of catalog_item_id or custom_text is allowed'
+            //     ], 422);
+            // }
 
             $item = ListItem::create([
                 'list_id'         => $list->id,
@@ -84,9 +84,8 @@ class ListItemController extends Controller
        Helper Methods
     ========================== */
 
-    private function authorizeList($listId)
+    private function authorizeList(ListModel $list)
     {
-        $list = ListModel::find($listId);
         if ($list->user_id !== Auth::id()) {
             abort(403, 'Unauthorized list access');
         }

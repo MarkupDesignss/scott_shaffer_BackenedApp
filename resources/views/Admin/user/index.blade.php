@@ -1,28 +1,6 @@
 @extends('layouts.admin')
 
-<style>
-    .btn-active {
-        background-color: #d1fae5;
-        color: #065f46;
-        border: 1px solid #a7f3d0;
-    }
 
-    .btn-inactive {
-        background-color: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fecaca;
-    }
-
-    .btn-active:hover {
-        background-color: #a7f3d0;
-        color: #065f46;
-    }
-
-    .btn-inactive:hover {
-        background-color: #fecaca;
-        color: #991b1b;
-    }
-</style>
 @section('content')
 <div class="container-fluid py-4">
 
@@ -178,7 +156,7 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-0 fw-bold text-gray-800">{{ $user->full_name }}</h6>
-                                        <small class="text-muted">ID: {{ $user->id }}</small>
+                                        {{-- <small class="text-muted">ID: {{ $user->id }}</small> --}}
                                     </div>
                                 </div>
                             </td>
@@ -269,11 +247,47 @@
     </div>
 
 </div>
-@endsection
+<style>
+ .btn-active {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
 
+    .btn-inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .btn-active:hover {
+        background-color: #a7f3d0;
+        color: #065f46;
+    }
+
+    .btn-inactive:hover {
+        background-color: #fecaca;
+        color: #991b1b;
+    }
+
+    .btn-outline-primary, .btn-outline-danger {
+        border-width: 1px;
+    }
+
+    .toggle-status-form {
+        margin: 0;
+    }
+
+    .status-btn {
+        min-width: 100px;
+        border-radius: 50px;
+        transition: all 0.2s ease;
+    }
+
+</style>
 
 <script>
-        // Add animation to status toggle buttons
+    // Add animation to status toggle buttons
     document.addEventListener('DOMContentLoaded', function() {
         const statusButtons = document.querySelectorAll('.status-btn');
 
@@ -302,17 +316,19 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.querySelector('input[name="search"]');
-    const rows = document.querySelectorAll('tbody tr');
+        const searchInput = document.querySelector('input[name="search"]');
+        const rows = document.querySelectorAll('tbody tr');
 
-    searchInput.addEventListener('keyup', function () {
-        const value = this.value.toLowerCase();
+        searchInput.addEventListener('keyup', function () {
+            const value = this.value.toLowerCase();
 
-        rows.forEach(row => {
-            row.style.display = row.innerText.toLowerCase().includes(value)
+            rows.forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(value)
                 ? ''
                 : 'none';
+            });
         });
     });
-});
 </script>
+
+@endsection
