@@ -12,7 +12,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
         {{-- Active Users --}}
-        <div class="relative bg-gradient-to-br from-green-500 to-emerald-500 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+        <a href="{{route('admin.user.index')}}" class="relative bg-gradient-to-br from-green-500 to-emerald-500 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
             <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
 
             <div class="flex items-center justify-between">
@@ -22,10 +22,10 @@
 
             <p class="text-4xl font-bold mt-4 text-white">{{ $activeUsers ?? 0 }}</p>
             <p class="text-sm text-white/80 mt-2">Currently active users</p>
-        </div>
+        </a>
 
         {{-- Inactive Users --}}
-        <div class="relative bg-gradient-to-br from-gray-500 to-slate-600 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+        <a href="{{route('admin.user.index')}}" class="relative bg-gradient-to-br from-gray-500 to-slate-600 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
             <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
 
             <div class="flex items-center justify-between">
@@ -35,10 +35,10 @@
 
             <p class="text-4xl font-bold mt-4 text-white">{{ $inactiveUsers ?? 0 }}</p>
             <p class="text-sm text-white/80 mt-2">Blocked / inactive users</p>
-        </div>
+        </a>
 
         {{-- Total Categories --}}
-        <div class="relative bg-gradient-to-br from-blue-500 to-indigo-500 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+        <a href="{{route('admin.catalog-categories.index')}}" class="relative bg-gradient-to-br from-blue-500 to-indigo-500 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
             <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
 
             <div class="flex items-center justify-between">
@@ -48,10 +48,10 @@
 
             <p class="text-4xl font-bold mt-4 text-white">{{ $totalCategories ?? 0 }}</p>
             <p class="text-sm text-white/80 mt-2">Total catalog categories</p>
-        </div>
+        </a>
 
         {{-- Total Items --}}
-        <div class="relative bg-gradient-to-br from-yellow-500 to-amber-500 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+        <a href="{{route('admin.catalog-categories.index')}}" class="relative bg-gradient-to-br from-yellow-500 to-amber-500 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
             <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
 
             <div class="flex items-center justify-between">
@@ -61,7 +61,7 @@
 
             <p class="text-4xl font-bold mt-4 text-white">{{ $totalItems ?? 0 }}</p>
             <p class="text-sm text-white/80 mt-2">Total catalog items</p>
-        </div>
+        </a>
 
     </div>
 </div>

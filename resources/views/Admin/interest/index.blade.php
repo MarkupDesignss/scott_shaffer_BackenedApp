@@ -229,6 +229,7 @@
 
     .status-btn {
         min-width: 100px;
+        border-radius: 50px;
         transition: all 0.2s ease;
     }
 

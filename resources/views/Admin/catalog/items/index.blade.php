@@ -237,7 +237,6 @@
         </div>
     </div>
 </div>
-@endsection
 
 <style>
 .item-thumbnail img {
@@ -313,87 +312,87 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
-    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    tooltips.forEach(tooltip => new bootstrap.Tooltip(tooltip));
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltips.forEach(tooltip => new bootstrap.Tooltip(tooltip));
 
-    // Search functionality
-    const searchInput = document.getElementById('itemSearch');
-    if (searchInput) {
-        searchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
+        // Search functionality
+        const searchInput = document.getElementById('itemSearch');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#itemsTable tbody tr');
+
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            });
+        }
+
+        // Category filter
+        const categoryFilter = document.getElementById('categoryFilter');
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', function() {
+                filterTable();
+            });
+        }
+
+        // Status filter
+        const statusFilter = document.getElementById('statusFilter');
+        if (statusFilter) {
+            statusFilter.addEventListener('change', function() {
+                filterTable();
+            });
+        }
+
+        function filterTable() {
+            const categoryValue = categoryFilter ? categoryFilter.value : '';
+            const statusValue = statusFilter ? statusFilter.value : '';
             const rows = document.querySelectorAll('#itemsTable tbody tr');
 
             rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(filter) ? '' : 'none';
+                const categoryCell = row.querySelector('td:nth-child(3)');
+                const statusCell = row.querySelector('td:nth-child(4)');
+
+                let showRow = true;
+
+                if (categoryValue && categoryCell) {
+                    const categoryId = categoryCell.querySelector('.badge')?.getAttribute('data-category-id');
+                    if (categoryId !== categoryValue) {
+                        showRow = false;
+                    }
+                }
+
+                if (statusValue && statusCell) {
+                    const statusBadge = statusCell.querySelector('.badge');
+                    const isActive = statusBadge.classList.contains('bg-success-soft');
+                    const rowStatus = isActive ? 'active' : 'inactive';
+                    if (rowStatus !== statusValue) {
+                        showRow = false;
+                    }
+                }
+
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        // Delete confirmation modal
+        let deleteForm = null;
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        const confirmDeleteBtn = document.getElementById('confirmDelete');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                deleteForm = this.closest('.delete-form');
+                deleteModal.show();
             });
         });
-    }
 
-    // Category filter
-    const categoryFilter = document.getElementById('categoryFilter');
-    if (categoryFilter) {
-        categoryFilter.addEventListener('change', function() {
-            filterTable();
-        });
-    }
-
-    // Status filter
-    const statusFilter = document.getElementById('statusFilter');
-    if (statusFilter) {
-        statusFilter.addEventListener('change', function() {
-            filterTable();
-        });
-    }
-
-    function filterTable() {
-        const categoryValue = categoryFilter ? categoryFilter.value : '';
-        const statusValue = statusFilter ? statusFilter.value : '';
-        const rows = document.querySelectorAll('#itemsTable tbody tr');
-
-        rows.forEach(row => {
-            const categoryCell = row.querySelector('td:nth-child(3)');
-            const statusCell = row.querySelector('td:nth-child(4)');
-
-            let showRow = true;
-
-            if (categoryValue && categoryCell) {
-                const categoryId = categoryCell.querySelector('.badge')?.getAttribute('data-category-id');
-                if (categoryId !== categoryValue) {
-                    showRow = false;
-                }
-            }
-
-            if (statusValue && statusCell) {
-                const statusBadge = statusCell.querySelector('.badge');
-                const isActive = statusBadge.classList.contains('bg-success-soft');
-                const rowStatus = isActive ? 'active' : 'inactive';
-                if (rowStatus !== statusValue) {
-                    showRow = false;
-                }
-            }
-
-            row.style.display = showRow ? '' : 'none';
-        });
-    }
-
-    // Delete confirmation modal
-    let deleteForm = null;
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    const confirmDeleteBtn = document.getElementById('confirmDelete');
-
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            deleteForm = this.closest('.delete-form');
-            deleteModal.show();
-        });
-    });
-
-    confirmDeleteBtn.addEventListener('click', function() {
-        if (deleteForm) {
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (deleteForm) {
             deleteForm.submit();
         }
     });
@@ -413,3 +412,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+@endsection

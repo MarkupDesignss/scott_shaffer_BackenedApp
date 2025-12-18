@@ -203,7 +203,6 @@
         </div>
     </div>
 </div>
-@endsection
 
 <style>
 .category-icon {
@@ -269,55 +268,57 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
-    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    tooltips.forEach(tooltip => new bootstrap.Tooltip(tooltip));
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltips.forEach(tooltip => new bootstrap.Tooltip(tooltip));
 
-    // Search functionality
-    const searchInput = document.getElementById('categorySearch');
-    if (searchInput) {
-        searchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#categoriesTable tbody tr');
+        // Search functionality
+        const searchInput = document.getElementById('categorySearch');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#categoriesTable tbody tr');
 
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(filter) ? '' : 'none';
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            });
+        }
+
+        // Delete confirmation modal
+        let deleteForm = null;
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        const confirmDeleteBtn = document.getElementById('confirmDelete');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                deleteForm = this.closest('.delete-form');
+                deleteModal.show();
             });
         });
-    }
 
-    // Delete confirmation modal
-    let deleteForm = null;
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    const confirmDeleteBtn = document.getElementById('confirmDelete');
-
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            deleteForm = this.closest('.delete-form');
-            deleteModal.show();
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (deleteForm) {
+                deleteForm.submit();
+            }
         });
     });
 
-    confirmDeleteBtn.addEventListener('click', function() {
-        if (deleteForm) {
-            deleteForm.submit();
-        }
-    });
-});
+    document.addEventListener('DOMContentLoaded', function () {
+        const statusButtons = document.querySelectorAll('.status-btn');
 
-document.addEventListener('DOMContentLoaded', function () {
-    const statusButtons = document.querySelectorAll('.status-btn');
-
-    statusButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 150);
+        statusButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
         });
     });
 });
 </script>
+
+@endsection
