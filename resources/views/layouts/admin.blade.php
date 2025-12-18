@@ -690,6 +690,36 @@
                 </ul>
             </li>
 
+            {{-- Feature list --}}
+            <li class="sidebar-item has-submenu
+                {{ request()->routeIs('admin.featured-lists.*') || request()->routeIs('admin.featured-list-items.*') ? 'open active' : '' }}"
+                 style="list-style: none;">
+
+                <a href="javascript:void(0);" class="sidebar-link">
+                    <i class="bi bi-folder"></i>
+                    <span>Featured List Builder</span>
+                    <i class="bi bi-chevron-down ms-auto arrow"></i>
+                </a>
+
+                <ul class="submenu">
+                    <li>
+                        <a href="{{ route('admin.featured-lists.index') }}"
+                        class="{{ request()->routeIs('admin.featured-lists.*') ? 'active' : '' }}">
+                            <i class="bi bi-folder2-open"></i>
+                            <span>Featured Lists</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('admin.featured-list-items.index') }}"
+                        class="{{ request()->routeIs('admin.featured-list-items.*') ? 'active' : '' }}">
+                            <i class="bi bi-box-seam"></i>
+                            <span>Featured List Items</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
 
 
 

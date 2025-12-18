@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\InterestController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CatalogCategoryController;
 use App\Http\Controllers\Admin\CatalogItemController;
+use App\Http\Controllers\Admin\FeaturedListController;
+use App\Http\Controllers\Admin\FeaturedListItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -43,6 +45,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::post('/reset-password', [AdminController::class, 'resetPassword'])
         ->name('reset.password');
+
+    // Featured Lists
+    Route::resource('featured-lists', FeaturedListController::class);
+
+    Route::resource(
+        'featured-list-items',
+        FeaturedListItemController::class
+    );
 });
 
 
