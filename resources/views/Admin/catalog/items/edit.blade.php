@@ -14,10 +14,10 @@
                             <p class="text-muted mb-0">Update item details</p>
                         </div>
                         <div class="d-flex gap-2">
-                            <a href="{{ route('admin.catalog-items.show', $item->id) }}"
-                               class="btn btn-outline-info">
-                                <i class="fas fa-eye me-2"></i>View
-                            </a>
+                                {{-- <a href="{{ route('admin.catalog-items.show', $item->id) }}"
+                                class="btn btn-outline-info">
+                                    <i class="fas fa-eye me-2"></i>View
+                                </a> --}}
                             <a href="{{ route('admin.catalog-items.index') }}"
                                class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-2"></i>Back to List
@@ -168,16 +168,7 @@
                                             </div>
                                             <div class="form-text">Provide either an image URL or upload an image file.</div>
 
-                                            <div class="mt-3">
-                                                <div class="image-preview rounded border p-3 text-center"
-                                                     id="imagePreview"
-                                                     style="{{ $item->image_url ? '' : 'display: none;' }}">
-                                                    <img id="previewImage"
-                                                         src="{{ $item->image_url }}"
-                                                         class="img-fluid rounded"
-                                                         style="max-height: 200px;">
-                                                </div>
-                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -208,25 +199,25 @@
                                             <div class="form-text">Active items are visible to customers.</div>
                                         </div>
 
-                                        <div class="mb-4">
+                                        {{-- <div class="mb-4">
                                             <label class="form-label fw-semibold">Created</label>
                                             <div class="text-muted">
                                                 <i class="far fa-calendar me-1"></i>
                                                 {{ $item->created_at->format('M d, Y h:i A') }}
                                             </div>
-                                        </div>
+                                        </div> --}}
 
-                                        <div class="mb-4">
+                                        {{-- <div class="mb-4">
                                             <label class="form-label fw-semibold">Last Updated</label>
                                             <div class="text-muted">
                                                 <i class="far fa-calendar-alt me-1"></i>
                                                 {{ $item->updated_at->format('M d, Y h:i A') }}
                                             </div>
-                                        </div>
+                                        </div> --}}
 
                                         <div class="d-grid gap-2 mt-4">
                                             <button type="submit" class="btn btn-warning btn-lg">
-                                                <i class="fas fa-sync-alt me-2"></i>Update Item
+                                                Update Item
                                             </button>
                                             <button type="button" class="btn btn-outline-danger" id="resetForm">
                                                 <i class="fas fa-redo me-2"></i>Reset Changes
@@ -235,46 +226,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Live Preview -->
-                                <div class="card border">
-                                    <div class="card-header bg-light py-3">
-                                        <h6 class="mb-0 fw-semibold">Preview</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="preview-card p-4 rounded">
-                                            <div class="preview-image mb-3 text-center" id="liveImagePreview">
-                                                @if($item->image_url)
-                                                    <img src="{{ $item->image_url }}"
-                                                         class="img-fluid rounded"
-                                                         style="max-height: 150px;">
-                                                @else
-                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center"
-                                                         style="height: 150px;">
-                                                        <i class="fas fa-image fa-3x text-muted"></i>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <div class="preview-content">
-                                                <h5 id="liveNamePreview" class="fw-semibold mb-2">{{ $item->name }}</h5>
-                                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                                    <span class="badge bg-light-primary text-primary rounded-pill px-3 py-1"
-                                                          id="liveCategoryPreview">
-                                                        <i class="fas fa-folder me-1"></i>
-                                                        {{ $item->category->name ?? 'Uncategorized' }}
-                                                    </span>
-                                                    <span class="badge {{ $item->status == '1' ? 'bg-success-soft text-success' : 'bg-secondary-soft text-secondary' }} rounded-pill px-3 py-1"
-                                                          id="liveStatusPreview">
-                                                        <i class="fas fa-circle me-1" style="font-size: 8px"></i>
-                                                        {{ ucfirst($item->status) }}
-                                                    </span>
-                                                </div>
-                                                <p class="text-muted mb-0" id="liveDescriptionPreview">
-                                                    {{ $item->description ?? 'Item description will appear here.' }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </form>

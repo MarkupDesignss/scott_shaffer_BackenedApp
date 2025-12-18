@@ -101,52 +101,52 @@ class CategoryController extends Controller
         }
     }
 
-    public function itemsByCategory($categoryId)
-    {
-        try {
-            $category = CatalogCategory::where('id', $categoryId)
-                ->where('status', '1')
-                ->first();
+    // public function itemsByCategory($categoryId)
+    // {
+    //     try {
+    //         $category = CatalogCategory::where('id', $categoryId)
+    //             ->where('status', '1')
+    //             ->first();
 
-            if (!$category) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Category not found.'
-                ], 404);
-            }
+    //         if (!$category) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Category not found.'
+    //             ], 404);
+    //         }
 
-            $items = CatalogItem::where('status', '1')
-                ->where('category_id', $categoryId)
-                ->select('id', 'name', 'description', 'image_url')
-                ->orderBy('name')
-                ->get();
+    //         $items = CatalogItem::where('status', '1')
+    //             ->where('category_id', $categoryId)
+    //             ->select('id', 'name', 'description', 'image_url')
+    //             ->orderBy('name')
+    //             ->get();
 
-            if ($items->isEmpty()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No items found for this category.',
-                    'data' => []
-                ], 404);
-            }
+    //         if ($items->isEmpty()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'No items found for this category.',
+    //                 'data' => []
+    //             ], 404);
+    //         }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Category items fetched successfully.',
-                'data' => $items
-            ], 200);
-        } catch (\Throwable $e) {
-            Log::error('Category Items API Error', [
-                'category_id' => $categoryId,
-                'error' => $e->getMessage()
-            ]);
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Category items fetched successfully.',
+    //             'data' => $items
+    //         ], 200);
+    //     } catch (\Throwable $e) {
+    //         Log::error('Category Items API Error', [
+    //             'category_id' => $categoryId,
+    //             'error' => $e->getMessage()
+    //         ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Unable to fetch items.',
-                'reason'    => $e->getMessage()
-            ], 500);
-        }
-    }
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Unable to fetch items.',
+    //             'reason'    => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
 
     public function categoriesByInterest($interestId)
     {

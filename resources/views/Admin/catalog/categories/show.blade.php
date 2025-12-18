@@ -14,10 +14,10 @@
             </nav>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.catalog-categories.edit', $category->id) }}"
+            {{-- <a href="{{ route('admin.catalog-categories.edit', $category->id) }}"
                class="btn btn-warning">
                 <i class="fas fa-edit me-2"></i>Edit
-            </a>
+            </a> --}}
             <a href="{{ route('admin.catalog-categories.index') }}"
                class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Back to List
@@ -207,77 +207,7 @@
                 </div>
             </div>
 
-            <!-- Meta Information Card -->
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="fas fa-info-circle me-2"></i>Meta Information
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="detail-item mb-3">
-                        <h6 class="text-muted mb-2">
-                            <i class="fas fa-plus-circle me-1"></i>Created
-                        </h6>
-                        <div class="d-flex align-items-center">
-                            <div class="meta-icon bg-light-primary rounded p-2 me-3">
-                                <i class="fas fa-calendar-plus text-primary"></i>
-                            </div>
-                            <div>
-                                <p class="mb-0 fw-semibold">{{ $category->created_at->format('M d, Y') }}</p>
-                                <small class="text-muted">{{ $category->created_at->format('h:i A') }}</small>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="detail-item mb-3">
-                        <h6 class="text-muted mb-2">
-                            <i class="fas fa-sync-alt me-1"></i>Last Updated
-                        </h6>
-                        <div class="d-flex align-items-center">
-                            <div class="meta-icon bg-light-warning rounded p-2 me-3">
-                                <i class="fas fa-calendar-alt text-warning"></i>
-                            </div>
-                            <div>
-                                <p class="mb-0 fw-semibold">{{ $category->updated_at->format('M d, Y') }}</p>
-                                <small class="text-muted">{{ $category->updated_at->format('h:i A') }}</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="detail-item">
-                        <h6 class="text-muted mb-2">
-                            <i class="fas fa-hashtag me-1"></i>Unique ID
-                        </h6>
-                        <div class="d-flex align-items-center">
-                            <div class="meta-icon bg-light-info rounded p-2 me-3">
-                                <i class="fas fa-fingerprint text-info"></i>
-                            </div>
-                            <div>
-                                <p class="mb-0 fw-semibold">{{ $category->id }}</p>
-                                <small class="text-muted">Category Identifier</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer bg-white border-top py-3">
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('admin.catalog-categories.edit', $category->id) }}"
-                           class="btn btn-warning">
-                            <i class="fas fa-edit me-2"></i>Edit Category
-                        </a>
-                        <form action="{{ route('admin.catalog-categories.destroy', $category->id) }}"
-                              method="POST"
-                              onsubmit="return confirm('Are you sure you want to delete this category? This will affect all items in this category.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger w-100">
-                                <i class="fas fa-trash-alt me-2"></i>Delete Category
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>

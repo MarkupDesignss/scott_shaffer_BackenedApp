@@ -132,7 +132,7 @@
                 </div>
                 <div class="col-auto">
                     <div class="input-group input-group-sm">
-                        <input type="text" class="form-control" placeholder="Search users...">
+                        <input type="text" class="form-control" name="search" placeholder="Search users...">
                         <button class="btn btn-outline-secondary" type="button">
                             <i class="fas fa-search"></i>
                         </button>
@@ -300,4 +300,19 @@
             }, index * 50);
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.querySelector('input[name="search"]');
+    const rows = document.querySelectorAll('tbody tr');
+
+    searchInput.addEventListener('keyup', function () {
+        const value = this.value.toLowerCase();
+
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(value)
+                ? ''
+                : 'none';
+        });
+    });
+});
 </script>

@@ -5,6 +5,8 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\UserConsentController;
 use App\Http\Controllers\API\InterestController;
+use App\Http\Controllers\API\ListController;
+use App\Http\Controllers\API\ListItemController;
 use App\Http\Controllers\API\PasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +34,16 @@ Route::middleware('auth:sanctum')->group(function () {
     // Category
     Route::get('catalog/categories/{id}', [CategoryController::class, 'categoriesByInterest']);
     Route::get('catalog/items', [CategoryController::class, 'items']);
+
+    // Lists items
+    Route::get('/lists', [ListController::class, 'index']);
+    Route::post('/lists', [ListController::class, 'store']);
+    Route::get('/lists/{list}', [ListController::class, 'show']);
+    Route::put('/lists/{list}', [ListController::class, 'update']);
+    Route::delete('/lists/{list}', [ListController::class, 'destroy']);
+
+    Route::post('/lists/{list}/items', [ListItemController::class, 'store']);
+    Route::delete('/lists/{list}/items/{item}', [ListItemController::class, 'destroy']);
 });
 
 // User Details

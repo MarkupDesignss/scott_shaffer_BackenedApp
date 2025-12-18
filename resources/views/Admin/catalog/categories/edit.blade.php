@@ -8,16 +8,16 @@
                 <div class="card-header bg-white border-bottom py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h5 class="mb-0 fw-semibold" style="font-size: 1.5rem;font-weight:800">
+                            <h5 class="mb-0" style="font-size: 1.5rem;font-weight:800">
                                 <i class="fas fa-edit me-2 text-warning"></i>Edit Category
                             </h5>
                             <p class="text-muted mb-0">Update category details</p>
                         </div>
                         <div class="d-flex gap-2">
-                            <a href="{{ route('admin.catalog-categories.show', $category->id) }}"
+                            {{-- <a href="{{ route('admin.catalog-categories.show', $category->id) }}"
                                class="btn btn-outline-info">
                                 <i class="fas fa-eye me-2"></i>View
-                            </a>
+                            </a> --}}
                             <a href="{{ route('admin.catalog-categories.index') }}"
                                class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-2"></i>Back to List
@@ -132,25 +132,25 @@
                                             <div class="form-text">Active categories are visible to customers.</div>
                                         </div>
 
-                                        <div class="mb-4">
+                                        {{-- <div class="mb-4">
                                             <label class="form-label fw-semibold">Created</label>
                                             <div class="text-muted">
                                                 <i class="far fa-calendar me-1"></i>
                                                 {{ $category->created_at->format('M d, Y h:i A') }}
                                             </div>
-                                        </div>
+                                        </div> --}}
 
-                                        <div class="mb-4">
+                                        {{-- <div class="mb-4">
                                             <label class="form-label fw-semibold">Last Updated</label>
                                             <div class="text-muted">
                                                 <i class="far fa-calendar-alt me-1"></i>
                                                 {{ $category->updated_at->format('M d, Y h:i A') }}
                                             </div>
-                                        </div>
+                                        </div> --}}
 
                                         <div class="d-grid gap-2">
                                             <button type="submit" class="btn btn-warning btn-lg">
-                                                <i class="fas fa-sync-alt me-2"></i>Update Category
+                                                </i>Update Category
                                             </button>
                                             <button type="button" class="btn btn-outline-danger" id="resetForm">
                                                 <i class="fas fa-redo me-2"></i>Reset Changes
@@ -159,26 +159,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Live Preview -->
-                                <div class="card border mt-4">
-                                    <div class="card-header bg-light py-3">
-                                        <h6 class="mb-0 fw-semibold">Preview</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="preview-card text-center p-4 rounded">
-                                            <div class="preview-icon mb-3" id="liveIconPreview">
-                                                <i class="{{ $category->icon ?: 'fas fa-folder' }} fa-2x"
-                                                   style="color: {{ $category->color ?: '#0d6efd' }}"></i>
-                                            </div>
-                                            <h5 id="liveNamePreview" class="fw-semibold mb-1">{{ $category->name }}</h5>
-                                            <div class="badge {{ $category->status == 'active' ? 'bg-success-soft text-success' : 'bg-secondary-soft text-secondary' }} rounded-pill px-3 py-1"
-                                                 id="liveStatusPreview">
-                                                <i class="fas fa-circle me-1" style="font-size: 8px"></i>
-                                                {{ ucfirst($category->status) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </form>

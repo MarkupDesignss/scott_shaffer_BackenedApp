@@ -155,8 +155,8 @@
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-toggle-on me-1"></i> Initial Status
                             </label>
-                            <div class="form-check form-switch ps-0">
-                                <div class="d-flex align-items-center">
+                            <div class="form-check form-switch ps-0 m-lg-2">
+                                <div class="d-flex align-items-center" style="margin-left: 30px">
                                     <input class="form-check-input me-3"
                                            type="checkbox"
                                            role="switch"
@@ -188,7 +188,7 @@
             </div>
 
             <!-- Tips Card -->
-            <div class="card border-0 shadow-sm mt-4 bg-light">
+            {{-- <div class="card border-0 shadow-sm mt-4 bg-light">
                 <div class="card-body p-4">
                     <h6 class="fw-semibold mb-3">
                         <i class="bi bi-lightbulb me-2"></i> Tips for Creating Great Interests
@@ -201,7 +201,7 @@
                         <li>Test new interests with a small user group first</li>
                     </ul>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>

@@ -58,4 +58,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserProfile::class);
     }
+    public function lists()
+    {
+        return $this->hasMany(ListModel::class, 'user_id');
+    }
 }

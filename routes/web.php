@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\CatalogItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('admin.login');
 });
 
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
@@ -21,7 +21,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminController::class, 'showLogin'])->name('login');
     Route::post('/login', [AdminController::class, 'login']);
 
-    // Logout
 
 
     // Forgot Password

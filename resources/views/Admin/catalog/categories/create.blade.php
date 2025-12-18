@@ -135,22 +135,6 @@
                                 </div>
 
                                 <!-- Live Preview -->
-                                <div class="card border mt-4">
-                                    <div class="card-header bg-light py-3">
-                                        <h6 class="mb-0 fw-semibold">Preview</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="preview-card text-center p-4 rounded">
-                                            <div class="preview-icon mb-3" id="liveIconPreview">
-                                                <i class="fas fa-folder fa-2x text-primary"></i>
-                                            </div>
-                                            <h5 id="liveNamePreview" class="fw-semibold mb-1">Category Name</h5>
-                                            <div class="badge bg-success-soft text-success rounded-pill px-3 py-1" id="liveStatusPreview">
-                                                <i class="fas fa-circle me-1" style="font-size: 8px"></i>Active
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </form>
