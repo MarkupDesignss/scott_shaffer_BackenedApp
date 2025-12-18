@@ -14,10 +14,10 @@
             </nav>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.catalog-items.edit', $item->id) }}"
+            {{-- <a href="{{ route('admin.catalog-items.edit', $item->id) }}"
                class="btn btn-warning">
                 <i class="fas fa-edit me-2"></i>Edit
-            </a>
+            </a> --}}
             <a href="{{ route('admin.catalog-items.index') }}"
                class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Back to List
@@ -103,13 +103,13 @@
                                  alt="{{ $item->name }}"
                                  class="img-fluid rounded shadow-sm"
                                  style="max-height: 300px; object-fit: contain;">
-                            <div class="mt-3">
+                            {{-- <div class="mt-3">
                                 <a href="{{ $item->image_url }}"
                                    target="_blank"
                                    class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-external-link-alt me-1"></i>View Full Image
                                 </a>
-                            </div>
+                            </div> --}}
                         @else
                             <div class="empty-image d-flex flex-column align-items-center justify-content-center p-5">
                                 <div class="empty-image-icon rounded-circle bg-light p-4 mb-3">
@@ -124,7 +124,7 @@
 
             <!-- Meta Information Card -->
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom py-3">
+                {{-- <div class="card-header bg-white border-bottom py-3">
                     <h5 class="mb-0 fw-semibold">
                         <i class="fas fa-info-circle me-2"></i>Meta Information
                     </h5>
@@ -159,8 +159,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer bg-white border-top py-3">
+                </div> --}}
+                {{-- <div class="card-footer bg-white border-top py-3">
                     <div class="d-grid gap-2">
                         <a href="{{ route('admin.catalog-items.edit', $item->id) }}"
                            class="btn btn-warning">
@@ -176,7 +176,7 @@
                             </button>
                         </form>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

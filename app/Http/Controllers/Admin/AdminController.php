@@ -27,7 +27,6 @@ class AdminController extends Controller
             'totalCategories' => CatalogCategory::count(),
             'totalItems'    => CatalogItem::count(),
         ];
-
         return view('admin.dashboard', $data);
     }
     /**

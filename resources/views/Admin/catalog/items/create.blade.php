@@ -190,38 +190,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Live Preview -->
-                                <div class="card border">
-                                    <div class="card-header bg-light py-3">
-                                        <h6 class="mb-0 fw-semibold">Preview</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="preview-card p-4 rounded">
-                                            <div class="preview-image mb-3 text-center" id="liveImagePreview">
-                                                <div class="bg-light rounded d-flex align-items-center justify-content-center"
-                                                     style="height: 150px;">
-                                                    <i class="fas fa-image fa-3x text-muted"></i>
-                                                </div>
-                                            </div>
-                                            <div class="preview-content">
-                                                <h5 id="liveNamePreview" class="fw-semibold mb-2">Item Name</h5>
-                                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                                    <span class="badge bg-light-primary text-primary rounded-pill px-3 py-1"
-                                                          id="liveCategoryPreview">
-                                                        <i class="fas fa-folder me-1"></i>Category
-                                                    </span>
-                                                    <span class="badge bg-success-soft text-success rounded-pill px-3 py-1"
-                                                          id="liveStatusPreview">
-                                                        <i class="fas fa-circle me-1" style="font-size: 8px"></i>Active
-                                                    </span>
-                                                </div>
-                                                <p class="text-muted mb-0" id="liveDescriptionPreview">
-                                                    Item description will appear here.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                     </form>

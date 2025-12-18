@@ -489,9 +489,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .fade-in {
+        /* .fade-in {
             animation: fadeIn 0.5s ease forwards;
-        }
+        } */
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
@@ -552,56 +552,62 @@
             font-size: 12px;
         }
         /* Parent Item */
-.sidebar-item > .sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 15px;
-    font-weight: 500;
-    cursor: pointer;
-}
+        .sidebar-item > .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            font-weight: 500;
+            cursor: pointer;
+                color: #4f46e5;
+        }
 
-/* Arrow animation */
-.sidebar-item .arrow {
-    transition: transform 0.3s ease;
-}
+        /* Arrow animation */
+        .sidebar-item .arrow {
+            transition: transform 0.3s ease;
+        }
 
-.sidebar-item.open .arrow {
-    transform: rotate(180deg);
-}
+        .sidebar-item.open .arrow {
+            transform: rotate(180deg);
+        }
 
-/* Submenu */
-.submenu {
-    display: none;
-    padding-left: 40px;
-    margin-top: 5px;
-}
+        /* Submenu */
+        .submenu {
+            display: none;
+            padding-left: 40px;
+            margin-top: 5px;
+        }
 
-.sidebar-item.open .submenu {
-    display: block;
-}
+        .sidebar-item.open .submenu {
+            display: block;
+        }
 
-/* Submenu links */
-.submenu li a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-    font-size: 14px;
-    color: #6c757d;
-    transition: all 0.2s ease;
-}
+        .submenu li{
+            color: #6b7280;
+        }
 
-/* Hover effect */
-.submenu li a:hover {
-    color: #0d6efd;
-}
+        /* Submenu links */
+        .submenu li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #484b4e;
+            transition: all 0.2s ease;
+        }
 
-/* Active item */
-.submenu li a.active {
-    color: #0d6efd;
-    font-weight: 600;
-}
+        /* Hover effect */
+        .submenu li a:hover {
+            color: #0d6efd;
+        }
+
+        /* Active item */
+        .submenu li a.active {
+            color: #0d6efd;
+            font-weight: 600;
+        }
 
     </style>
 </head>
@@ -637,7 +643,7 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-nav">
-            <div class="nav-section">Main</div>
+            {{-- <div class="nav-section">Main</div> --}}
 
             <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i class="nav-icon bi bi-speedometer2"></i>
