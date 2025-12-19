@@ -48,7 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/lists/{list}/items/{item}', [ListItemController::class, 'destroy']);
 
     // featured lists
-    Route::get('/featured-lists', [FeatureListCOntroller::class, 'index']);
+    Route::get('/featured-lists/{id}', [FeatureListCOntroller::class, 'index']);
 
 
 
