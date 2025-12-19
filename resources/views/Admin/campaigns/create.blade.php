@@ -117,7 +117,7 @@
                             <!-- CTA Text -->
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="form-label fw-semibold">CTA Button Text</label>
+                                    <label class="form-label fw-semibold">CTA</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-hand-pointer text-muted"></i>
