@@ -7,7 +7,7 @@
 
     {{-- BASIC USER INFO --}}
     <div class="card mb-4">
-        <div class="card-header"  style="font-size: 1.5rem;font-weight:700">Basic Information</div>
+        <div class="card-header" style="font-size: 1.5rem;font-weight:700">Basic Information</div>
         <div class="card-body">
             <table class="table table-bordered">
                 {{-- <tr>
@@ -43,26 +43,26 @@
         <div class="card-header" style="font-size:1.3rem;font-weight:700">Profile Details</div>
         <div class="card-body">
             @if($user->profile)
-                <table class="table table-bordered">
-                    <tr>
-                        <th>Age Band</th>
-                        <td>{{ $user->profile->age_band }}</td>
-                    </tr>
-                    <tr>
-                        <th>City</th>
-                        <td>{{ $user->profile->city }}</td>
-                    </tr>
-                    <tr>
-                        <th>Dining Budget</th>
-                        <td>{{ $user->profile->dining_budget }}</td>
-                    </tr>
-                    <tr>
-                        <th>Has Dogs</th>
-                        <td>{{ $user->profile->has_dogs ? 'Yes' : 'No' }}</td>
-                    </tr>
-                </table>
+            <table class="table table-bordered">
+                <tr>
+                    <th>Age Band</th>
+                    <td>{{ $user->profile->age_band }}</td>
+                </tr>
+                <tr>
+                    <th>City</th>
+                    <td>{{ $user->profile->city }}</td>
+                </tr>
+                <tr>
+                    <th>Dining Budget</th>
+                    <td>{{ $user->profile->dining_budget }}</td>
+                </tr>
+                <tr>
+                    <th>Has Dogs</th>
+                    <td>{{ $user->profile->has_dogs ? 'Yes' : 'No' }}</td>
+                </tr>
+            </table>
             @else
-                <p class="text-muted">No profile data available.</p>
+            <p class="text-muted">No profile data available.</p>
             @endif
         </div>
     </div>
@@ -72,24 +72,24 @@
         <div class="card-header">User Interests</div>
         <div class="card-body">
             @if($user->interests->count())
-                <ul class="list-group">
-                    @foreach($user->interests as $interest)
-                        <li class="list-group-item d-flex justify-content-between">
-                            {{ $interest->name }}
-                            <small class="text-muted">
-                                Added: {{ $interest->pivot->created_at->format('d M Y') }}
-                            </small>
-                        </li>
-                    @endforeach
-                </ul>
+            <ul class="list-group">
+                @foreach($user->interests as $interest)
+                <li class="list-group-item d-flex justify-content-between">
+                    {{ $interest->name }}
+                    <small class="text-muted">
+                        Added: {{ $interest->pivot->created_at->format('d M Y') }}
+                    </small>
+                </li>
+                @endforeach
+            </ul>
             @else
-                <p class="text-muted">No interests selected.</p>
+            <p class="text-muted">No interests selected.</p>
             @endif
         </div>
     </div>
 
     {{-- USER LISTS --}}
-    <div class="card mt-4">
+    <!-- <div class="card mt-4">
         <div class="card-header" style="font-size:1.3rem;font-weight:700">
             User Lists
         </div>
@@ -162,7 +162,7 @@
                 <p class="text-muted">User has not created any lists.</p>
             @endif
         </div>
-    </div>
+    </div> -->
 
 
 </div>

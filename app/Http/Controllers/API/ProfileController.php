@@ -30,9 +30,13 @@ class ProfileController extends Controller
             /** -----------------------
              *  User Basic Info
              * ---------------------- */
-            $user = User::with(['profile', 'interests:id,name'])
-                ->select('id', 'full_name', 'email', 'phone', 'country', 'country_code')
-                ->find($userId);
+            $user = User::with([
+                'profile:id,user_id,age_band,city,dining_budget,has_dogs',
+                'consent:id,user_id,accepted_terms_privacy,campaign_marketing,accepted_at',
+                'interests:id,name'
+            ])
+            ->select('id', 'full_name', 'email', 'phone', 'country', 'country_code')
+            ->find($userId);
 
             if (!$user) {
                 return response()->json([
@@ -41,44 +45,44 @@ class ProfileController extends Controller
                 ], 404);
             }
 
-            /** -----------------------
-             *  Interest → Category → Items
-             * ---------------------- */
-            $interestsData = [];
+            // /** -----------------------
+            //  *  Interest → Category → Items
+            //  * ---------------------- */
+            // $interestsData = [];
 
-            foreach ($user->interests as $interest) {
+            // foreach ($user->interests as $interest) {
 
-                $categories = DB::table('catalog_categories')
-                    ->where('interest_id', $interest->id)
-                    ->where('status', 1)
-                    ->select('id', 'name', 'slug', 'icon', 'color')
-                    ->get()
-                    ->map(function ($category) {
+            //     $categories = DB::table('catalog_categories')
+            //         ->where('interest_id', $interest->id)
+            //         ->where('status', 1)
+            //         ->select('id', 'name', 'slug', 'icon', 'color')
+            //         ->get()
+            //         ->map(function ($category) {
 
-                        $items = DB::table('catalog_items')
-                            ->where('category_id', $category->id)
-                            ->where('status', 1)
-                            ->whereNull('deleted_at')
-                            ->select('id', 'name', 'description', 'image_url')
-                            ->get();
+            //             $items = DB::table('catalog_items')
+            //                 ->where('category_id', $category->id)
+            //                 ->where('status', 1)
+            //                 ->whereNull('deleted_at')
+            //                 ->select('id', 'name', 'description', 'image_url')
+            //                 ->get();
 
-                        $category->items = $items;
-                        return $category;
-                    });
+            //             $category->items = $items;
+            //             return $category;
+            //         });
 
-                $interestsData[] = [
-                    'id'         => $interest->id,
-                    'name'       => $interest->name,
-                    'categories' => $categories
-                ];
-            }
+            //     $interestsData[] = [
+            //         'id'         => $interest->id,
+            //         'name'       => $interest->name,
+            //         'categories' => $categories
+            //     ];
+            // }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Profile fetched successfully',
                 'data' => [
                     'user'      => $user,
-                    'interests' => $interestsData
+                //    'interests' => $interestsData
                 ]
             ]);
         } catch (\Exception $e) {
@@ -150,10 +154,9 @@ class ProfileController extends Controller
                 'country'       => 'nullable|string|max:100',
                 'country_code'  => 'nullable|string|max:5',
                 'phone'         => 'nullable|string|unique:users,phone,' . $userId,
-
-                'age_band'      => 'nullable|in:18-24,25-34,35-44,45+',
-                'city'          => 'nullable|string|max:100',
-                'dining_budget' => 'nullable|in:under_100,100_300,300_500,500_plus',
+                'age_band'      => 'nullable',
+                'city'          => 'nullable',
+                'dining_budget' => 'nullable',
                 'has_dogs'      => 'nullable|boolean',
             ]);
 
