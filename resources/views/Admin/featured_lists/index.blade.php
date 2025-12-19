@@ -73,7 +73,7 @@
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th width="60">ID</th>
+                            <th width="60">S.No.</th>
                             <th>List Title</th>
                             <th>Category</th>
                             <th>Size</th>
@@ -85,7 +85,9 @@
                     <tbody>
                         @forelse($lists as $list)
                             <tr>
-                                <td class="fw-semibold text-muted">#{{ $list->id }}</td>
+                                <td class="ps-4 fw-medium text-muted">
+                                    {{ $loop->iteration }}
+                                </td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="flex-shrink-0 me-3">
@@ -95,7 +97,7 @@
                                         </div>
                                         <div class="flex-grow-1">
                                             <h6 class="mb-0">{{ $list->title }}</h6>
-                                            <small class="text-muted">Created {{ $list->created_at->diffForHumans() }}</small>
+                                            {{-- <small class="text-muted">Created {{ $list->created_at->diffForHumans() }}</small> --}}
                                         </div>
                                     </div>
                                 </td>
