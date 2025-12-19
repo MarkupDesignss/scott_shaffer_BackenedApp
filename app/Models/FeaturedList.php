@@ -23,7 +23,7 @@ class FeaturedList extends Model
 
     public function items()
     {
-        return $this->hasMany(FeaturedListItem::class)
+        return $this->hasMany(FeaturedListItem::class, 'featured_list_id')
             ->orderBy('position');
     }
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\FeatureListCOntroller;
 use App\Http\Controllers\API\UserConsentController;
 use App\Http\Controllers\API\InterestController;
 use App\Http\Controllers\API\ListController;
@@ -32,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/update_profile', [ProfileController::class, 'updateProfile']);
 
     // Category
+    Route::get('catalog/categories', [CategoryController::class, 'categories']);
     Route::get('catalog/categories/{id}', [CategoryController::class, 'categoriesByInterest']);
     Route::get('catalog/items', [CategoryController::class, 'items']);
 
@@ -44,6 +46,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/lists/{list}/items', [ListItemController::class, 'store']);
     Route::delete('/lists/{list}/items/{item}', [ListItemController::class, 'destroy']);
+
+    // featured lists
+    Route::get('/featured-lists', [FeatureListCOntroller::class, 'index']);
+
+
+
+    Route::get('/user/interests', [InterestController::class, 'getUserInterests']);
 });
 
 // User Details

@@ -65,42 +65,28 @@
                                 @enderror
                             </div>
 
-                            <!-- List Size -->
+                           <!-- List Size -->
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-semibold">List Size *</label>
-                                <div class="btn-group w-100" role="group">
-                                    <input type="radio"
-                                           class="btn-check"
-                                           name="list_size"
-                                           id="size3"
-                                           value="3"
-                                           {{ old('list_size', '3') == '3' ? 'checked' : '' }}>
-                                    <label class="btn btn-outline-primary" for="size3">
-                                        <i class="fas fa-medal me-2"></i>Top 3
-                                    </label>
 
-                                    <input type="radio"
-                                           class="btn-check"
-                                           name="list_size"
-                                           id="size5"
-                                           value="5"
-                                           {{ old('list_size') == '5' ? 'checked' : '' }}>
-                                    <label class="btn btn-outline-primary" for="size5">
-                                        <i class="fas fa-trophy me-2"></i>Top 5
-                                    </label>
+                                <input type="number"
+                                    name="list_size"
+                                    class="form-control text-center"
+                                    min="1"
+                                    max="100"
+                                    placeholder="Enter list size (e.g. 3, 5, 10)"
+                                    value="{{ old('list_size', 3) }}"
+                                    required>
 
-                                    <input type="radio"
-                                           class="btn-check"
-                                           name="list_size"
-                                           id="size10"
-                                           value="10"
-                                           {{ old('list_size') == '10' ? 'checked' : '' }}>
-                                    <label class="btn btn-outline-primary" for="size10">
-                                        <i class="fas fa-crown me-2"></i>Top 10
-                                    </label>
+                                <div class="form-text">
+                                    Enter how many items this list will contain.
                                 </div>
-                                <div class="form-text">Select how many items this list will contain.</div>
+
+                                @error('list_size')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
+
 
                             <!-- Status & Order -->
                             <div class="col-md-6 mb-4">

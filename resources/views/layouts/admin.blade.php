@@ -559,7 +559,7 @@
             padding: 12px 15px;
             font-weight: 500;
             cursor: pointer;
-                color: #4f46e5;
+                color: #64748b;
         }
 
         /* Arrow animation */
@@ -660,14 +660,18 @@
                <i class="nav-icon bi bi-heart-fill"></i>
                 <span class="nav-label">Interest</span>
             </a>
+
+
+
             {{-- Catalog Management --}}
             <li class="sidebar-item has-submenu
+
                 {{ request()->routeIs('admin.catalog-categories.*') || request()->routeIs('admin.catalog-items.*') ? 'open active' : '' }}"
                  style="list-style: none;">
 
                 <a href="javascript:void(0);" class="sidebar-link">
                     <i class="bi bi-folder"></i>
-                    <span>Catalog Mgmt.</span>
+                    <span class="nav-label">Catalog Mgmt.</span>
                     <i class="bi bi-chevron-down ms-auto arrow"></i>
                 </a>
 
@@ -722,6 +726,11 @@
 
 
 
+            <a href="{{ route('admin.campaigns.index') }}"
+            class="nav-item {{ request()->routeIs('admin.campaigns.*') ? 'active' : '' }}">
+                <i class="nav-icon bi bi-megaphone-fill"></i>
+                <span class="nav-label">Campaigns Mgmt.</span>
+            </a>
 
 
 

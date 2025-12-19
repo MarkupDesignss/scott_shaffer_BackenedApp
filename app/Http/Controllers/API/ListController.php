@@ -17,20 +17,28 @@ class ListController extends Controller
     public function index()
     {
         try {
+            $user = Auth::user();
+            // dd($user);
             $lists = Auth::user()
                 ->lists()
-                ->with('items.catalogItem')
+                ->whereNull('deleted_at')
+                ->with([
+                    'items' => function ($q) {
+                        $q->with('catalogItem');
+                    }
+                ])
                 ->get();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Lists retrieved successfully',
+                'message' => 'User lists with items retrieved successfully',
                 'data'    => $lists
             ]);
         } catch (Throwable $e) {
             return $this->serverError($e);
         }
     }
+
 
     public function store(Request $request)
     {

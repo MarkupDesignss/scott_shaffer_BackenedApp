@@ -32,7 +32,7 @@ class FeaturedListController extends Controller
         $validated = $request->validate([
             'title'         => 'required|string|max:150',
             'category_id'   => 'required|exists:catalog_categories,id',
-            'list_size'     => 'required|in:3,5,10',
+            'list_size'     => 'required',
             'display_order' => 'required|integer|min:0',
             'status'        => 'required|in:draft,live'
         ]);
@@ -64,7 +64,7 @@ class FeaturedListController extends Controller
         $validated = $request->validate([
             'title'         => 'required|string|max:150',
             'category_id'   => 'required|exists:catalog_categories,id',
-            'list_size'     => 'required|in:3,5,10',
+            'list_size'     => 'required',
             'display_order' => 'required|integer|min:0',
             'status'        => 'required|in:draft,live'
         ]);
