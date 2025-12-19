@@ -38,7 +38,7 @@ class UserController extends Controller
         $user = User::with([
             'profile',
             'interests',
-            'lists.items.catalogItem'
+           // 'lists.items.catalogItem'
         ])->findOrFail($id);
 
         return view('admin.user.view', compact('user'));
