@@ -38,7 +38,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
-
+        {{-- @dd($items); --}}
     <div class="card border-0 shadow-sm mx-3">
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -57,8 +57,11 @@
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4 py-3 text-uppercase text-muted fw-semibold small" style="width: 80px">#ID</th>
+                            <th class="ps-4 py-3 text-uppercase text-muted fw-semibold small" style="width: 80px">
+                                S.No.
+                            </th>
                             <th class="py-3 text-uppercase text-muted fw-semibold small">Item Name</th>
+                            <th class="py-3 text-uppercase text-muted fw-semibold small">List Name</th>
                             <th class="py-3 text-uppercase text-muted fw-semibold small" style="width: 120px">Position</th>
                             <th class="pe-4 py-3 text-uppercase text-muted fw-semibold small" style="width: 150px">Actions</th>
                         </tr>
@@ -66,12 +69,21 @@
                     <tbody>
                         @forelse($items as $item)
                             <tr class="align-middle">
-                                <td class="ps-4 fw-medium text-muted">{{ $item->id }}</td>
+                               <td class="ps-4 fw-medium text-muted">
+                                    {{ $loop->iteration }}
+                                </td>
                                 <td class="fw-medium">
                                     @if($item->catalogItem)
                                         <span class="text-dark">{{ $item->catalogItem->name }}</span>
                                     @else
                                         <span class="text-danger fst-italic">Item not found</span>
+                                    @endif
+                                </td>
+                                <td class="fw-medium">
+                                    @if($item->featuredList)
+                                        <span class="text-dark">{{ $item->featuredList->title }}</span>
+                                    @else
+                                        <span class="text-danger fst-italic">List not found</span>
                                     @endif
                                 </td>
                                 <td>

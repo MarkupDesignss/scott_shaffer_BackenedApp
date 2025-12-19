@@ -13,9 +13,13 @@ class FeaturedListItemController extends Controller
     public function index()
     {
         return view('admin.featured_lists.items.index', [
-            'items' => FeaturedListItem::with('catalogItem')->latest()->get()
+            'items' => FeaturedListItem::with([
+                'catalogItem',
+                'featuredList'
+            ])->latest()->get()
         ]);
     }
+
 
     public function create()
     {
