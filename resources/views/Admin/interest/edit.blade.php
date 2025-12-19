@@ -15,7 +15,7 @@
 
     <!-- Form Card -->
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6" style="display: contents;">
+        {{-- <div class="col-md-8 col-lg-6"> --}}
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
                     <!-- Interest Preview -->
@@ -105,25 +105,42 @@
                             </div>
 
                             <!-- Icon Suggestions -->
-                            <div class="mt-3">
-                                <small class="text-muted mb-2 d-block">Quick Pick:</small>
-                                <div class="d-flex flex-wrap gap-2">
-                                    @php
-                                        $iconSuggestions = [
-                                            'bi bi-heart', 'bi bi-star', 'bi bi-music-note',
-                                            'bi bi-camera', 'bi bi-controller', 'bi bi-book',
-                                            'bi bi-joystick', 'bi bi-bicycle', 'bi bi-cup-straw',
-                                            'bi bi-palette', 'bi bi-code-slash', 'bi bi-people'
-                                        ];
-                                    @endphp
-                                    @foreach($iconSuggestions as $suggestion)
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-secondary d-flex align-items-center"
-                                                onclick="selectIcon('{{ $suggestion }}')">
-                                            <i class="{{ $suggestion }} me-1"></i>
-                                            {{ str_replace('bi bi-', '', $suggestion) }}
-                                        </button>
-                                    @endforeach
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted fw-semibold">Popular Icon Suggestions:</small>
+                                </div>
+                                <div class="icon-suggestions">
+                                    <div class="row g-2" id="iconGrid">
+                                        @php
+                                            $iconCategories = [
+                                                'General' => ['bi bi-heart', 'bi bi-star', 'bi bi-bookmark', 'bi bi-flag'],
+                                                'Activities' => ['bi bi-controller', 'bi bi-music-note', 'bi bi-camera', 'bi bi-book'],
+                                                'Sports' => ['bi bi-bicycle', 'bi bi-joystick', 'bi bi-trophy', 'bi bi-dice-5'],
+                                                'Arts' => ['bi bi-palette', 'bi bi-music-note-beamed', 'bi bi-camera-reels', 'bi bi-brush'],
+                                                'Tech' => ['bi bi-code-slash', 'bi bi-laptop', 'bi bi-phone', 'bi bi-cpu'],
+                                                'Food' => ['bi bi-cup-straw', 'bi bi-egg-fried', 'bi bi-emoji-sunglasses', 'bi bi-basket']
+                                            ];
+                                        @endphp
+
+                                        @foreach($iconCategories as $category => $icons)
+                                            <div class="col-12 mb-2">
+                                                <small class="text-muted d-block mb-2">{{ $category }}</small>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    @foreach($icons as $icon)
+                                                        <button type="button"
+                                                                class="btn btn-sm btn-outline-light border d-flex flex-column align-items-center justify-content-center p-2"
+                                                                onclick="selectIcon('{{ $icon }}')"
+                                                                style="width: 70px; height: 70px;"
+                                                                title="{{ str_replace('bi bi-', '', $icon) }}">
+                                                           <i class="{{ $icon }} fs-5 mb-1" style="color:#212529;"></i>
+
+                                                            <small class="text-muted">{{ str_replace('bi bi-', '', $icon) }}</small>
+                                                        </button>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -182,7 +199,7 @@
                     </form>
                 </div>
             </div> --}}
-        </div>
+        {{-- </div> --}}
     </div>
 </div>
 
@@ -260,6 +277,14 @@
         font-size: 0.875rem;
     }
 
+    .icon-suggestions .btn {
+        transition: all 0.2s ease;
+    }
+
+    .icon-suggestions .btn:hover {
+        transform: translateY(-2px);
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
         .card-body {
@@ -321,6 +346,20 @@
     });
 
     // Select icon from suggestions
+    // Toggle icon grid visibility
+    // function toggleIconGrid() {
+    //     const iconGrid = document.getElementById('iconGrid');
+    //     const toggleBtn = event.target.closest('button');
+
+    //     if (iconGrid.style.display === 'none' || iconGrid.style.display === '') {
+    //         iconGrid.style.display = 'block';
+    //         toggleBtn.innerHTML = '<i class="bi bi-grid me-1"></i> Show less';
+    //     } else {
+    //         iconGrid.style.display = 'none';
+    //         toggleBtn.innerHTML = '<i class="bi bi-grid me-1"></i> Show all';
+    //     }
+    // }
+
     function selectIcon(iconClass) {
         const iconInput = document.getElementById('icon');
         const iconPreview = document.getElementById('iconPreview');

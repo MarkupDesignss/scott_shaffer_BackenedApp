@@ -58,14 +58,14 @@
         <div class="card-header bg-white py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">All Featured Lists</h6>
-                <div class="d-flex gap-2">
+                {{-- <div class="d-flex gap-2">
                     <select class="form-select form-select-sm w-auto">
                         <option>All Status</option>
                         <option>Live</option>
                         <option>Draft</option>
                     </select>
                     <input type="text" class="form-control form-control-sm" placeholder="Search lists...">
-                </div>
+                </div> --}}
             </div>
         </div>
         <div class="card-body p-0">

@@ -20,6 +20,6 @@ class ListItem extends Model
 
     public function catalogItem()
     {
-        return $this->belongsTo(CatalogItem::class);
+        return $this->belongsTo(CatalogItem::class, 'catalog_item_id');
     }
 }

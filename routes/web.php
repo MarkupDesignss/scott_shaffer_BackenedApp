@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\InterestController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CatalogCategoryController;
@@ -45,14 +46,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::post('/reset-password', [AdminController::class, 'resetPassword'])
         ->name('reset.password');
-
-    // Featured Lists
-    Route::resource('featured-lists', FeaturedListController::class);
-
-    Route::resource(
-        'featured-list-items',
-        FeaturedListItemController::class
-    );
 });
 
 
@@ -95,5 +88,14 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     )->name('catalog-categories.toggle-status');
 
 
+    // Featured Lists
+    Route::resource('featured-lists', FeaturedListController::class);
+
+    Route::resource(
+        'featured-list-items',
+        FeaturedListItemController::class
+    );
+
+    Route::resource('campaigns', CampaignController::class);
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
 });

@@ -74,24 +74,27 @@
                                 @enderror
                             </div>
 
-                            <!-- List Size -->
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-semibold">List Size *</label>
-                                <div class="btn-group w-100" role="group">
-                                    @foreach([3, 5, 10] as $size)
-                                        <input type="radio"
-                                               class="btn-check"
-                                               name="list_size"
-                                               id="size{{ $size }}"
-                                               value="{{ $size }}"
-                                               {{ old('list_size', $featuredList->list_size) == $size ? 'checked' : '' }}>
-                                        <label class="btn btn-outline-primary" for="size{{ $size }}">
-                                            <i class="fas fa-{{ $size == 3 ? 'medal' : ($size == 5 ? 'trophy' : 'crown') }} me-2"></i>
-                                            Top {{ $size }}
-                                        </label>
-                                    @endforeach
+
+                                <input type="number"
+                                    name="list_size"
+                                    class="form-control text-center"
+                                    min="1"
+                                    max="100"
+                                    value="{{ old('list_size', $featuredList->list_size) }}"
+                                    placeholder="Enter list size (e.g. 3, 5, 10)"
+                                    required>
+
+                                <div class="form-text">
+                                    Enter how many items this list will contain.
                                 </div>
+
+                                @error('list_size')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
+
 
                             <!-- Status & Order -->
                             <div class="col-md-6 mb-4">

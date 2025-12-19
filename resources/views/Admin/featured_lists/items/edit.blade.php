@@ -18,9 +18,9 @@
             <a href="{{ route('admin.featured-list-items.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Back
             </a>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            {{-- <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                 <i class="fas fa-trash me-2"></i>Delete
-            </button>
+            </button> --}}
         </div>
     </div>
 
