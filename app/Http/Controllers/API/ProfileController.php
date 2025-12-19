@@ -98,9 +98,9 @@ class ProfileController extends Controller
         try {
             $validated = $request->validate([
                 'user_id'        => 'required|exists:users,id',
-                'age_band'       => 'required|in:18-24,25-34,35-44,45+',
+                'age_band'       => 'required',
                 'city'           => 'required|string|max:100',
-                'dining_budget'  => 'required|in:under_100,100_300,300_500,500_plus',
+                'dining_budget'  => 'required',
                 'has_dogs'       => 'required|boolean',
             ]);
 

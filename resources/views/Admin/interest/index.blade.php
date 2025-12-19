@@ -79,7 +79,7 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">#ID</th>
+                            <th class="ps-4">#</th>
                             <th>Name</th>
                             <th>Icon</th>
                             <th>Status</th>
@@ -89,7 +89,7 @@
                     <tbody>
                         @forelse($interests as $interest)
                             <tr>
-                                <td class="ps-4 fw-semibold">{{ $interest->id }}</td>
+                                <td class="ps-4 fw-semibold">{{ $loop->iteration }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="bg-light p-2 rounded me-3">
