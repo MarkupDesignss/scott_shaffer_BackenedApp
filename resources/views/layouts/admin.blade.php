@@ -694,13 +694,12 @@
                 </ul>
             </li>
 
-            {{-- Feature list --}}
             <li class="sidebar-item has-submenu
                 {{ request()->routeIs('admin.featured-lists.*') || request()->routeIs('admin.featured-list-items.*') ? 'open active' : '' }}"
-                 style="list-style: none;">
+                style="list-style: none;">
 
                 <a href="javascript:void(0);" class="sidebar-link">
-                    <i class="bi bi-folder"></i>
+                    <i class="bi bi-stars"></i>
                     <span>Featured List Builder</span>
                     <i class="bi bi-chevron-down ms-auto arrow"></i>
                 </a>
@@ -709,7 +708,7 @@
                     <li>
                         <a href="{{ route('admin.featured-lists.index') }}"
                         class="{{ request()->routeIs('admin.featured-lists.*') ? 'active' : '' }}">
-                            <i class="bi bi-folder2-open"></i>
+                            <i class="bi bi-list-stars"></i>
                             <span>Featured Lists</span>
                         </a>
                     </li>
@@ -717,12 +716,13 @@
                     <li>
                         <a href="{{ route('admin.featured-list-items.index') }}"
                         class="{{ request()->routeIs('admin.featured-list-items.*') ? 'active' : '' }}">
-                            <i class="bi bi-box-seam"></i>
+                            <i class="bi bi-boxes"></i>
                             <span>Featured List Items</span>
                         </a>
                     </li>
                 </ul>
             </li>
+
 
 
 
@@ -735,7 +735,7 @@
 
             <a href="{{ route('admin.policies.index') }}"
             class="nav-item {{ request()->routeIs('admin.policies.*') ? 'active' : '' }}">
-                <i class="nav-icon bi bi-megaphone-fill"></i>
+                <i class="nav-icon bi bi-shield-lock-fill"></i>
                 <span class="nav-label">Pages</span>
             </a>
 

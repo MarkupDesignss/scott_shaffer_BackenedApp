@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->boolean('accepted_terms_privacy')->default(false);
-            $table->longText('policy_content')->nullable();
             $table->boolean('campaign_marketing')->default(false);
             $table->timestamp('accepted_at')->nullable();
             $table->timestamps();
