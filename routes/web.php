@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CatalogCategoryController;
 use App\Http\Controllers\Admin\CatalogItemController;
 use App\Http\Controllers\Admin\FeaturedListController;
 use App\Http\Controllers\Admin\FeaturedListItemController;
+use App\Http\Controllers\Admin\PolicyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -86,6 +87,9 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
         '/catalog-categories/{id}/toggle-status',
         [CatalogCategoryController::class, 'toggleStatus']
     )->name('catalog-categories.toggle-status');
+
+    // Policy
+    Route::resource('policies', PolicyController::class);
 
 
     // Featured Lists

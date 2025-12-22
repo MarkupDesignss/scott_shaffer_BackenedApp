@@ -20,11 +20,14 @@ class UserConsentController extends Controller
         try {
             $policies = Policy::where('is_active', true)
                 ->orderBy('order')
-                ->get([
-                    'id',
-                    'name',
-                    'description'
-                ]);
+                ->get(['id', 'name', 'description'])
+                ->map(function ($policy) {
+                    return [
+                        'id'          => $policy->id,
+                        'name'        => '<em>' . e($policy->name) . '</em>',
+                        'description' => $policy->description,
+                    ];
+                });
 
             return response()->json([
                 'success' => true,
@@ -32,7 +35,6 @@ class UserConsentController extends Controller
                 'data'    => $policies
             ], 200);
         } catch (\Throwable $th) {
-
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch policies',
