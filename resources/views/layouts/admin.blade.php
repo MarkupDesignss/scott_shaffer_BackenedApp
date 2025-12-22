@@ -733,6 +733,13 @@
             </a>
 
 
+            <a href="{{ route('admin.policies.index') }}"
+            class="nav-item {{ request()->routeIs('admin.policies.*') ? 'active' : '' }}">
+                <i class="nav-icon bi bi-megaphone-fill"></i>
+                <span class="nav-label">Pages</span>
+            </a>
+
+
 
 
             <div class="nav-divider"></div>
@@ -766,6 +773,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Summernote JS -->
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
+    {{-- CKE editor --}}
+    @stack('scripts')
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
+
 
     <script>
         // Toggle sidebar on hamburger click
