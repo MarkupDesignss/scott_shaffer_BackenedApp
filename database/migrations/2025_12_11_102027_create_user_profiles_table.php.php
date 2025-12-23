@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->unique();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('age_band')->nullable();
+            $table->string('profile_image')->nullable();
             $table->string('city')->nullable();
             $table->string('dining_budget')->nullable();
             $table->boolean('has_dogs')->default(false);

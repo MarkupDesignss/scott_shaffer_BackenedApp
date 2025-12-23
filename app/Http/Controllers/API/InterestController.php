@@ -56,6 +56,9 @@ class InterestController extends Controller
 
             // Replace old interests safely
             $user->interests()->sync($validated['interests']);
+            User::where('id', $user->id)->update([
+                'is_interest_completed' => true
+            ]);
 
             return response()->json([
                 'success'            => true,

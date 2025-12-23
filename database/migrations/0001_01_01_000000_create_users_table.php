@@ -31,6 +31,9 @@ return new class extends Migration
             $table->tinyInteger('status')
                 ->default(1)
                 ->comment('0 = Inactive, 1 = Active');
+            $table->boolean('is_consent_completed')->default(false);
+            $table->boolean('is_interest_completed')->default(false);
+            $table->boolean('is_profile_completed')->default(false);
 
             $table->string('remember_token', 100)->nullable();
             $table->string('google_id')->nullable();

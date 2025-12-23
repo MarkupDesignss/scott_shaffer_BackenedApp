@@ -10,11 +10,13 @@ use App\Http\Controllers\API\ListController;
 use App\Http\Controllers\API\ListItemController;
 use App\Http\Controllers\API\PasswordController;
 use App\Http\Controllers\API\RecommenededItemsController;
+use App\Http\Controllers\Api\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public auth routes
 Route::post('/register', [AuthController::class, 'signup']);
+Route::post('/check-user-status', [AuthController::class, 'checkUserStatus']);
 Route::post('/request-otp', [AuthController::class, 'requestOtp']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 
@@ -31,7 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'getProfile']);
-    Route::put('/update_profile', [ProfileController::class, 'updateProfile']);
+    Route::post('/update_profile', [ProfileController::class, 'updateProfile']);
 
     // Category
     Route::get('catalog/categories', [CategoryController::class, 'categories']);
@@ -53,6 +55,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Recommended items
     Route::get('/recommeditems', [RecommenededItemsController::class, 'recommendedList']);
+
+
+    Route::get(
+        '/global-search',
+        [SearchController::class, 'globalSearch']
+    );
 });
 Route::get('/user/interests/{id}', [InterestController::class, 'getUserInterests']);
 

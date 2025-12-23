@@ -24,12 +24,46 @@ class AuthController extends Controller
     /**
      * Signup (API)
      */
+    public function checkUserStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'country_code' => 'required|string|max:5',
+            'phone'        => 'required|string',
+        ]);
+
+        $finalPhone = $this->formatFullPhone(
+            $validated['country_code'],
+            $validated['phone']
+        );
+
+        $user = User::where('phone', $finalPhone)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => true,
+                'exists'  => false,
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => true,
+            'exists'  => true,
+            'data'    => [
+                'user_id'     => $user->id,
+                'is_consent'  => (bool) $user->is_consent_completed,
+                'is_interest' => (bool) $user->is_interest_completed,
+                'is_profile'  => (bool) $user->is_profile_completed,
+            ],
+        ], 200);
+    }
+
+
     public function signup(Request $request)
     {
         try {
             $validated = $request->validate([
                 'full_name'    => 'required|string|max:255',
-                'email'        => 'required|email|unique:users,email',
+                'email'        => 'required|email',
                 'country_code' => 'required|string|max:5',
                 'phone'        => 'required|string',
                 'country'      => 'required|string|max:100',
@@ -40,43 +74,55 @@ class AuthController extends Controller
                 $validated['phone']
             );
 
-            // Phone already exists check
             if (User::where('phone', $finalPhone)->exists()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User already registered with this phone number',
-                ], 409);
-            }
+                $user = User::where('phone', $finalPhone)->first();
 
+                return response()->json([
+                    'success' => true,
+                    'exists'  => true,
+                    'data'    => [
+                        'user_id'     => $user->id,
+                        'is_consent'  => (bool) $user->is_consent_completed,
+                        'is_interest' => (bool) $user->is_interest_completed,
+                        'is_profile'  => (bool) $user->is_profile_completed,
+                    ]
+                ], 200);
+            }
             $user = User::create([
-                'full_name'    => $validated['full_name'],
-                'email'        => $validated['email'],
-                'country_code' => $validated['country_code'],
-                'country'      => $validated['country'],
-                'phone'        => $finalPhone,
+                'full_name'             => $validated['full_name'],
+                'email'                 => $validated['email'],
+                'country_code'          => $validated['country_code'],
+                'country'               => $validated['country'],
+                'phone'                 => $finalPhone,
+
+                // onboarding flags
+                'is_consent_completed'  => false,
+                'is_interest_completed' => false,
+                'is_profile_completed'  => false,
             ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Signup successful',
-                'user'    => $user,
+                'data'    => [
+                    'user_id' => $user->id
+                ]
             ], 201);
         } catch (ValidationException $e) {
-
-            // Email already exists OR other validation issues
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
                 'errors'  => $e->errors(),
             ], 422);
         } catch (\Throwable $th) {
-
             return response()->json([
                 'success' => false,
                 'message' => 'Signup failed',
             ], 500);
         }
     }
+
+
     /**
      * Request OTP
      */
@@ -88,15 +134,38 @@ class AuthController extends Controller
                 'country' => 'required|string',
             ]);
 
+            // phone already in +91XXXXXXXXXX format
             $user = User::where('phone', $validated['phone'])->first();
 
             if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'User not found'
+                    'message' => 'User not found',
                 ], 404);
             }
 
+            /* ---------------------------------
+         | BLOCK OTP IF ONBOARDING INCOMPLETE
+         |----------------------------------*/
+            if (
+                !$user->is_consent_completed ||
+                !$user->is_interest_completed ||
+                !$user->is_profile_completed
+            ) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Onboarding incomplete',
+                    'data'    => [
+                        'is_consent'  => (bool) $user->is_consent_completed,
+                        'is_interest' => (bool) $user->is_interest_completed,
+                        'is_profile'  => (bool) $user->is_profile_completed,
+                    ],
+                ], 403);
+            }
+
+            /* ---------------------------------
+         | SEND OTP
+         |----------------------------------*/
             $otp = random_int(100000, 999999);
 
             $user->update([
@@ -106,17 +175,27 @@ class AuthController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'OTP sent',
-                'otp'     => $otp // testing only
-            ]);
-        } catch (\Throwable $th) {
+                'message' => 'OTP sent successfully',
+                'otp'     => $otp, // testing only
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to send otp',
-                'error'   => $th->getMessage(),
+                'message' => 'Validation error',
+                'errors'  => $e->errors(),
+            ], 422);
+        } catch (\Throwable $th) {  
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send OTP',
+                'error'   => $th->getMessage()
             ], 500);
         }
     }
+
+
 
     /**
      * Verify OTP & Login (API)
@@ -215,7 +294,7 @@ class AuthController extends Controller
         try {
             $appleUser = Socialite::driver('apple')
                 ->stateless()
-                ->user();   
+                ->user();
 
             $user = User::where('apple_id', $appleUser->getId())->first();
 
