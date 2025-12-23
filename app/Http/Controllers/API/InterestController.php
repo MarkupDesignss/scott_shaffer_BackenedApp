@@ -83,16 +83,17 @@ class InterestController extends Controller
     /**
      * 3. Get logged-in user's selected interests
      */
-    public function getUserInterests(Request $request)
+    public function getUserInterests(Request $request, $user_id)
     {
         try {
-            $user = Auth::user();
+
+            $user = User::find($user_id);
 
             if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Unauthenticated',
-                ], 401);
+                    'message' => 'User not found',
+                ], 404);
             }
 
             $data = $user->interests()->get();
