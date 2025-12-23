@@ -20,7 +20,7 @@ class CatalogItem extends Model
 
     public function category()
     {
-        return $this->belongsTo(CatalogCategory::class);
+        return $this->belongsTo(CatalogCategory::class, 'category_id');
     }
 
     public function tags()

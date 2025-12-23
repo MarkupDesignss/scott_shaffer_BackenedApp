@@ -16,6 +16,6 @@ class CatalogCategory extends Model
 
     public function interest()
     {
-        return $this->belongsTo(Intrest::class);
+        return $this->belongsTo(Intrest::class, 'interest_id');
     }
 }

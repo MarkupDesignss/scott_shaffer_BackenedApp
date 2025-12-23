@@ -9,6 +9,7 @@ use App\Http\Controllers\API\InterestController;
 use App\Http\Controllers\API\ListController;
 use App\Http\Controllers\API\ListItemController;
 use App\Http\Controllers\API\PasswordController;
+use App\Http\Controllers\API\RecommenededItemsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,10 +51,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // featured lists
     Route::get('/featured-lists/{id}', [FeatureListCOntroller::class, 'index']);
 
-
-
-    Route::get('/user/interests', [InterestController::class, 'getUserInterests']);
+    // Recommended items
+    Route::get('/recommeditems', [RecommenededItemsController::class, 'recommendedList']);
 });
+Route::get('/user/interests/{id}', [InterestController::class, 'getUserInterests']);
 
 // User Details
 Route::post('/user_profile', [ProfileController::class, 'store']);

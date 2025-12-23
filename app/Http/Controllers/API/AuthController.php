@@ -215,7 +215,7 @@ class AuthController extends Controller
         try {
             $appleUser = Socialite::driver('apple')
                 ->stateless()
-                ->user();
+                ->user();   
 
             $user = User::where('apple_id', $appleUser->getId())->first();
 

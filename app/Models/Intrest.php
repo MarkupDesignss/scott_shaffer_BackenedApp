@@ -26,13 +26,18 @@ class Intrest extends Model
         return $this->belongsToMany(User::class, 'user_interest', 'interest_id', 'user_id')
             ->withTimestamps();
     }
+    // public function categories()
+    // {
+    //     return $this->belongsToMany(
+    //         CatalogCategory::class,
+    //         'catalog_category_interest',
+    //         'interest_id',
+    //         'catalog_category_id'
+    //     );
+    // }
+
     public function categories()
     {
-        return $this->belongsToMany(
-            CatalogCategory::class,
-            'catalog_category_interest',
-            'interest_id',
-            'catalog_category_id'
-        );
+        return $this->hasMany(CatalogCategory::class, 'interest_id');
     }
 }
