@@ -34,8 +34,16 @@ class FeaturedListController extends Controller
             'category_id'   => 'required|exists:catalog_categories,id',
             'list_size'     => 'required',
             'display_order' => 'required|integer|min:0',
+            'image_url'     => 'nullable|url|required_without:image_upload',
+            'image_upload'  => 'nullable|image|mimes:jpg,jpeg,png,webp|required_without:image_url',
             'status'        => 'required|in:draft,live'
         ]);
+
+        if ($request->hasFile('image_upload')) {
+            $path = $request->file('image_upload')->store('featured_lists', 'public');
+            $validated['image'] = $path;
+            unset($validated['image_upload']);
+        }
 
         FeaturedList::create(
             $validated + ['created_by' => auth('admin')->id()]
@@ -45,6 +53,7 @@ class FeaturedListController extends Controller
             ->route('admin.featured-lists.index')
             ->with('success', 'Featured list created');
     }
+
 
     public function edit(FeaturedList $featuredList)
     {

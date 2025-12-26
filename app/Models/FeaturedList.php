@@ -9,6 +9,7 @@ class FeaturedList extends Model
     protected $table = 'featured_lists';
     protected $fillable = [
         'title',
+        'image',
         'category_id',
         'list_size',
         'status',
