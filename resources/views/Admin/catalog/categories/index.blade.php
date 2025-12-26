@@ -120,7 +120,7 @@
                                         </a>
 
 
-                                        <form action="{{ route('admin.catalog-categories.destroy', $category->id) }}"
+                                        <!-- <form action="{{ route('admin.catalog-categories.destroy', $category->id) }}"
                                               method="POST" class="delete-form">
                                             @csrf
                                             @method('DELETE')
@@ -130,7 +130,7 @@
                                                     title="Delete Category">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
-                                        </form>
+                                        </form> -->
                                     </div>
                                 </td>
                             </tr>

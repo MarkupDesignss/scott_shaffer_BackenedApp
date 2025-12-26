@@ -3,7 +3,7 @@
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
-use App\Http\Controllers\API\FeatureListCOntroller;
+use App\Http\Controllers\API\FeatureListController;
 use App\Http\Controllers\API\UserConsentController;
 use App\Http\Controllers\API\InterestController;
 use App\Http\Controllers\API\ListController;
@@ -35,11 +35,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [ProfileController::class, 'getProfile']);
     Route::post('/update_profile', [ProfileController::class, 'updateProfile']);
 
-    // Category
-    Route::get('catalog/categories', [CategoryController::class, 'categories']);
-    Route::get('catalog/categories/{id}', [CategoryController::class, 'categoriesByInterest']);
-    Route::get('catalog/items', [CategoryController::class, 'items']);
-
     // Lists items
     Route::get('/lists', [ListController::class, 'index']);
     Route::post('/lists', [ListController::class, 'store']);
@@ -51,7 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/lists/{list}/items/{item}', [ListItemController::class, 'destroy']);
 
     // featured lists
-    Route::get('/featured-lists/{id}', [FeatureListCOntroller::class, 'index']);
+    Route::get('/featured-lists/{id}', [FeatureListController::class, 'index']);
 
     // Recommended items
     Route::get('/recommeditems', [RecommenededItemsController::class, 'recommendedList']);
@@ -61,15 +56,17 @@ Route::middleware('auth:sanctum')->group(function () {
         '/global-search',
         [SearchController::class, 'globalSearch']
     );
+
+    // Get authenticated user's interests
+    Route::get('/user-interests', [InterestController::class, 'getUserInterests']);
 });
-Route::get('/user/interests/{id}', [InterestController::class, 'getUserInterests']);
 
 // User Details
 Route::post('/user_profile', [ProfileController::class, 'store']);
 
 // Interests
-Route::get('/interests', [InterestController::class, 'getAllInterests']);
-Route::post('/user/interests', [InterestController::class, 'saveUserInterests']);
+Route::get('/interest-list', [InterestController::class, 'getAllInterests']);
+Route::post('/add-interest', [InterestController::class, 'addUserInterests']);
 
 // Consent APIs
 Route::get('/termsAndPrivacy', [UserConsentController::class, 'index']);

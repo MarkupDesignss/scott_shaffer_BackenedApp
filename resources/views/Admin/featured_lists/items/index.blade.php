@@ -97,7 +97,7 @@
                                             Edit
                                         </a>
 
-                                        <form method="POST"
+                                        <!-- <form method="POST"
                                               action="{{ route('admin.featured-list-items.destroy', $item) }}"
                                               class="d-inline"
                                               onsubmit="return confirm('Are you sure you want to delete this featured item?')">
@@ -107,7 +107,7 @@
                                                 <i class="fas fa-trash fa-sm"></i>
                                                 Delete
                                             </button>
-                                        </form>
+                                        </form> -->
                                     </div>
                                 </td>
                             </tr>

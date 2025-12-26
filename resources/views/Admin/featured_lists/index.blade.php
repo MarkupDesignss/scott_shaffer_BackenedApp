@@ -138,7 +138,7 @@
                                         {{-- <a href="#" class="btn btn-sm btn-outline-success" title="Preview">
                                             <i class="fas fa-eye"></i>
                                         </a> --}}
-                                        <form method="POST"
+                                        <!-- <form method="POST"
                                               action="{{ route('admin.featured-lists.destroy', $list) }}"
                                               class="d-inline">
                                             @csrf
@@ -149,7 +149,7 @@
                                                     title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
-                                        </form>
+                                        </form> -->
                                     </div>
                                 </td>
                             </tr>
