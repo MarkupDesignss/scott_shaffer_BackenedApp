@@ -162,7 +162,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
 
-                                    <form action="{{ route('admin.catalog-items.destroy', $item->id) }}" method="POST"
+                                    <!-- <form action="{{ route('admin.catalog-items.destroy', $item->id) }}" method="POST"
                                         class="delete-form">
                                         @csrf
                                         @method('DELETE')
@@ -171,7 +171,7 @@
                                             data-bs-toggle="tooltip" title="Delete Item">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
-                                    </form>
+                                    </form> -->
                                 </div>
                             </td>
                         </tr>

@@ -129,7 +129,7 @@
                                             Edit
                                         </a>
 
-                                        <form action="{{ route('admin.interest.destroy', $interest) }}"
+                                        <!-- <form action="{{ route('admin.interest.destroy', $interest) }}"
                                               method="POST"
                                               class="delete-form">
                                             @csrf
@@ -139,7 +139,7 @@
                                                     onclick="return confirmDelete(event)">
                                                 Delete
                                             </button>
-                                        </form>
+                                        </form> -->
                                     </div>
                                 </td>
                             </tr>
