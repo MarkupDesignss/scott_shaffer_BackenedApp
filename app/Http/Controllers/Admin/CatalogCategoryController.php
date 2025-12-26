@@ -49,7 +49,7 @@ class CatalogCategoryController extends Controller
     {
         $validated = $request->validate([
             'name'        => 'required|string|max:100',
-            'icon'        => 'nullable|string',
+            //'icon'        => 'nullable|string',
             'interest_id' => 'required|exists:interests,id',
             'status'      => 'required|in:0,1',
         ]);
@@ -83,7 +83,7 @@ class CatalogCategoryController extends Controller
         // dd($request->all());
         $validated = $request->validate([
             'name'        => 'required|string|max:100',
-            'icon'        => 'nullable|string',
+            //'icon'        => 'nullable|string',
             'interest_id' => 'required|exists:interests,id',
             'status'      => 'required|in:0,1',
         ]);

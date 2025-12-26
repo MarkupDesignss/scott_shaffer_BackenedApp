@@ -47,37 +47,6 @@
                                     <div class="form-text">This name will be displayed to customers.</div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-md-6 mb-4">
-                                        <label for="icon" class="form-label fw-semibold">
-                                            <i class="fas fa-icons me-1"></i> Icon
-                                        </label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0">
-                                                <i class="fas fa-font text-muted"></i>
-                                            </span>
-                                            <input type="text"
-                                                   class="form-control @error('icon') is-invalid @enderror"
-                                                   id="icon"
-                                                   name="icon"
-                                                   value="{{ old('icon') }}"
-                                                   placeholder="e.g., fas fa-folder">
-                                        </div>
-                                        @error('icon')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                        <div class="form-text">Font Awesome class (optional)</div>
-
-                                        <div class="mt-3">
-                                            <div class="d-flex gap-2 flex-wrap" id="iconPreview">
-                                                <!-- Icons will appear here -->
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                </div>
-
                                 <div class="mb-4">
                                     <label for="interest_id" class="form-label fw-semibold">
                                         <i class="fas fa-heart me-1"></i> Interest
