@@ -31,7 +31,7 @@ class CatalogItemController extends Controller
      */
     public function create()
     {
-        $categories = CatalogCategory::where('status', '1')->get();
+        $categories = CatalogCategory::where('status', 'active')->get();
 
         return view('admin.catalog.items.create', compact('categories'));
     }
@@ -39,23 +39,44 @@ class CatalogItemController extends Controller
     /**
      * Store new catalog item
      */
-    public function store(Request $request)
+  public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name'        => 'required|string|max:150',
-            'category_id' => 'required|exists:catalog_categories,id',
-            'description' => 'nullable|string',
-            'image_url'   => 'nullable|string',
-            'status'      => 'required|in:1,0',
-        ]);
-        // dd($request->all());
+        $request->validate([
+            'name'         => 'required|string|max:255',
+            'category_id'  => 'required|exists:catalog_categories,id',
+            'description'  => 'nullable|string',
 
-        CatalogItem::create($validated);
+            // ONE OF THEM REQUIRED
+            'image_url'    => 'nullable|url|required_without:image_upload',
+            'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,webp|required_without:image_url',
+
+            'status'       => 'required|boolean',
+        ]);
+
+        $imageValue = null;
+
+        if ($request->hasFile('image_upload')) {
+            $imageValue = $request->file('image_upload')
+                                ->store('catalog-items', 'public');
+        }
+
+        if ($request->filled('image_url')) {
+            $imageValue = $request->image_url;
+        }
+
+        CatalogItem::create([
+            'name'        => $request->name,
+            'category_id' => $request->category_id,
+            'description' => $request->description,
+            'image_url'   => $imageValue, // SAME COLUMN
+            'status'      => $request->status,
+        ]);
 
         return redirect()
             ->route('admin.catalog-items.index')
             ->with('success', 'Catalog item created successfully.');
     }
+
 
     /**
      * Display the specified resource.
@@ -72,7 +93,7 @@ class CatalogItemController extends Controller
     public function edit($id)
     {
         $item = CatalogItem::findOrFail($id);
-        $categories = CatalogCategory::where('status', '1')->get();
+        $categories = CatalogCategory::where('status', 'active')->get();
 
         return view('admin.catalog.items.edit', compact('item', 'categories'));
     }
@@ -82,7 +103,6 @@ class CatalogItemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // dd($request->all());
         $item = CatalogItem::findOrFail($id);
 
         $validated = $request->validate([
@@ -90,8 +110,16 @@ class CatalogItemController extends Controller
             'category_id' => 'required|exists:catalog_categories,id',
             'description' => 'nullable|string',
             'image_url'   => 'nullable|string',
-            'status'      => 'required|in:1,0',
+            'image_upload'=> 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'status'      => 'required',
         ]);
+
+        // Agar image upload hua hai
+        if ($request->hasFile('image_upload')) {
+            $file = $request->file('image_upload');
+            $path = $file->store('catalog-items', 'public'); // storage/app/public/catalog-items
+            $validated['image_url'] = $path; // store path in image_url column
+        }
 
         $item->update($validated);
 
@@ -99,6 +127,7 @@ class CatalogItemController extends Controller
             ->route('admin.catalog-items.index')
             ->with('success', 'Catalog item updated successfully.');
     }
+
 
     /**
      * Remove the specified resource from storage.

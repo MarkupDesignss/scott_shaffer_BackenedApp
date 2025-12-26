@@ -8,7 +8,7 @@
                 <div class="card-header bg-white border-bottom py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h5 class="mb-0"  style="font-size: 1.5rem;font-weight:800">
+                            <h5 class="mb-0" style="font-size: 1.5rem;font-weight:800">
                                 <i class="fas fa-plus-circle me-2 text-primary"></i>Create New Catalog Item
                             </h5>
                             <p class="text-muted mb-0">Add a new item to your catalog</p>
@@ -20,8 +20,8 @@
                 </div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('admin.catalog-items.store') }}"
-                          class="needs-validation" novalidate enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('admin.catalog-items.store') }}" class="needs-validation"
+                        novalidate enctype="multipart/form-data">
                         @csrf
 
                         <div class="row">
@@ -40,14 +40,11 @@
                                                     <i class="fas fa-tag text-muted"></i>
                                                 </span>
                                                 <input type="text"
-                                                       class="form-control @error('name') is-invalid @enderror"
-                                                       id="name"
-                                                       name="name"
-                                                       value="{{ old('name') }}"
-                                                       placeholder="Enter item name"
-                                                       required>
+                                                    class="form-control @error('name') is-invalid @enderror" id="name"
+                                                    name="name" value="{{ old('name') }}" placeholder="Enter item name"
+                                                    required>
                                                 @error('name')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                             <div class="form-text">Enter a descriptive name for your item.</div>
@@ -58,24 +55,22 @@
                                                 Category <span class="text-danger">*</span>
                                             </label>
                                             <select class="form-select @error('category_id') is-invalid @enderror"
-                                                    id="category_id"
-                                                    name="category_id"
-                                                    required>
+                                                id="category_id" name="category_id" required>
                                                 <option value="">Select a category</option>
                                                 @foreach($categories as $category)
-                                                    <option value="{{ $category->id }}"
-                                                        {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                                        {{ $category->name }}
-                                                    </option>
+                                                <option value="{{ $category->id }}"
+                                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
                                                 @endforeach
                                             </select>
                                             @error('category_id')
-                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                             <div class="form-text">
                                                 Choose a category for this item.
                                                 <a href="{{ route('admin.catalog-categories.create') }}"
-                                                   class="text-decoration-none ms-2">
+                                                    class="text-decoration-none ms-2">
                                                     <i class="fas fa-plus"></i> Add new category
                                                 </a>
                                             </div>
@@ -86,12 +81,10 @@
                                                 Description
                                             </label>
                                             <textarea class="form-control @error('description') is-invalid @enderror"
-                                                      id="description"
-                                                      name="description"
-                                                      rows="4"
-                                                      placeholder="Enter item description">{{ old('description') }}</textarea>
+                                                id="description" name="description" rows="4"
+                                                placeholder="Enter item description">{{ old('description') }}</textarea>
                                             @error('description')
-                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                             <div class="form-text">
                                                 <span id="charCount">0</span> characters
@@ -116,13 +109,12 @@
                                                                 <i class="fas fa-link text-muted"></i>
                                                             </span>
                                                             <input type="url"
-                                                                   class="form-control @error('image_url') is-invalid @enderror"
-                                                                   name="image_url"
-                                                                   value="{{ old('image_url') }}"
-                                                                   placeholder="https://example.com/image.jpg">
+                                                                class="form-control @error('image_url') is-invalid @enderror"
+                                                                name="image_url" value="{{ old('image_url') }}"
+                                                                placeholder="https://example.com/image.jpg">
                                                         </div>
                                                         @error('image_url')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        <div class="invalid-feedback">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                 </div>
@@ -130,23 +122,22 @@
                                                     <label class="form-label">Or Upload Image</label>
                                                     <div class="input-group">
                                                         <input type="file"
-                                                               class="form-control @error('image_upload') is-invalid @enderror"
-                                                               name="image_upload"
-                                                               accept="image/*">
+                                                            class="form-control @error('image_upload') is-invalid @enderror"
+                                                            name="image_upload" accept="image/*">
                                                     </div>
                                                     @error('image_upload')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
-                                            <div class="form-text">Provide either an image URL or upload an image file.</div>
+                                            <div class="form-text">Provide either an image URL or upload an image file.
+                                            </div>
 
                                             <div class="mt-3">
                                                 <div class="image-preview rounded border p-3 text-center"
-                                                     id="imagePreview"
-                                                     style="display: none;">
+                                                    id="imagePreview" style="display: none;">
                                                     <img id="previewImage" class="img-fluid rounded"
-                                                         style="max-height: 200px;">
+                                                        style="max-height: 200px;">
                                                 </div>
                                             </div>
                                         </div>
@@ -163,10 +154,9 @@
                                         <div class="mb-4">
                                             <label for="status" class="form-label fw-semibold">Status</label>
                                             <select class="form-select @error('status') is-invalid @enderror"
-                                                    id="status"
-                                                    name="status"
-                                                    required>
-                                                <option value="1" {{ old('status', 'active') == '1' ? 'selected' : '' }}>
+                                                id="status" name="status" required>
+                                                <option value="1"
+                                                    {{ old('status', 'active') == '1' ? 'selected' : '' }}>
                                                     <i class="fas fa-circle text-success me-2"></i>Active
                                                 </option>
                                                 <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>
@@ -174,7 +164,7 @@
                                                 </option>
                                             </select>
                                             @error('status')
-                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                             <div class="form-text">Active items are visible to customers.</div>
                                         </div>
@@ -250,7 +240,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Form validation
+
+    /* ===============================
+       FORM VALIDATION
+    ================================ */
     const forms = document.querySelectorAll('.needs-validation');
     forms.forEach(form => {
         form.addEventListener('submit', function(event) {
@@ -262,7 +255,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Character counter for description
+    /* ===============================
+       CHARACTER COUNT
+    ================================ */
     const descriptionInput = document.getElementById('description');
     const charCount = document.getElementById('charCount');
 
@@ -273,93 +268,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Live preview for name
-    const nameInput = document.getElementById('name');
-    const namePreview = document.getElementById('liveNamePreview');
-
-    if (nameInput && namePreview) {
-        nameInput.addEventListener('input', function() {
-            namePreview.textContent = this.value || 'Item Name';
-        });
-    }
-
-    // Live preview for description
-    const descriptionPreview = document.getElementById('liveDescriptionPreview');
-
-    if (descriptionInput && descriptionPreview) {
-        descriptionInput.addEventListener('input', function() {
-            descriptionPreview.textContent = this.value || 'Item description will appear here.';
-        });
-    }
-
-    // Live preview for category
-    const categorySelect = document.getElementById('category_id');
-    const categoryPreview = document.getElementById('liveCategoryPreview');
-    const categoryNames = {
-        @foreach($categories as $category)
-            '{{ $category->id }}': '{{ $category->name }}',
-        @endforeach
-    };
-
-    if (categorySelect && categoryPreview) {
-        categorySelect.addEventListener('change', function() {
-            const categoryName = categoryNames[this.value] || 'Uncategorized';
-            categoryPreview.innerHTML = `<i class="fas fa-folder me-1"></i>${categoryName}`;
-        });
-    }
-
-    // Image preview functionality
+    /* ===============================
+       IMAGE LOGIC (IMPORTANT FIX)
+       - URL OR Upload (not both)
+       - Preview works for both
+    ================================ */
     const imageUrlInput = document.querySelector('input[name="image_url"]');
     const imageUploadInput = document.querySelector('input[name="image_upload"]');
     const imagePreview = document.getElementById('imagePreview');
     const previewImage = document.getElementById('previewImage');
-    const liveImagePreview = document.getElementById('liveImagePreview');
 
-    // Preview from URL
-    if (imageUrlInput) {
-        imageUrlInput.addEventListener('input', function() {
-            if (this.value) {
-                previewImage.src = this.value;
-                imagePreview.style.display = 'block';
+    // When URL is typed → disable file upload
+    imageUrlInput.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            imageUploadInput.value = '';
+            imageUploadInput.disabled = true;
 
-                // Update live preview
-                liveImagePreview.innerHTML = `<img src="${this.value}" class="img-fluid rounded" style="max-height: 150px;">`;
-            }
-        });
-    }
+            previewImage.src = this.value;
+            imagePreview.style.display = 'block';
+        } else {
+            imageUploadInput.disabled = false;
+            imagePreview.style.display = 'none';
+        }
+    });
 
-    // Preview from file upload
-    if (imageUploadInput) {
-        imageUploadInput.addEventListener('change', function() {
+    // When file is selected → disable URL input
+    imageUploadInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            imageUrlInput.value = '';
+            imageUrlInput.disabled = true;
+
             const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    imagePreview.style.display = 'block';
+            const reader = new FileReader();
 
-                    // Update live preview
-                    liveImagePreview.innerHTML = `<img src="${e.target.result}" class="img-fluid rounded" style="max-height: 150px;">`;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
 
-    // Status preview
-    const statusSelect = document.getElementById('status');
-    const statusPreview = document.getElementById('liveStatusPreview');
+            reader.readAsDataURL(file);
+        } else {
+            imageUrlInput.disabled = false;
+            imagePreview.style.display = 'none';
+        }
+    });
 
-    if (statusSelect && statusPreview) {
-        statusSelect.addEventListener('change', function() {
-            if (this.value === 'active') {
-                statusPreview.className = 'badge bg-success-soft text-success rounded-pill px-3 py-1';
-                statusPreview.innerHTML = '<i class="fas fa-circle me-1" style="font-size: 8px"></i>Active';
-            } else {
-                statusPreview.className = 'badge bg-secondary-soft text-secondary rounded-pill px-3 py-1';
-                statusPreview.innerHTML = '<i class="fas fa-circle me-1" style="font-size: 8px"></i>Inactive';
-            }
-        });
-    }
+    /* ===============================
+       RESET BUTTON FIX
+    ================================ */
+    document.querySelector('button[type="reset"]').addEventListener('click', function() {
+        imageUrlInput.disabled = false;
+        imageUploadInput.disabled = false;
+        imagePreview.style.display = 'none';
+        previewImage.src = '';
+    });
+
 });
 </script>
