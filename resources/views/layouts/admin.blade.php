@@ -661,7 +661,11 @@
                 <span class="nav-label">Interest</span>
             </a>
 
-
+            <a href="{{ route('admin.segments.index') }}"
+            class="nav-item {{ request()->routeIs('admin.segments.*') ? 'active' : '' }}">
+                <i class="nav-icon bi bi-bullseye"></i>
+                <span class="nav-label">Segment Mgmt.</span>
+            </a>
 
             {{-- Catalog Management --}}
             <li class="sidebar-item has-submenu
@@ -731,6 +735,7 @@
                 <i class="nav-icon bi bi-megaphone-fill"></i>
                 <span class="nav-label">Campaigns Mgmt.</span>
             </a>
+
 
 
             <a href="{{ route('admin.policies.index') }}"

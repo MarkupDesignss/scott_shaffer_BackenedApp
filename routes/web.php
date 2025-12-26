@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CatalogCategoryController;
 use App\Http\Controllers\Admin\CatalogItemController;
 use App\Http\Controllers\Admin\FeaturedListController;
 use App\Http\Controllers\Admin\FeaturedListItemController;
+use App\Http\Controllers\Admin\SegmentController;
 use App\Http\Controllers\Admin\PolicyController;
 use Illuminate\Support\Facades\Route;
 
@@ -102,4 +103,10 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
     Route::resource('campaigns', CampaignController::class);
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
+
+
+    Route::resource('segments', SegmentController::class);
+    Route::post('segments/{segment}/estimate', [SegmentController::class, 'estimate']);
+    Route::post('segments/{segment}/export', [SegmentController::class, 'export']);
+    Route::get('segments/{segment}/exports', [SegmentController::class, 'exports'])->name('segments.exports');
 });

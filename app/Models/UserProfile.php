@@ -15,6 +15,7 @@ class UserProfile extends Model
         'city',
         'dining_budget',
         'has_dogs',
+        'profile_image'
     ];
 
     /**

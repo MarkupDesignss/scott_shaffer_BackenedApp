@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\Policy;
 use App\Models\UserConsent;
 use Illuminate\Support\Facades\Auth;
@@ -20,14 +21,11 @@ class UserConsentController extends Controller
         try {
             $policies = Policy::where('is_active', true)
                 ->orderBy('order')
-                ->get(['id', 'name', 'description'])
-                ->map(function ($policy) {
-                    return [
-                        'id'          => $policy->id,
-                        'name'        => '<em>' . e($policy->name) . '</em>',
-                        'description' => $policy->description,
-                    ];
-                });
+                ->get([
+                    'id',
+                    'name',
+                    'description'
+                ]);
 
             return response()->json([
                 'success' => true,
@@ -35,6 +33,7 @@ class UserConsentController extends Controller
                 'data'    => $policies
             ], 200);
         } catch (\Throwable $th) {
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch policies',
@@ -106,6 +105,9 @@ class UserConsentController extends Controller
                     'accepted_at'            => now(),
                 ]
             );
+            User::where('id', $user)->update([
+                'is_consent_completed' => true
+            ]);
 
             return response()->json([
                 'success' => true,
