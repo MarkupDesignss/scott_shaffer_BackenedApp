@@ -10,7 +10,6 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin.featured-lists.index') }}">Featured Lists</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.featured-lists.show', $featuredList) }}">{{ Str::limit($featuredList->title, 20) }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Edit</li>
                 </ol>
             </nav>
@@ -19,11 +18,6 @@
             <a href="{{ route('admin.featured-lists.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Back
             </a>
-            @if($featuredList->status === 'live')
-                <span class="btn btn-success disabled">
-                    <i class="fas fa-broadcast-tower me-2"></i>Live
-                </span>
-            @endif
         </div>
     </div>
 
@@ -38,7 +32,7 @@
                     </span>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('admin.featured-lists.update', $featuredList) }}" id="editForm">
+                    <form method="POST" action="{{ route('admin.featured-lists.update', $featuredList) }}" id="editForm" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -46,11 +40,7 @@
                             <!-- Title -->
                             <div class="col-md-12 mb-4">
                                 <label class="form-label fw-semibold">List Title *</label>
-                                <input type="text"
-                                       name="title"
-                                       class="form-control form-control-lg @error('title') is-invalid @enderror"
-                                       value="{{ old('title', $featuredList->title) }}"
-                                       required>
+                                <input type="text" name="title" class="form-control form-control-lg @error('title') is-invalid @enderror" value="{{ old('title', $featuredList->title) }}" required>
                                 @error('title')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -59,12 +49,9 @@
                             <!-- Category -->
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-semibold">Category *</label>
-                                <select name="category_id"
-                                        class="form-select @error('category_id') is-invalid @enderror"
-                                        required>
+                                <select name="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}"
-                                            {{ old('category_id', $featuredList->category_id) == $category->id ? 'selected' : '' }}>
+                                        <option value="{{ $category->id }}" {{ old('category_id', $featuredList->category_id) == $category->id ? 'selected' : '' }}>
                                             {{ $category->name }}
                                         </option>
                                     @endforeach
@@ -74,221 +61,153 @@
                                 @enderror
                             </div>
 
+                            <!-- List Size -->
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-semibold">List Size *</label>
-
-                                <input type="number"
-                                    name="list_size"
-                                    class="form-control text-center"
-                                    min="1"
-                                    max="100"
-                                    value="{{ old('list_size', $featuredList->list_size) }}"
-                                    placeholder="Enter list size (e.g. 3, 5, 10)"
-                                    required>
-
-                                <div class="form-text">
-                                    Enter how many items this list will contain.
-                                </div>
-
+                                <input type="number" name="list_size" class="form-control text-center" min="1" max="100" value="{{ old('list_size', $featuredList->list_size) }}" placeholder="Enter list size" required>
+                                <div class="form-text">Enter how many items this list will contain.</div>
                                 @error('list_size')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
 
+                            <!-- Image Upload / URL -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Image</label>
+                                <div class="row">
+                                    <!-- Current Image & URL -->
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Current Image</label>
+                                            @if($featuredList->image)
+                                                @php
+                                                    $imgSrc = Str::startsWith($featuredList->image, ['http://', 'https://']) ? $featuredList->image : asset('storage/'.$featuredList->image);
+                                                @endphp
+                                                <div class="mb-2">
+                                                    <img src="{{ $imgSrc }}" alt="{{ $featuredList->title }}" class="img-thumbnail" style="max-height: 100px;">
+                                                </div>
+                                            @else
+                                                <div class="text-muted mb-2">
+                                                    <i class="fas fa-image me-1"></i> No image set
+                                                </div>
+                                            @endif
+
+                                            <label class="form-label">New Image URL</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light border-end-0">
+                                                    <i class="fas fa-link text-muted"></i>
+                                                </span>
+                                                <input type="url" name="image_url" id="image_url" class="form-control @error('image_url') is-invalid @enderror" value="{{ old('image_url', $featuredList->image) }}" placeholder="https://example.com/image.jpg">
+                                            </div>
+                                            @error('image_url')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <!-- Upload New Image -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Or Upload New Image</label>
+                                        <div class="input-group">
+                                            <input type="file" name="image_upload" id="image_upload" class="form-control @error('image_upload') is-invalid @enderror" accept="image/*">
+                                        </div>
+                                        @error('image_upload')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                        <div class="form-text mt-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle me-1"></i> Leave empty to keep the current image
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Preview -->
+                                <div class="mt-3">
+                                    <div class="image-preview rounded border p-3 text-center" id="imagePreview" style="{{ $featuredList->image ? '' : 'display:none;' }}">
+                                        <img id="previewImage" class="img-fluid rounded" style="max-height: 200px;" src="{{ $featuredList->image ? $imgSrc : '' }}">
+                                    </div>
+                                </div>
+
+                                <div class="form-text">Provide either an image URL or upload an image file.</div>
+                            </div>
 
                             <!-- Status & Order -->
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-semibold">Status *</label>
-                                <div class="btn-group w-100" role="group">
-                                    <input type="radio"
-                                           class="btn-check"
-                                           name="status"
-                                           id="statusDraft"
-                                           value="draft"
-                                           {{ old('status', $featuredList->status) === 'draft' ? 'checked' : '' }}>
-                                    <label class="btn btn-outline-secondary" for="statusDraft">
-                                        <i class="fas fa-pencil-alt me-2"></i>Draft
-                                    </label>
-
-                                    <input type="radio"
-                                           class="btn-check"
-                                           name="status"
-                                           id="statusLive"
-                                           value="live"
-                                           {{ old('status', $featuredList->status) === 'live' ? 'checked' : '' }}>
-                                    <label class="btn btn-outline-success" for="statusLive">
-                                        <i class="fas fa-broadcast-tower me-2"></i>Live
-                                    </label>
-                                </div>
+                                <select name="status" class="form-select @error('status') is-invalid @enderror">
+                                    <option value="draft" {{ old('status', $featuredList->status) === 'draft' ? 'selected' : '' }}>Draft</option>
+                                    <option value="live" {{ old('status', $featuredList->status) === 'live' ? 'selected' : '' }}>Live</option>
+                                </select>
+                                @error('status')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-semibold">Display Order</label>
-                                <div class="input-group">
-                                    {{-- <button class="btn btn-outline-secondary" type="button" onclick="changeOrder(-1)">
-                                        <i class="fas fa-minus"></i>
-                                    </button> --}}
-                                    <input type="number"
-                                           name="display_order"
-                                           class="form-control text-center @error('display_order') is-invalid @enderror"
-                                           value="{{ old('display_order', $featuredList->display_order) }}"
-                                           min="0"
-                                           id="orderInput">
-                                    {{-- <button class="btn btn-outline-secondary" type="button" onclick="changeOrder(1)">
-                                        <i class="fas fa-plus"></i>
-                                    </button> --}}
-                                </div>
+                                <input type="number" name="display_order" class="form-control @error('display_order') is-invalid @enderror" value="{{ old('display_order', $featuredList->display_order) }}" min="0">
                                 @error('display_order')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
                         </div>
 
                         <!-- Form Actions -->
-                        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
-                            <div>
-                                <a href="{{ route('admin.featured-lists.index') }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-times me-2"></i>Cancel
-                                </a>
-                            </div>
-                            <div class="d-flex gap-3">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-2"></i>Save Changes
-                                </button>
-                                {{-- <button type="button" class="btn btn-success" onclick="saveAndView()">
-                                    <i class="fas fa-eye me-2"></i>Save & View
-                                </button> --}}
-                            </div>
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                            <a href="{{ route('admin.featured-lists.index') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
                         </div>
                     </form>
                 </div>
-            </div>
-
-            <!-- Danger Zone Card -->
-            {{-- <div class="card shadow border-danger">
-                <div class="card-header bg-danger text-white py-3">
-                    <h6 class="m-0 font-weight-bold">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Danger Zone
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="fw-bold">Delete This List</h6>
-                            <p class="text-muted mb-0">Once deleted, this list cannot be recovered.</p>
-                        </div>
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                            <i class="fas fa-trash me-2"></i>Delete List
-                        </button>
-                    </div>
-                </div>
-            </div> --}}
-        </div>
-
-        <!-- Sidebar -->
-        {{-- <div class="col-lg-4">
-            <!-- List Stats Card -->
-            <div class="card shadow border-0 mb-4">
-                <div class="card-header bg-white py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-chart-bar me-2"></i>List Statistics
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            <span class="text-muted">Created</span>
-                            <span class="fw-semibold">{{ $featuredList->created_at->format('M d, Y') }}</span>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            <span class="text-muted">Last Updated</span>
-                            <span class="fw-semibold">{{ $featuredList->updated_at->diffForHumans() }}</span>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            <span class="text-muted">Items in List</span>
-                            <span class="badge bg-primary">{{ $featuredList->items_count ?? 0 }} / {{ $featuredList->list_size }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions Card -->
-            <div class="card shadow border-0 mb-4">
-                <div class="card-header bg-white py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-bolt me-2"></i>Quick Actions
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="#" class="btn btn-outline-primary text-start">
-                            <i class="fas fa-plus-circle me-2"></i>Add Items to List
-                        </a>
-                        <a href="#" class="btn btn-outline-success text-start">
-                            <i class="fas fa-eye me-2"></i>Preview List
-                        </a>
-                        <a href="#" class="btn btn-outline-info text-start">
-                            <i class="fas fa-copy me-2"></i>Duplicate List
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
-    </div>
-
-</div>
-
-<!-- Delete Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header border-0">
-                <h5 class="modal-title text-danger">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete this featured list?</p>
-                <div class="alert alert-warning">
-                    <strong>Warning:</strong> This action cannot be undone. All items in this list will also be removed.
-                </div>
-            </div>
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="POST" action="{{ route('admin.featured-lists.destroy', $featuredList) }}">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Delete List</button>
-                </form>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    function changeOrder(value) {
-        const input = document.getElementById('orderInput');
-        const newValue = parseInt(input.value) + value;
-        if (newValue >= 0) {
-            input.value = newValue;
+document.addEventListener('DOMContentLoaded', function() {
+    const imageUrlInput = document.getElementById('image_url');
+    const imageUploadInput = document.getElementById('image_upload');
+    const imagePreviewDiv = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+
+    imageUrlInput.addEventListener('input', function() {
+        if(this.value.trim() !== '') {
+            imageUploadInput.value = '';
+            imageUploadInput.disabled = true;
+            previewImage.src = this.value;
+            imagePreviewDiv.style.display = 'block';
+        } else {
+            imageUploadInput.disabled = false;
+            previewImage.src = '{{ $featuredList->image ? $imgSrc : "" }}';
+            imagePreviewDiv.style.display = '{{ $featuredList->image ? "block" : "none" }}';
         }
-    }
-
-    function saveAndView() {
-        document.getElementById('editForm').submit();
-        // The redirect would be handled in the controller
-    }
-
-    // Auto-save draft status
-    const statusRadios = document.querySelectorAll('input[name="status"]');
-    statusRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'draft') {
-                // Optional: Show draft saved notification
-            }
-        });
     });
+
+    imageUploadInput.addEventListener('change', function() {
+        if(this.files.length > 0) {
+            imageUrlInput.value = '';
+            imageUrlInput.disabled = true;
+            const file = this.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                imagePreviewDiv.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            imageUrlInput.disabled = false;
+            previewImage.src = '{{ $featuredList->image ? $imgSrc : "" }}';
+            imagePreviewDiv.style.display = '{{ $featuredList->image ? "block" : "none" }}';
+        }
+    });
+});
 </script>
 
 @endsection

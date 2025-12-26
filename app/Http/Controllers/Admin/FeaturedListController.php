@@ -69,21 +69,32 @@ class FeaturedListController extends Controller
 
     public function update(Request $request, FeaturedList $featuredList)
     {
-        // dd($request->all());
         $validated = $request->validate([
             'title'         => 'required|string|max:150',
             'category_id'   => 'required|exists:catalog_categories,id',
-            'list_size'     => 'required',
+            'list_size'     => 'required|integer|min:1',
             'display_order' => 'required|integer|min:0',
+            'image_url'     => 'nullable|url|required_without:image_upload',
+            'image_upload'  => 'nullable|image|mimes:jpg,jpeg,png,webp|required_without:image_url',
             'status'        => 'required|in:draft,live'
         ]);
+
+        // Handle uploaded image
+        if ($request->hasFile('image_upload')) {
+            $path = $request->file('image_upload')->store('featured_lists', 'public');
+            $validated['image'] = $path;
+        }
+
+        // Remove image_upload from validated array to avoid mass-assignment error
+        unset($validated['image_upload']);
 
         $featuredList->update($validated);
 
         return redirect()
             ->route('admin.featured-lists.index')
-            ->with('success', 'Featured list updated');
+            ->with('success', 'Featured list updated successfully');
     }
+
 
     public function destroy(FeaturedList $featuredList)
     {
