@@ -27,7 +27,7 @@
                     <h6 class="m-0 font-weight-bold text-primary">List Information</h6>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('admin.featured-lists.store') }}" id="listForm">
+                    <form method="POST" action="{{ route('admin.featured-lists.store') }}" id="listForm" enctype="multipart/form-data">
                         @csrf
 
                         <div class="row">
@@ -65,10 +65,9 @@
                                 @enderror
                             </div>
 
-                           <!-- List Size -->
+                            <!-- List Size -->
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-semibold">List Size *</label>
-
                                 <input type="number"
                                     name="list_size"
                                     class="form-control text-center"
@@ -77,55 +76,73 @@
                                     placeholder="Enter list size (e.g. 3, 5, 10)"
                                     value="{{ old('list_size', 3) }}"
                                     required>
-
-                                <div class="form-text">
-                                    Enter how many items this list will contain.
-                                </div>
-
+                                <div class="form-text">Enter how many items this list will contain.</div>
                                 @error('list_size')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
 
-
-                            <!-- Status & Order -->
+                            <!-- Status -->
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-semibold">Status</label>
-                                <select name="status"
-                                        class="form-select @error('status') is-invalid @enderror">
-                                    <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>
-                                        <i class="fas fa-pencil-alt me-2"></i>Draft
-                                    </option>
-                                    <option value="live" {{ old('status') == 'live' ? 'selected' : '' }}>
-                                        <i class="fas fa-broadcast-tower me-2"></i>Live
-                                    </option>
+                                <select name="status" class="form-select @error('status') is-invalid @enderror">
+                                    <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                                    <option value="live" {{ old('status') == 'live' ? 'selected' : '' }}>Live</option>
                                 </select>
                                 @error('status')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
+                            <!-- Display Order -->
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-semibold">Display Order</label>
-                                <div class="input-group">
-                                    {{-- <button class="btn btn-outline-secondary" type="button" id="decreaseOrder">
-                                        <i class="fas fa-minus"></i>
-                                    </button> --}}
-                                    <input type="number"
-                                           name="display_order"
-                                           id="displayOrder"
-                                           class="form-control text-center @error('display_order') is-invalid @enderror"
-                                           value="{{ old('display_order', 0) }}"
-                                           min="0">
-                                    {{-- <button class="btn btn-outline-secondary" type="button" id="increaseOrder">
-                                        <i class="fas fa-plus"></i>
-                                    </button> --}}
-                                </div>
+                                <input type="number"
+                                       name="display_order"
+                                       id="displayOrder"
+                                       class="form-control text-center @error('display_order') is-invalid @enderror"
+                                       value="{{ old('display_order', 0) }}"
+                                       min="0">
                                 <div class="form-text">Lower numbers appear first.</div>
                                 @error('display_order')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <!-- Image Upload -->
+                            <div class="col-md-12 mb-4">
+                                <div class="card border mb-4">
+                                    <div class="card-header bg-light py-3">
+                                        <h6 class="mb-0 fw-semibold">Media</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Image URL</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-light border-end-0">
+                                                        <i class="fas fa-link text-muted"></i>
+                                                    </span>
+                                                    <input type="url" class="form-control" name="image_url" value="{{ old('image_url') }}" placeholder="https://example.com/image.jpg">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Or Upload Image</label>
+                                                <div class="input-group">
+                                                    <input type="file" class="form-control" name="image_upload" accept="image/*">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3">
+                                            <div class="image-preview rounded border p-3 text-center" id="imagePreview" style="display: none;">
+                                                <img id="previewImage" class="img-fluid rounded" style="max-height: 200px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                         <!-- Form Actions -->
@@ -139,111 +156,55 @@
                                 <button type="submit" name="action" value="save" class="btn btn-primary">
                                     <i class="fas fa-save me-2"></i>Save List
                                 </button>
-                                {{-- <button type="submit" name="action" value="save_and_add" class="btn btn-success">
-                                    <i class="fas fa-plus-circle me-2"></i>Save & Add Items
-                                </button> --}}
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-
-        <!-- Sidebar -->
-        {{-- <div class="col-lg-4">
-            <!-- Preview Card -->
-            <div class="card shadow border-0 mb-4">
-                <div class="card-header bg-white py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Live Preview</h6>
-                </div>
-                <div class="card-body">
-                    <div class="list-preview">
-                        <div class="text-center py-4">
-                            <i class="fas fa-list fa-2x text-muted mb-3"></i>
-                            <p class="text-muted">Preview will appear here</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tips Card -->
-            <div class="card shadow border-0">
-                <div class="card-header bg-white py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-lightbulb me-2"></i>Tips
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <ul class="list-unstyled">
-                        <li class="mb-3">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            <strong>Clear Titles:</strong> Make titles descriptive
-                        </li>
-                        <li class="mb-3">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            <strong>Proper Categories:</strong> Helps with organization
-                        </li>
-                        <li class="mb-3">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            <strong>List Size:</strong> Choose based on content depth
-                        </li>
-                        <li>
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            <strong>Display Order:</strong> Plan your list hierarchy
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div> --}}
     </div>
-
 </div>
 
-<script>
-    // Order input controls
-    document.getElementById('increaseOrder').addEventListener('click', function() {
-        const input = document.getElementById('displayOrder');
-        input.value = parseInt(input.value) + 1;
-    });
+<style>
+.image-preview { background-color: #f8f9fa; }
+</style>
 
-    document.getElementById('decreaseOrder').addEventListener('click', function() {
-        const input = document.getElementById('displayOrder');
-        if (input.value > 0) {
-            input.value = parseInt(input.value) - 1;
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageUrlInput = document.querySelector('input[name="image_url"]');
+    const imageUploadInput = document.querySelector('input[name="image_upload"]');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+
+    imageUrlInput.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            imageUploadInput.value = '';
+            imageUploadInput.disabled = true;
+            previewImage.src = this.value;
+            imagePreview.style.display = 'block';
+        } else {
+            imageUploadInput.disabled = false;
+            imagePreview.style.display = 'none';
         }
     });
 
-    // Live preview update
-    document.querySelectorAll('input[name="title"], select[name="list_size"]').forEach(element => {
-        element.addEventListener('input', updatePreview);
-        element.addEventListener('change', updatePreview);
+    imageUploadInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            imageUrlInput.value = '';
+            imageUrlInput.disabled = true;
+            const file = this.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imageUrlInput.disabled = false;
+            imagePreview.style.display = 'none';
+        }
     });
-
-    function updatePreview() {
-        const title = document.querySelector('input[name="title"]').value || 'Your List Title';
-        const size = document.querySelector('input[name="list_size"]:checked')?.value || '3';
-
-        const preview = document.querySelector('.list-preview');
-        preview.innerHTML = `
-            <div class="border rounded p-3 bg-light">
-                <h5 class="mb-3">${title}</h5>
-                <div class="list-group">
-                    ${Array.from({length: size}, (_, i) => `
-                        <div class="list-group-item d-flex align-items-center">
-                            <span class="badge bg-primary rounded-circle me-3" style="width: 24px; height: 24px; line-height: 24px">${i + 1}</span>
-                            <span class="text-muted">Item ${i + 1}</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="mt-3 text-end">
-                    <small class="text-muted">Top ${size} list</small>
-                </div>
-            </div>
-        `;
-    }
-
-    // Initial preview
-    updatePreview();
+});
 </script>
 
 @endsection

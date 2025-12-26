@@ -31,7 +31,7 @@ class CatalogItemController extends Controller
      */
     public function create()
     {
-        $categories = CatalogCategory::where('status', 'active')->get();
+        $categories = CatalogCategory::where('status', '1')->get();
 
         return view('admin.catalog.items.create', compact('categories'));
     }
@@ -93,7 +93,7 @@ class CatalogItemController extends Controller
     public function edit($id)
     {
         $item = CatalogItem::findOrFail($id);
-        $categories = CatalogCategory::where('status', 'active')->get();
+        $categories = CatalogCategory::where('status', '1')->get();
 
         return view('admin.catalog.items.edit', compact('item', 'categories'));
     }
