@@ -8,35 +8,41 @@ use App\Models\Intrest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\URL;
 
 class InterestController extends Controller
-{
-    /**
-     * 1. Get all active interests
-     */
+{    
+    // All interests List
     public function getAllInterests()
     {
-        try {
-            $interests = Intrest::where('is_active', true)->get();
+    try {
+        $interests = Intrest::where('is_active', true)->get()->map(function ($interest) {
+            return [
+                'id'         => $interest->id,
+                'name'       => $interest->name,
+                'icon'       => $interest->icon 
+                    ? url('storage/' . $interest->icon)
+                    : null,
+                'is_active'  => $interest->is_active,
+            ];
+        });
 
-            return response()->json([
-                'success' => true,
-                'data'    => $interests
-            ], 200);
-        } catch (\Throwable $th) {
+        return response()->json([
+            'success' => true,
+            'data'    => $interests
+        ], 200);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch interests',
-                'reason'  => $th->getMessage()
-            ], 500);
-        }
+    } catch (\Throwable $th) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch interests',
+            'reason'  => $th->getMessage()
+        ], 500);
     }
+}
 
-    /**
-     * 2. Save selected user interests (minimum 3)
-     */
-    public function saveUserInterests(Request $request)
+    //Add User Interests
+    public function addUserInterests(Request $request)
     {
         try {
             $validated = $request->validate([
@@ -64,7 +70,7 @@ class InterestController extends Controller
                 'success'            => true,
                 'message'            => 'Interests saved successfully',
                 'user_id'            => $user->id,
-                'selected_interests' => $user->interests()->pluck('interests.id'),
+                'Data'               => $user->interests()->pluck('interests.id'),
             ], 200);
         } catch (ValidationException $e) {
 
@@ -83,35 +89,42 @@ class InterestController extends Controller
         }
     }
 
-    /**
-     * 3. Get logged-in user's selected interests
-     */
-    public function getUserInterests(Request $request, $user_id)
+    // Get Authenticated User Interests
+    public function getUserInterests(Request $request)
     {
-        try {
+    try {
+        $user = Auth::user();
 
-            $user = User::find($user_id);
-
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User not found',
-                ], 404);
-            }
-
-            $data = $user->interests()->get();
-
-            return response()->json([
-                'success' => true,
-                'data'    => $data
-            ], 200);
-        } catch (\Throwable $th) {
-
+        if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch user interests',
-                'reason'  => $th->getMessage()
-            ], 500);
+                'message' => 'Invalid or expired authentication token',
+            ], 401);
         }
+
+        $data = $user->interests()->get()->map(function ($interest) {
+            return [
+                'id'        => $interest->id,
+                'name'      => $interest->name,
+                'icon'      => $interest->icon
+                    ? url('storage/' . $interest->icon)
+                    : null,
+                'is_active' => $interest->is_active,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data'    => $data
+        ], 200);
+
+    } catch (\Throwable $th) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch user interests',
+            'reason'  => $th->getMessage()
+        ], 500);
     }
+}
+
 }
