@@ -67,6 +67,8 @@ class ListController extends Controller
             return $this->serverError($e);
         }
     }
+
+
     public function show($id)
     {
         try {

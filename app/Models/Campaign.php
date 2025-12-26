@@ -30,4 +30,9 @@ class Campaign extends Model
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
     ];
+
+    public function segments()
+    {
+        return $this->belongsToMany(Segment::class, 'campaign_segment');
+    }
 }

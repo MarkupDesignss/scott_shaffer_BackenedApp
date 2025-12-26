@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -28,9 +30,6 @@ class ProfileController extends Controller
                 ], 401);
             }
 
-            /** -----------------------
-             *  User Basic Info
-             * ---------------------- */
             $user = User::with([
                 'profile:id,user_id,age_band,city,dining_budget,has_dogs,profile_image',
                 'consent:id,user_id,accepted_terms_privacy,campaign_marketing,accepted_at',
@@ -46,47 +45,21 @@ class ProfileController extends Controller
                 ], 404);
             }
 
-            // /** -----------------------
-            //  *  Interest â†’ Category â†’ Items
-            //  * ---------------------- */
-            // $interestsData = [];
-
-            // foreach ($user->interests as $interest) {
-
-            //     $categories = DB::table('catalog_categories')
-            //         ->where('interest_id', $interest->id)
-            //         ->where('status', 1)
-            //         ->select('id', 'name', 'slug', 'icon', 'color')
-            //         ->get()
-            //         ->map(function ($category) {
-
-            //             $items = DB::table('catalog_items')
-            //                 ->where('category_id', $category->id)
-            //                 ->where('status', 1)
-            //                 ->whereNull('deleted_at')
-            //                 ->select('id', 'name', 'description', 'image_url')
-            //                 ->get();
-
-            //             $category->items = $items;
-            //             return $category;
-            //         });
-
-            //     $interestsData[] = [
-            //         'id'         => $interest->id,
-            //         'name'       => $interest->name,
-            //         'categories' => $categories
-            //     ];
-            // }
+            /** 🔥 Convert profile_image to full URL */
+            if ($user->profile && $user->profile->profile_image) {
+                $user->profile->profile_image = asset($user->profile->profile_image);
+            } else {
+                $user->profile->profile_image = null;
+            }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Profile fetched successfully',
                 'data' => [
-                    'user'      => $user,
-                    //    'interests' => $interestsData
+                    'user' => $user
                 ]
-            ]);
-        } catch (\Exception $e) {
+            ], 200);
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch profile',
@@ -94,6 +67,7 @@ class ProfileController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * POST: /api/profile/store
@@ -103,10 +77,10 @@ class ProfileController extends Controller
         try {
             $validated = $request->validate([
                 'user_id'        => 'required|exists:users,id',
-                'age_band'       => 'required',
-                'city'           => 'required|string|max:100',
-                'dining_budget'  => 'required',
-                'has_dogs'       => 'required|boolean',
+                'age_band'       => 'nullable',
+                'city'           => 'nullable|string|max:100',
+                'dining_budget'  => 'nullable',
+                'has_dogs'       => 'nullable|boolean',
             ]);
 
             $profile = UserProfile::updateOrCreate(
@@ -140,6 +114,8 @@ class ProfileController extends Controller
     /**
      * PUT: /api/profile/update
      */
+
+
     public function updateProfile(Request $request)
     {
         try {
@@ -151,9 +127,7 @@ class ProfileController extends Controller
                     'message' => 'Unauthorized'
                 ], 401);
             }
-            /** -----------------------
-             *  Validation
-             * ---------------------- */
+
             $validated = $request->validate([
                 'country'       => 'nullable|string|max:100',
                 'country_code'  => 'nullable|string|max:5',
@@ -162,21 +136,17 @@ class ProfileController extends Controller
                 'age_band'      => 'nullable|string',
                 'city'          => 'nullable|string|max:150',
                 'dining_budget' => 'nullable|string|max:100',
-                'has_dogs'      => 'nullable',
+                'has_dogs'      => 'nullable|boolean',
 
-                // 🔥 Profile Image
-                'profile_image' => 'nullable|image|max:2048',
-
-                // 🔥 Interests
+                'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'interests'     => 'nullable|array',
                 'interests.*'   => 'exists:interests,id',
             ]);
 
             /** -----------------------
-             *  Update User
+             * Update User
              * ---------------------- */
             $user = User::findOrFail($userId);
-
             $user->update(array_filter([
                 'country'      => $validated['country'] ?? null,
                 'country_code' => $validated['country_code'] ?? null,
@@ -184,83 +154,68 @@ class ProfileController extends Controller
             ]));
 
             /** -----------------------
-             *  Profile Image Upload
+             * Profile Image Upload (FIXED)
              * ---------------------- */
-            $profile = UserProfile::where('user_id', $userId)->first();
-            $profileImagePath = $profile->profile_image ?? null;
+            $profile = UserProfile::firstOrCreate(['user_id' => $userId]);
 
             if ($request->hasFile('profile_image')) {
-                // delete old image
-                if ($profileImagePath && Storage::disk('public')->exists($profileImagePath)) {
-                    Storage::disk('public')->delete($profileImagePath);
+
+                $image      = $request->file('profile_image');
+                $fileName   = uniqid() . '.' . $image->getClientOriginalExtension();
+                $uploadPath = public_path('storage/profile-images');
+
+                // create directory if not exists
+                if (!File::exists($uploadPath)) {
+                    File::makeDirectory($uploadPath, 0755, true);
                 }
 
-                $profileImagePath = $request
-                    ->file('profile_image')
-                    ->store('profile-images', 'public');
+                // delete old image
+                if ($profile->profile_image) {
+                    $oldPath = public_path($profile->profile_image);
+                    if (File::exists($oldPath)) {
+                        File::delete($oldPath);
+                    }
+                }
+
+                // move image
+                $image->move($uploadPath, $fileName);
+
+                // save relative path in DB
+                $profile->profile_image = 'storage/profile-images/' . $fileName;
             }
 
             /** -----------------------
-             *  Update / Create Profile
+             * Update Profile
              * ---------------------- */
-            $profile = UserProfile::updateOrCreate(
-                ['user_id' => $userId],
-                array_filter([
-                    'age_band'      => $validated['age_band'] ?? null,
-                    'city'          => $validated['city'] ?? null,
-                    'dining_budget' => $validated['dining_budget'] ?? null,
-                    'has_dogs'      => $validated['has_dogs'] ?? null,
-                    'profile_image' => $profileImagePath,
-                ])
-            );
+            $profile->fill(array_filter([
+                'age_band'      => $validated['age_band'] ?? null,
+                'city'          => $validated['city'] ?? null,
+                'dining_budget' => $validated['dining_budget'] ?? null,
+                'has_dogs'      => $validated['has_dogs'] ?? null,
+            ]));
+
+            $profile->save();
 
             /** -----------------------
-             *  Sync Interests
+             * Sync Interests
              * ---------------------- */
             if (isset($validated['interests'])) {
                 $user->interests()->sync($validated['interests']);
             }
 
             /** -----------------------
-             *  Response
+             * Response
              * ---------------------- */
             return response()->json([
                 'success' => true,
                 'message' => 'Profile updated successfully',
                 'data' => [
-                    'user' => $user->only([
-                        'id',
-                        'full_name',
-                        'email',
-                        'country',
-                        'country_code',
-                        'phone'
-                    ]),
-                    'profile' => [
-                        'age_band'      => $profile->age_band,
-                        'city'          => $profile->city,
-                        'dining_budget' => $profile->dining_budget,
-                        'has_dogs'      => $profile->has_dogs,
-                        'profile_image' => $profile->profile_image
-                            ? asset('storage/' . $profile->profile_image)
-                            : null,
-                    ],
-                    'interests' => $user->interests()->get([
-                        'interests.id',
-                        'interests.name',
-                        'interests.icon'
-                    ])
+                    'profile_image' => $profile->profile_image
+                        ? asset($profile->profile_image)
+                        : null,
                 ]
             ], 200);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors'  => $e->errors()
-            ], 422);
         } catch (\Throwable $e) {
-
             return response()->json([
                 'success' => false,
                 'message' => 'Profile update failed',
