@@ -64,10 +64,7 @@
                             <tr class="align-middle">
                                 <td class="ps-4 fw-semibold text-muted">{{ $loop->iteration }}</td>
                                 <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="category-icon bg-light-primary rounded p-2 me-3">
-                                            <i class="fas fa-folder text-primary"></i>
-                                        </div>
+                                    <div class="d-flex align-items-center">                  
                                         <div>
                                             <h6 class="mb-0 fw-semibold">{{ $category->name }}</h6>
                                             @if($category->parent_id)

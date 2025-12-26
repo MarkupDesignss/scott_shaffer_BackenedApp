@@ -67,7 +67,7 @@
                     </div>
 
                     <!-- Icon & Color Display -->
-                    <div class="row">
+                    <!-- <div class="row">
                         <div class="col-md-6 mb-4">
                             <div class="detail-item">
                                 <h6 class="text-muted mb-2">
@@ -122,7 +122,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
