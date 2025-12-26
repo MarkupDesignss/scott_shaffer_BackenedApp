@@ -8,18 +8,18 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.catalog-items.index') }}">Catalog Items</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.catalog-items.index') }}">Catalog Items</a>
+                    </li>
                     <li class="breadcrumb-item active">{{ $item->name }}</li>
                 </ol>
             </nav>
         </div>
         <div class="d-flex gap-2">
             {{-- <a href="{{ route('admin.catalog-items.edit', $item->id) }}"
-               class="btn btn-warning">
-                <i class="fas fa-edit me-2"></i>Edit
+            class="btn btn-warning">
+            <i class="fas fa-edit me-2"></i>Edit
             </a> --}}
-            <a href="{{ route('admin.catalog-items.index') }}"
-               class="btn btn-outline-secondary">
+            <a href="{{ route('admin.catalog-items.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Back to List
             </a>
         </div>
@@ -58,14 +58,14 @@
                                     <i class="fas fa-folder me-1"></i>Category
                                 </h6>
                                 @if($item->category)
-                                    <div class="d-flex align-items-center">
-                                        <span class="badge bg-light-primary text-primary rounded-pill px-3 py-2 me-2">
-                                            <i class="fas fa-folder me-1"></i>
-                                        </span>
-                                        <span class="fw-semibold">{{ $item->category->name }}</span>
-                                    </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-light-primary text-primary rounded-pill px-3 py-2 me-2">
+                                        <i class="fas fa-folder me-1"></i>
+                                    </span>
+                                    <span class="fw-semibold">{{ $item->category->name }}</span>
+                                </div>
                                 @else
-                                    <span class="text-muted fst-italic">Uncategorized</span>
+                                <span class="text-muted fst-italic">Uncategorized</span>
                                 @endif
                             </div>
                         </div>
@@ -77,9 +77,9 @@
                         </h6>
                         <div class="description-box p-3 rounded bg-light">
                             @if($item->description)
-                                <p class="mb-0">{{ $item->description }}</p>
+                            <p class="mb-0">{{ $item->description }}</p>
                             @else
-                                <p class="text-muted fst-italic mb-0">No description provided</p>
+                            <p class="text-muted fst-italic mb-0">No description provided</p>
                             @endif
                         </div>
                     </div>
@@ -99,25 +99,22 @@
                 <div class="card-body">
                     <div class="text-center">
                         @if($item->image_url)
-                            <img src="{{ $item->image_url }}"
-                                 alt="{{ $item->name }}"
-                                 class="img-fluid rounded shadow-sm"
-                                 style="max-height: 300px; object-fit: contain;">
-                            {{-- <div class="mt-3">
-                                <a href="{{ $item->image_url }}"
-                                   target="_blank"
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-external-link-alt me-1"></i>View Full Image
-                                </a>
-                            </div> --}}
+                        @php
+                        $imgSrc = Str::startsWith($item->image_url, ['http://', 'https://'])
+                        ? $item->image_url
+                        : asset('storage/' . $item->image_url);
+                        @endphp
+                        <img src="{{ $imgSrc }}" alt="{{ $item->name }}" class="img-fluid rounded shadow-sm"
+                            style="max-height: 300px; object-fit: contain;">
                         @else
-                            <div class="empty-image d-flex flex-column align-items-center justify-content-center p-5">
-                                <div class="empty-image-icon rounded-circle bg-light p-4 mb-3">
-                                    <i class="fas fa-image fa-2x text-muted"></i>
-                                </div>
-                                <h6 class="text-muted mb-0">No Image Available</h6>
+                        <div class="empty-image d-flex flex-column align-items-center justify-content-center p-5">
+                            <div class="empty-image-icon rounded-circle bg-light p-4 mb-3">
+                                <i class="fas fa-image fa-2x text-muted"></i>
                             </div>
+                            <h6 class="text-muted mb-0">No Image Available</h6>
+                        </div>
                         @endif
+
                     </div>
                 </div>
             </div>
@@ -140,46 +137,45 @@
                             </div>
                             <div>
                                 <p class="mb-0 fw-semibold">{{ $item->created_at->format('M d, Y') }}</p>
-                                <small class="text-muted">{{ $item->created_at->format('h:i A') }}</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="detail-item">
-                        <h6 class="text-muted mb-2">
-                            <i class="fas fa-sync-alt me-1"></i>Last Updated
-                        </h6>
-                        <div class="d-flex align-items-center">
-                            <div class="meta-icon bg-light-warning rounded p-2 me-3">
-                                <i class="fas fa-calendar-alt text-warning"></i>
-                            </div>
-                            <div>
-                                <p class="mb-0 fw-semibold">{{ $item->updated_at->format('M d, Y') }}</p>
-                                <small class="text-muted">{{ $item->updated_at->format('h:i A') }}</small>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
-                {{-- <div class="card-footer bg-white border-top py-3">
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('admin.catalog-items.edit', $item->id) }}"
-                           class="btn btn-warning">
-                            <i class="fas fa-edit me-2"></i>Edit Item
-                        </a>
-                        <form action="{{ route('admin.catalog-items.destroy', $item->id) }}"
-                              method="POST"
-                              onsubmit="return confirm('Are you sure you want to delete this item?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger w-100">
-                                <i class="fas fa-trash-alt me-2"></i>Delete Item
-                            </button>
-                        </form>
-                    </div>
-                </div> --}}
+                <small class="text-muted">{{ $item->created_at->format('h:i A') }}</small>
             </div>
         </div>
     </div>
+
+    <div class="detail-item">
+        <h6 class="text-muted mb-2">
+            <i class="fas fa-sync-alt me-1"></i>Last Updated
+        </h6>
+        <div class="d-flex align-items-center">
+            <div class="meta-icon bg-light-warning rounded p-2 me-3">
+                <i class="fas fa-calendar-alt text-warning"></i>
+            </div>
+            <div>
+                <p class="mb-0 fw-semibold">{{ $item->updated_at->format('M d, Y') }}</p>
+                <small class="text-muted">{{ $item->updated_at->format('h:i A') }}</small>
+            </div>
+        </div>
+    </div>
+</div> --}}
+{{-- <div class="card-footer bg-white border-top py-3">
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('admin.catalog-items.edit', $item->id) }}"
+class="btn btn-warning">
+<i class="fas fa-edit me-2"></i>Edit Item
+</a>
+<form action="{{ route('admin.catalog-items.destroy', $item->id) }}" method="POST"
+    onsubmit="return confirm('Are you sure you want to delete this item?')">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn btn-outline-danger w-100">
+        <i class="fas fa-trash-alt me-2"></i>Delete Item
+    </button>
+</form>
+</div>
+</div> --}}
+</div>
+</div>
+</div>
 </div>
 @endsection
 

@@ -14,10 +14,6 @@
                             <p class="text-muted mb-0">Update item details</p>
                         </div>
                         <div class="d-flex gap-2">
-                                {{-- <a href="{{ route('admin.catalog-items.show', $item->id) }}"
-                                class="btn btn-outline-info">
-                                    <i class="fas fa-eye me-2"></i>View
-                                </a> --}}
                             <a href="{{ route('admin.catalog-items.index') }}"
                                class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-2"></i>Back to List
@@ -27,8 +23,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('admin.catalog-items.update', $item->id) }}"
-                          class="needs-validation" novalidate enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('admin.catalog-items.update', $item->id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -120,8 +115,13 @@
                                                     <div class="mb-3">
                                                         <label class="form-label">Current Image</label>
                                                         @if($item->image_url)
+                                                            @php
+                                                                $imgSrc = Str::startsWith($item->image_url, ['http://', 'https://'])
+                                                                          ? $item->image_url
+                                                                          : asset('storage/' . $item->image_url);
+                                                            @endphp
                                                             <div class="mb-2">
-                                                                <img src="{{ $item->image_url }}"
+                                                                <img src="{{ $imgSrc }}"
                                                                      alt="{{ $item->name }}"
                                                                      class="img-thumbnail"
                                                                      style="max-height: 100px;">
@@ -131,6 +131,7 @@
                                                                 <i class="fas fa-image me-1"></i> No image set
                                                             </div>
                                                         @endif
+
                                                         <label class="form-label">New Image URL</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text bg-light border-end-0">
@@ -167,8 +168,6 @@
                                                 </div>
                                             </div>
                                             <div class="form-text">Provide either an image URL or upload an image file.</div>
-
-
                                         </div>
                                     </div>
                                 </div>
@@ -186,34 +185,14 @@
                                                     id="status"
                                                     name="status"
                                                     required>
-                                                <option value="1" {{ old('status', $item->status) == '1' ? 'selected' : '' }}>
-                                                    <i class="fas fa-circle text-success me-2"></i>Active
-                                                </option>
-                                                <option value="0" {{ old('status', $item->status) == '0' ? 'selected' : '' }}>
-                                                    <i class="fas fa-circle text-secondary me-2"></i>Inactive
-                                                </option>
+                                                <option value="1" {{ old('status', $item->status) == '1' ? 'selected' : '' }}>Active</option>
+                                                <option value="0" {{ old('status', $item->status) == '0' ? 'selected' : '' }}>Inactive</option>
                                             </select>
                                             @error('status')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                             <div class="form-text">Active items are visible to customers.</div>
                                         </div>
-
-                                        {{-- <div class="mb-4">
-                                            <label class="form-label fw-semibold">Created</label>
-                                            <div class="text-muted">
-                                                <i class="far fa-calendar me-1"></i>
-                                                {{ $item->created_at->format('M d, Y h:i A') }}
-                                            </div>
-                                        </div> --}}
-
-                                        {{-- <div class="mb-4">
-                                            <label class="form-label fw-semibold">Last Updated</label>
-                                            <div class="text-muted">
-                                                <i class="far fa-calendar-alt me-1"></i>
-                                                {{ $item->updated_at->format('M d, Y h:i A') }}
-                                            </div>
-                                        </div> --}}
 
                                         <div class="d-grid gap-2 mt-4">
                                             <button type="submit" class="btn btn-warning btn-lg">
@@ -237,50 +216,15 @@
 @endsection
 
 <style>
-.preview-card {
-    background-color: #f8f9fa;
-    border: 2px dashed #dee2e6;
-}
-
-.bg-light-primary {
-    background-color: rgba(13, 110, 253, 0.1) !important;
-}
-
-.bg-success-soft {
-    background-color: rgba(25, 135, 84, 0.1) !important;
-}
-
-.bg-secondary-soft {
-    background-color: rgba(108, 117, 125, 0.1) !important;
-}
-
-.text-success {
-    color: #198754 !important;
-}
-
-.form-label {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
-.input-group-text {
-    background-color: #f8f9fa;
-    border-color: #dee2e6;
-}
-
-.image-preview {
-    background-color: #f8f9fa;
-}
-
-.needs-validation .form-control:valid,
-.needs-validation .form-select:valid {
-    border-color: #198754;
-}
-
-.needs-validation .form-control:invalid,
-.needs-validation .form-select:invalid {
-    border-color: #dc3545;
-}
+.bg-light-primary { background-color: rgba(13, 110, 253, 0.1) !important; }
+.bg-success-soft { background-color: rgba(25, 135, 84, 0.1) !important; }
+.bg-secondary-soft { background-color: rgba(108, 117, 125, 0.1) !important; }
+.text-success { color: #198754 !important; }
+.form-label { font-weight: 500; margin-bottom: 0.5rem; }
+.input-group-text { background-color: #f8f9fa; border-color: #dee2e6; }
+.image-preview { background-color: #f8f9fa; }
+.needs-validation .form-control:valid, .needs-validation .form-select:valid { border-color: #198754; }
+.needs-validation .form-control:invalid, .needs-validation .form-select:invalid { border-color: #dc3545; }
 </style>
 
 <script>
@@ -297,110 +241,45 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Character counter for description
+    // Character counter
     const descriptionInput = document.getElementById('description');
     const charCount = document.getElementById('charCount');
-
     if (descriptionInput && charCount) {
         descriptionInput.addEventListener('input', function() {
             charCount.textContent = this.value.length;
         });
     }
 
-    // Live preview for name
-    const nameInput = document.getElementById('name');
-    const namePreview = document.getElementById('liveNamePreview');
-
-    if (nameInput && namePreview) {
-        nameInput.addEventListener('input', function() {
-            namePreview.textContent = this.value || 'Item Name';
-        });
-    }
-
-    // Live preview for description
-    const descriptionPreview = document.getElementById('liveDescriptionPreview');
-
-    if (descriptionInput && descriptionPreview) {
-        descriptionInput.addEventListener('input', function() {
-            descriptionPreview.textContent = this.value || 'Item description will appear here.';
-        });
-    }
-
-    // Live preview for category
-    const categorySelect = document.getElementById('category_id');
-    const categoryPreview = document.getElementById('liveCategoryPreview');
-    const categoryNames = {
-        @foreach($categories as $category)
-            '{{ $category->id }}': '{{ $category->name }}',
-        @endforeach
-        '': 'Uncategorized'
-    };
-
-    if (categorySelect && categoryPreview) {
-        categorySelect.addEventListener('change', function() {
-            const categoryName = categoryNames[this.value] || 'Uncategorized';
-            categoryPreview.innerHTML = `<i class="fas fa-folder me-1"></i>${categoryName}`;
-        });
-    }
-
     // Image preview functionality
     const imageUrlInput = document.querySelector('input[name="image_url"]');
     const imageUploadInput = document.querySelector('input[name="image_upload"]');
-    const imagePreview = document.getElementById('imagePreview');
-    const previewImage = document.getElementById('previewImage');
     const liveImagePreview = document.getElementById('liveImagePreview');
 
-    // Preview from URL
+    function updatePreview(src) {
+        liveImagePreview.innerHTML = src
+            ? `<img src="${src}" class="img-fluid rounded" style="max-height: 150px;">`
+            : '<div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 150px;"><i class="fas fa-image fa-3x text-muted"></i></div>';
+    }
+
     if (imageUrlInput) {
         imageUrlInput.addEventListener('input', function() {
-            if (this.value) {
-                previewImage.src = this.value;
-                imagePreview.style.display = 'block';
-
-                // Update live preview
-                liveImagePreview.innerHTML = `<img src="${this.value}" class="img-fluid rounded" style="max-height: 150px;">`;
-            } else {
-                imagePreview.style.display = 'none';
-                liveImagePreview.innerHTML = '<div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 150px;"><i class="fas fa-image fa-3x text-muted"></i></div>';
-            }
+            const src = this.value.startsWith('http') ? this.value : `{{ asset('storage') }}/${this.value}`;
+            updatePreview(this.value ? src : null);
         });
     }
 
-    // Preview from file upload
     if (imageUploadInput) {
         imageUploadInput.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    imagePreview.style.display = 'block';
-
-                    // Update live preview
-                    liveImagePreview.innerHTML = `<img src="${e.target.result}" class="img-fluid rounded" style="max-height: 150px;">`;
-                };
+                reader.onload = function(e) { updatePreview(e.target.result); };
                 reader.readAsDataURL(file);
             }
         });
     }
 
-    // Status preview
-    const statusSelect = document.getElementById('status');
-    const statusPreview = document.getElementById('liveStatusPreview');
-
-    if (statusSelect && statusPreview) {
-        statusSelect.addEventListener('change', function() {
-            if (this.value === 'active') {
-                statusPreview.className = 'badge bg-success-soft text-success rounded-pill px-3 py-1';
-                statusPreview.innerHTML = '<i class="fas fa-circle me-1" style="font-size: 8px"></i>Active';
-            } else {
-                statusPreview.className = 'badge bg-secondary-soft text-secondary rounded-pill px-3 py-1';
-                statusPreview.innerHTML = '<i class="fas fa-circle me-1" style="font-size: 8px"></i>Inactive';
-            }
-        });
-    }
-
-    // Reset form button
+    // Reset form
     const resetButton = document.getElementById('resetForm');
     if (resetButton) {
         resetButton.addEventListener('click', function() {
