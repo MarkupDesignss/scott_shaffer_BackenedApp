@@ -16,9 +16,14 @@ class ListModel extends Model
         'title',
         'category_id',
         'list_size',
+        'is_group',
         'status',
         'visibility',
         'cloned_from_id'
+    ];
+
+    protected $casts = [
+    'is_group' => 'boolean',
     ];
 
     public function items()
@@ -32,6 +37,11 @@ class ListModel extends Model
         return $this->belongsTo(CatalogCategory::class, 'category_id');
     }
 
+    public function members() 
+    {
+       return $this->hasMany(ListMember::class, 'list_id');
+    }
+    
     public function clonedFrom()
     {
         return $this->belongsTo(ListModel::class, 'cloned_from_id');
