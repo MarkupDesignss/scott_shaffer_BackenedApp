@@ -45,8 +45,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/lists/{list}/items', [ListItemController::class, 'store']);
     Route::delete('/lists/{list}/items/{item}', [ListItemController::class, 'destroy']);
 
-    // featured lists
-    Route::get('/featured-lists/{id}', [FeatureListController::class, 'index']);
+    // Fetch all featured lists (user ke interests) OR filter by specific interest
+    Route::get('/featured-lists', [FeatureListController::class, 'index']);
+    Route::get('/featured-lists/{id}', [FeatureListController::class, 'show']);
+
+    // Fetch items for a specific featured list
+    Route::get('/featured-lists/{listId}/items', [FeatureListController::class, 'items']);
 
     // Recommended items
     Route::get('/recommeditems', [RecommenededItemsController::class, 'recommendedList']);
