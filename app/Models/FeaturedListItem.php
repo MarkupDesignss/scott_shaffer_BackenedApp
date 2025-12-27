@@ -18,10 +18,11 @@ class FeaturedListItem extends Model
         return $this->belongsTo(FeaturedList::class, 'featured_list_id');
     }
 
-    public function catalogItem()
+   public function catalogItem()
     {
         return $this->belongsTo(CatalogItem::class, 'catalog_item_id');
     }
+    
     public function featuredList()
     {
         return $this->belongsTo(FeaturedList::class, 'featured_list_id');

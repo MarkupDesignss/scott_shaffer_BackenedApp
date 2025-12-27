@@ -17,15 +17,14 @@ class FeaturedList extends Model
         'created_by'
     ];
 
-    public function category()
+   public function category()
     {
-        return $this->belongsTo(CatalogCategory::class);
+        return $this->belongsTo(CatalogCategory::class, 'category_id');
     }
 
     public function items()
     {
-        return $this->hasMany(FeaturedListItem::class, 'featured_list_id')
-            ->orderBy('position');
+        return $this->hasMany(FeaturedListItem::class, 'featured_list_id');
     }
 
     public function admin()
