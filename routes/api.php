@@ -35,12 +35,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [ProfileController::class, 'getProfile']);
     Route::post('/update_profile', [ProfileController::class, 'updateProfile']);
 
-    // Lists items
-    Route::get('/lists', [ListController::class, 'index']);
-    Route::post('/lists', [ListController::class, 'store']);
-    Route::get('/lists/{list}', [ListController::class, 'show']);
-    Route::put('/lists/{list}', [ListController::class, 'update']);
-    Route::delete('/lists/{list}', [ListController::class, 'destroy']);
+    /* =========================
+       Lists (CRUD)
+    ========================== */
+    Route::get('/lists', [ListController::class, 'index']);          // My lists (owner + group)
+    Route::post('/lists', [ListController::class, 'store']);         // Create list
+    Route::get('/lists/{id}', [ListController::class, 'show']);      // Show list
+    Route::put('/lists/{id}', [ListController::class, 'update']);    // Update list
+    Route::delete('/lists/{id}', [ListController::class, 'destroy']); // Delete list
+
+
+    /* =========================
+       Group List – Members
+    ========================== */
+    Route::get('/users/invite-list', [ListController::class, 'inviteUserList']);    // User list for inviting members
+    Route::post('/lists/{id}/invite', [ListController::class, 'inviteMembers']);   // Invite members
+    Route::get('/lists/invitations', [ListController::class, 'myInvitations']);    // My invites
+    Route::post('/lists/{id}/accept', [ListController::class, 'acceptInvite']);    // Accept invite
+    Route::post('/lists/{id}/reject', [ListController::class, 'rejectInvite']);    // Reject invite
+    Route::delete('/lists/{id}/members/{userId}', [ListController::class, 'removeMember']); // Remove member
+    Route::post('/lists/{id}/leave', [ListController::class, 'leaveGroup']);       // Leave group
 
     Route::post('/lists/{list}/items', [ListItemController::class, 'store']);
     Route::delete('/lists/{list}/items/{item}', [ListItemController::class, 'destroy']);
