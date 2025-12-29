@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Intrest;
 use App\Models\Segment;
 use App\Models\SegmentExport;
 use Illuminate\Http\Request;
@@ -19,7 +20,8 @@ class SegmentController extends Controller
 
     public function create()
     {
-        return view('admin.segments.create');
+        $intrest = Intrest::get();
+        return view('admin.segments.create', compact('intrest'));
     }
 
     public function store(Request $request)
@@ -41,7 +43,9 @@ class SegmentController extends Controller
     public function edit($id)
     {
         $segment = Segment::findOrFail($id);
-        return view('admin.segments.edit', compact('segment'));
+        $intrest = Intrest::get();
+
+        return view('admin.segments.edit', compact('segment', 'intrest'));
     }
 
     public function update(Request $request, $id)

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Campaign extends Model
 {
     use SoftDeletes;
-
+    protected $table = 'campaigns';
 
     protected $fillable = [
         'name',
@@ -33,6 +33,11 @@ class Campaign extends Model
 
     public function segments()
     {
-        return $this->belongsToMany(Segment::class, 'campaign_segment');
+        return $this->belongsToMany(
+            Segment::class,
+            'campaign_segment',
+            'campaign_id',
+            'segment_id'
+        )->withTimestamps();
     }
 }

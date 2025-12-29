@@ -44,7 +44,7 @@
                             <th class="py-3 border-0">
                                 <span class="fw-semibold">Created</span>
                             </th>
-                            <th class="pe-4 py-3 border-0 text-end">
+                            <th class="pe-4 py-3 border-0 text-center">
                                 <span class="fw-semibold">Actions</span>
                             </th>
                         </tr>

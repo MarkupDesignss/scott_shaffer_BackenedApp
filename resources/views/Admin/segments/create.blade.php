@@ -19,7 +19,6 @@
             </div>
         </div>
     </div>
-
     <form action="{{ route('admin.segments.store') }}" method="POST">
         @csrf
 
@@ -48,13 +47,13 @@
                         </div>
 
                         <!-- Description -->
-                        <div class="mb-4">
+                        {{-- <div class="mb-4">
                             <label class="form-label fw-semibold">Description (Optional)</label>
                             <textarea name="description"
                                       class="form-control"
                                       rows="3"
                                       placeholder="Brief description about this segment...">{{ old('description') }}</textarea>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 
@@ -69,7 +68,7 @@
                     <div class="card-body">
                         <div class="row g-4">
                             <!-- Age Band -->
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <label class="form-label fw-semibold d-flex align-items-center">
                                     <i class="fas fa-birthday-cake me-2 text-primary"></i>
                                     Age Band
@@ -91,9 +90,32 @@
                                         <span class="me-2">👴</span> 45+ Years
                                     </option>
                                 </select>
+                            </div> --}}
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold d-flex align-items-center">
+                                    <i class="fas fa-heart me-2 text-danger"></i>
+                                    Interests
+                                </label>
+
+                                <select name="filters[intrest_ids][]"
+                                        class="form-select"
+                                        multiple
+                                        size="5">
+                                    @foreach($intrest as $item)
+                                        <option value="{{ $item->id }}"
+                                            {{ in_array(
+                                                $item->id,
+                                                old('filters.intrest_ids', [])
+                                            ) ? 'selected' : '' }}>
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
-                            <!-- Budget -->
+
+                            {{-- <!-- Budget -->
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold d-flex align-items-center">
                                     <i class="fas fa-money-bill-wave me-2 text-primary"></i>
@@ -111,10 +133,10 @@
                                         <span class="me-2">💰💰💰</span> High (Above ₹1500)
                                     </option>
                                 </select>
-                            </div>
+                            </div> --}}
 
                             <!-- City -->
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <label class="form-label fw-semibold d-flex align-items-center">
                                     <i class="fas fa-city me-2 text-primary"></i>
                                     City
@@ -124,10 +146,10 @@
                                        class="form-control"
                                        value="{{ old('filters.city') }}"
                                        placeholder="Enter city names (comma separated)">
-                            </div>
+                            </div> --}}
 
                             <!-- Activity -->
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <label class="form-label fw-semibold d-flex align-items-center">
                                     <i class="fas fa-chart-line me-2 text-primary"></i>
                                     User Activity
@@ -141,8 +163,15 @@
                                         <span class="me-2">💤</span> Inactive (Over 30 days)
                                     </option>
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
+                    <!-- Actions -->
+                    <div class="text-end mt-2">
+                        <a href="{{ route('admin.segments.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            Create Interest
+                        </button>
+                    </div>
 
 
                 </div>
