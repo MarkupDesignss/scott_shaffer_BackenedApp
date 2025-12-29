@@ -59,14 +59,15 @@ class ListItemController extends Controller
     {
         try {
             $list = ListModel::findOrFail($listId);
-           // $this->authorizeList($list);
+            // $this->authorizeList($list);
 
-            // Manual validator
+            // Validator
             $validator = Validator::make($request->all(), [
-                'catalog_item_id'  => 'nullable|exists:catalog_items,id',
-                'custom_item_name' => 'nullable|string|max:120',
-                'custom_text'      => 'nullable|string',
-                'position'         => 'required|integer|min:1',
+                'catalog_item_ids'  => 'nullable|array',
+                'catalog_item_ids.*' => 'exists:catalog_items,id',
+                'custom_item_name'  => 'nullable|string|max:120',
+                'custom_text'       => 'nullable|string',
+                //'position'          => 'required|integer|min:1',
             ]);
 
             if ($validator->fails()) {
@@ -78,35 +79,46 @@ class ListItemController extends Controller
 
             $validated = $validator->validated();
 
-            // Either catalog OR custom (not both, not none)
-            if (
-                (empty($validated['catalog_item_id']) && empty($validated['custom_item_name'])) ||
-                (!empty($validated['catalog_item_id']) && !empty($validated['custom_item_name']))
-            ) {
+            $items = [];
+
+            // Multiple catalog items
+            if (!empty($validated['catalog_item_ids'])) {
+                foreach ($validated['catalog_item_ids'] as $catalogId) {
+                    $items[] = ListItem::create([
+                        'list_id' => $listId,
+                        'catalog_item_id' => $catalogId,
+                        'custom_item_name' => null,
+                        'custom_text' =>  null,
+                        //'position' => $validated['position'],
+                    ]);
+                }
+            } elseif (!empty($validated['custom_item_name'])) {
+                // Single custom item
+                $items[] = ListItem::create([
+                    'list_id' => $listId,
+                    'catalog_item_id' => null,
+                    'custom_item_name' => $validated['custom_item_name'],
+                    'custom_text' => $validated['custom_text'] ?? null,
+                    //'position' => $validated['position'],
+                ]);
+            } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Provide either catalog_item_id OR custom_item_name'
+                    'message' => 'Provide either catalog_item_ids or custom_item_name'
                 ], 422);
             }
 
-            $item = ListItem::create([
-                'list_id' => $listId,
-                'catalog_item_id' => $validated['catalog_item_id'] ?? null,
-                'custom_item_name' => $validated['custom_item_name'] ?? null,
-                'custom_text' => $validated['custom_text'] ?? null,
-                'position' => $validated['position'],
-            ]);
-
             return response()->json([
                 'success' => true,
-                'message' => 'Item added successfully',
-                'data' => $item
+                'message' => 'Item(s) added successfully',
+                'data' => $items
             ], 201);
 
         } catch (Throwable $e) {
             return $this->serverError($e);
         }
     }
+
 
     /* =========================
        PUT: Update Custom Item
