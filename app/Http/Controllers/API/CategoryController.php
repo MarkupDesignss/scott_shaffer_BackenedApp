@@ -16,7 +16,7 @@ class CategoryController extends Controller
     {
         try {
             $categories = CatalogCategory::where('status', '1')
-                ->select('id', 'name', 'slug', 'icon', 'color')
+                ->select('id', 'name')
                 ->orderBy('name')
                 ->get();
 
