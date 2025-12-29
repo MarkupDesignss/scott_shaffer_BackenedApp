@@ -44,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/lists/{id}', [ListController::class, 'show']);      // Show list
     Route::put('/lists/{id}', [ListController::class, 'update']);    // Update list
     Route::delete('/lists/{id}', [ListController::class, 'destroy']); // Delete list
+    Route::get('/catalog/categories', [CategoryController::class, 'categories']); // Categories list
 
 
     /* =========================
