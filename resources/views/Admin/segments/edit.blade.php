@@ -59,15 +59,15 @@
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
-
+                        {{-- @dd($segment); --}}
                         <!-- Description -->
-                        <div class="mb-4">
+                        {{-- <div class="mb-4">
                             <label class="form-label fw-semibold">Description</label>
                             <textarea name="description"
                                       class="form-control"
                                       rows="3"
                                       placeholder="Describe this segment...">{{ old('description', $segment->description ?? '') }}</textarea>
-                        </div>
+                        </div> --}}
 
                         <!-- Segment Stats -->
                         <div class="row g-3">
@@ -108,7 +108,7 @@
                     <div class="card-body">
                         <div class="row g-4">
                             <!-- Age Band -->
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <label class="form-label fw-semibold d-flex align-items-center">
                                     <i class="fas fa-birthday-cake me-2 text-primary"></i>
                                     Age Band
@@ -125,10 +125,36 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> --}}
+
+                            <div class="col-md-6">
+                            <label class="form-label fw-semibold d-flex align-items-center">
+                                <i class="fas fa-heart me-2 text-danger"></i>
+                                Interests
+                            </label>
+
+                            <select name="filters[intrest_ids][]"
+                                    class="form-select"
+                                    multiple
+                                    size="5">
+                                @foreach($intrest as $item)
+                                    <option value="{{ $item->id }}"
+                                        {{ in_array(
+                                            $item->id,
+                                            old(
+                                                'filters.intrest_ids',
+                                                $segment->filters['intrest_ids'] ?? []
+                                            )
+                                        ) ? 'selected' : '' }}>
+                                        {{ $item->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
 
                             <!-- Budget -->
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <label class="form-label fw-semibold d-flex align-items-center">
                                     <i class="fas fa-money-bill-wave me-2 text-primary"></i>
                                     Dining Budget
@@ -143,10 +169,10 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> --}}
 
                             <!-- City -->
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <label class="form-label fw-semibold d-flex align-items-center">
                                     <i class="fas fa-city me-2 text-primary"></i>
                                     City
@@ -157,10 +183,10 @@
                                        value="{{ old('filters.city', $segment->filters['city'] ?? '') }}"
                                        placeholder="Enter city names">
                                 <small class="text-muted">e.g., Mumbai, Delhi, Bangalore</small>
-                            </div>
+                            </div> --}}
 
                             <!-- Activity -->
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <label class="form-label fw-semibold d-flex align-items-center">
                                     <i class="fas fa-chart-line me-2 text-primary"></i>
                                     User Activity
@@ -175,13 +201,32 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
 
                     </div>
                 </div>
             </div>
 
+        </div>
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+            <div>
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        onclick="window.history.back()">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit"
+                        name="action"
+                        value="publish"
+                        class="btn btn-primary">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Update Segment
+                </button>
+            </div>
         </div>
     </form>
 </div>
@@ -193,7 +238,6 @@
 </form>
 @endsection
 
-@push('scripts')
 <script>
 function resetFilters() {
     if (confirm('Reset all filters to default values?')) {
@@ -217,9 +261,7 @@ function confirmDelete() {
     }
 }
 </script>
-@endpush
 
-@push('styles')
 <style>
 .segment-icon-lg {
     transition: transform 0.3s ease;
@@ -250,4 +292,3 @@ function confirmDelete() {
     z-index: 1;
 }
 </style>
-@endpush

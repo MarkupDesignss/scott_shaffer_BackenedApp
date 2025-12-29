@@ -11,35 +11,34 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\URL;
 
 class InterestController extends Controller
-{    
+{
     // All interests List
     public function getAllInterests()
     {
-    try {
-        $interests = Intrest::where('is_active', true)->get()->map(function ($interest) {
-            return [
-                'id'         => $interest->id,
-                'name'       => $interest->name,
-                'icon'       => $interest->icon 
-                    ? url('storage/' . $interest->icon)
-                    : null,
-                'is_active'  => $interest->is_active,
-            ];
-        });
+        try {
+            $interests = Intrest::where('is_active', true)->get()->map(function ($interest) {
+                return [
+                    'id'         => $interest->id,
+                    'name'       => $interest->name,
+                    'icon'       => $interest->icon
+                        ? url('storage/' . $interest->icon)
+                        : null,
+                    'is_active'  => $interest->is_active,
+                ];
+            });
 
-        return response()->json([
-            'success' => true,
-            'data'    => $interests
-        ], 200);
-
-    } catch (\Throwable $th) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to fetch interests',
-            'reason'  => $th->getMessage()
-        ], 500);
+            return response()->json([
+                'success' => true,
+                'data'    => $interests
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch interests',
+                'reason'  => $th->getMessage()
+            ], 500);
+        }
     }
-}
 
     //Add User Interests
     public function addUserInterests(Request $request)
@@ -92,39 +91,37 @@ class InterestController extends Controller
     // Get Authenticated User Interests
     public function getUserInterests(Request $request)
     {
-    try {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        if (!$user) {
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid or expired authentication token',
+                ], 401);
+            }
+
+            $data = $user->interests()->get()->map(function ($interest) {
+                return [
+                    'id'        => $interest->id,
+                    'name'      => $interest->name,
+                    'icon'      => $interest->icon
+                        ? url('storage/' . $interest->icon)
+                        : null,
+                    'is_active' => $interest->is_active,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data'    => $data
+            ], 200);
+        } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid or expired authentication token',
-            ], 401);
+                'message' => 'Failed to fetch user interests',
+                'reason'  => $th->getMessage()
+            ], 500);
         }
-
-        $data = $user->interests()->get()->map(function ($interest) {
-            return [
-                'id'        => $interest->id,
-                'name'      => $interest->name,
-                'icon'      => $interest->icon
-                    ? url('storage/' . $interest->icon)
-                    : null,
-                'is_active' => $interest->is_active,
-            ];
-        });
-
-        return response()->json([
-            'success' => true,
-            'data'    => $data
-        ], 200);
-
-    } catch (\Throwable $th) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to fetch user interests',
-            'reason'  => $th->getMessage()
-        ], 500);
     }
-}
-
 }

@@ -10,7 +10,8 @@ use App\Http\Controllers\API\ListController;
 use App\Http\Controllers\API\ListItemController;
 use App\Http\Controllers\API\PasswordController;
 use App\Http\Controllers\API\RecommenededItemsController;
-use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\API\SearchController;
+use App\Http\Controllers\API\CampaignController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -77,6 +78,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Get authenticated user's interests
     Route::get('/user-interests', [InterestController::class, 'getUserInterests']);
+
+    Route::get(
+        '/campaigns',
+        [CampaignController::class, 'index']
+    );
 });
 
 // User Details

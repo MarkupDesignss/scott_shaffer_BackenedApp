@@ -26,6 +26,11 @@ class Segment extends Model
 
     public function campaigns()
     {
-        return $this->belongsToMany(Campaign::class, 'campaign_segment');
+        return $this->belongsToMany(
+            Campaign::class,
+            'campaign_segment',
+            'segment_id',
+            'campaign_id'
+        )->withTimestamps();
     }
 }

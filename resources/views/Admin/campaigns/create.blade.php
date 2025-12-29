@@ -29,7 +29,7 @@
     </div>
 
     <!-- Form -->
-    <form method="POST" action="{{ route('admin.campaigns.store') }}" id="campaignForm">
+    <form method="POST" action="{{ route('admin.campaigns.store') }}" id="campaignForm" enctype="multipart/form-data">
         @csrf
 
         <div class="row">
@@ -100,6 +100,28 @@
                                                   placeholder="Brief description or supporting text for your campaign">{{ old('subtitle') }}</textarea>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="form-label">Campaign Image</label>
+                                    <input type="file"
+                                        name="image_url"
+                                        class="form-control"
+                                        accept="image/*">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Select Segments</label>
+                                <select name="segments[]" class="form-control" multiple required>
+                                    @foreach($segments as $segment)
+                                        <option value="{{ $segment->id }}"
+                                            {{ in_array($segment->id, old('segments', [])) ? 'selected' : '' }}>
+                                            {{ $segment->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -280,7 +302,6 @@
 </style>
 
 
-@push('scripts')
 <script>
     // Live preview functionality
     document.addEventListener('DOMContentLoaded', function() {
@@ -335,5 +356,4 @@
         updatePreview();
     });
 </script>
-@endpush
 @endsection

@@ -59,6 +59,8 @@
                         <tr>
                             <th class="ps-4">#ID</th>
                             <th>Campaign Details</th>
+                            <th>Campaign Image</th>
+                            <th>Segments</th>
                             <th>Status</th>
                             <th>Schedule</th>
                             <th>Consent</th>
@@ -82,6 +84,26 @@
                                         <p class="text-muted mb-0 small">{{ $campaign->subtitle }}</p>
                                     </div>
                                 </div>
+                            </td>
+                            <td>
+                                @if($campaign->image_url)
+                                    <img src="{{ asset($campaign->image_url) }}"
+                                        width="60"
+                                        class="rounded">
+                                @else
+                                    <p>No image</p>
+                                @endif
+                            </td>
+                            <td>
+                                @if($campaign->segments->count())
+                                    @foreach($campaign->segments as $segment)
+                                        <span class="badge bg-primary me-1">
+                                            {{ $segment->name }}
+                                        </span>
+                                    @endforeach
+                                @else
+                                    <span class="text-muted">No Segment</span>
+                                @endif
                             </td>
                             <td>
                                 @php
