@@ -59,6 +59,19 @@
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold">Status</label>
+                            <select name="status" class="form-select" required>
+                                <option value="active"
+                                    {{ old('status', $segment->status) === 'active' ? 'selected' : '' }}>
+                                    Active
+                                </option>
+                                <option value="inactive"
+                                    {{ old('status', $segment->status) === 'inactive' ? 'selected' : '' }}>
+                                    Inactive
+                                </option>
+                            </select>
+                        </div>
                         {{-- @dd($segment); --}}
                         <!-- Description -->
                         {{-- <div class="mb-4">
@@ -70,7 +83,7 @@
                         </div> --}}
 
                         <!-- Segment Stats -->
-                        <div class="row g-3">
+                        {{-- <div class="row g-3">
                             <div class="col-md-4">
                                 <div class="border rounded p-3 text-center">
                                     <div class="text-muted small mb-1">Created</div>
@@ -91,7 +104,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 

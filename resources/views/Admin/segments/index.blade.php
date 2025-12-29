@@ -42,6 +42,9 @@
                                 <span class="fw-semibold">Users</span>
                             </th>
                             <th class="py-3 border-0">
+                                <span class="fw-semibold">Status</span>
+                            </th>
+                            <th class="py-3 border-0">
                                 <span class="fw-semibold">Created</span>
                             </th>
                             <th class="pe-4 py-3 border-0 text-center">
@@ -77,26 +80,47 @@
                                     </div>
                                 </td>
                                 <td class="py-3">
+                                    <div class="d-flex align-items-center">
+                                       @if($segment->status === 'active')
+                                        <span class="badge bg-success">Active</span>
+                                    @else
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    @endif
+                                </td>
+                                <td class="py-3">
                                     <span class="text-muted">{{ $segment->created_at->format('d M Y') }}</span>
                                 </td>
-                                <td class="pe-4 py-3 text-end">
+                                <td class="pe-4 py-3 text-center">
                                     <div class="btn-group" role="group">
-                                        <a href="{{ route('admin.segments.edit', $segment) }}"
+                                        {{-- <a href="{{ route('admin.segments.edit', $segment) }}"
                                            class="btn btn-sm btn-outline-primary rounded-start-2">
                                             <i class="fas fa-edit me-1"></i>Edit
-                                        </a>
-                                        {{-- <a href="{{ route('admin.segments.exports', $segment) }}"
-                                           class="btn btn-sm btn-outline-secondary">
-                                            <i class="fas fa-download me-1"></i>Exports
                                         </a> --}}
-                                        <form action="{{ route('admin.segments.destroy', $segment) }}"
+
+
+                                    <a href="{{ route('admin.segments.edit', $segment) }}"
+                                    class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Edit Segment">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <form action="{{ route('admin.segments.destroy', $segment) }}"
                                               method="POST" class="d-inline delete-form">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-end-2 delete-btn" data-segment-name="{{ $segment->name }}">
-                                                <i class="fas fa-trash me-1"></i>Delete
-                                            </button>
-                                        </form>
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="btn btn-sm btn-outline-danger rounded-pill px-3 delete-btn"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-container="body"
+                                            data-bs-offset="0,8"
+                                            title="Delete Segment"
+                                            data-segment-name="{{ $segment->name }}">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
                                     </div>
                                 </td>
                             </tr>
@@ -152,28 +176,18 @@ document.querySelectorAll('.delete-btn').forEach(button => {
         });
     });
 });
+
+new bootstrap.Tooltip(tooltipTriggerEl, {
+    container: 'body',
+    offset: [0, 8]
+});
+document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(
+        document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
 </script>
-<style>
-.segment-avatar {
-    font-size: 1rem;
-    transition: transform 0.2s;
-}
-.table-hover tbody tr:hover .segment-avatar {
-    transform: scale(1.1);
-}
-.table th {
-    font-weight: 600;
-    color: #495057;
-}
-.btn-group .btn {
-    border-radius: 0;
-}
-.btn-group .btn:first-child {
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
-}
-.btn-group .btn:last-child {
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-}
-</style>

@@ -17,7 +17,7 @@ class FeaturedList extends Model
         'created_by'
     ];
 
-   public function category()
+    public function category()
     {
         return $this->belongsTo(CatalogCategory::class, 'category_id');
     }

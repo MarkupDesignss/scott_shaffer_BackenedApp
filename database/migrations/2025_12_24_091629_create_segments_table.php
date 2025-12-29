@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('filters');
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->integer('estimated_users')->nullable();
             $table->timestamps();
             $table->softDeletes();

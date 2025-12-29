@@ -76,6 +76,7 @@
                             <th width="60">S.No.</th>
                             <th>List Title</th>
                             <th>Category</th>
+                            <th>Image</th>
                             <th>Size</th>
                             <th>Status</th>
                             <th>Order</th>
@@ -107,6 +108,13 @@
                                     </span>
                                 </td>
                                 <td>
+                                @if($list->image)
+                                    <img src="{{ asset($list->image) }}" alt="{{ $list->title }}" width="80" height="80" style="object-fit:cover; border-radius:5px;">
+                                @else
+                                    <span>No Image</span>
+                                @endif
+                            </td>
+                                <td>
                                     <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">
                                         Top {{ $list->list_size }}
                                     </span>
@@ -129,12 +137,21 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <div class="btn-group" role="group">
+                                    {{-- <div class="btn-group" role="group">
                                         <a href="{{ route('admin.featured-lists.edit', $list) }}"
                                            class="btn btn-sm btn-outline-primary"
                                            title="Edit">
                                             <i class="fas fa-edit"></i>
-                                        </a>
+                                        </a> --}}
+
+                                    <a href="{{ route('admin.featured-lists.edit', $list) }}"
+                                    class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Edit Category">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
                                         {{-- <a href="#" class="btn btn-sm btn-outline-success" title="Preview">
                                             <i class="fas fa-eye"></i>
                                         </a> --}}
@@ -209,6 +226,13 @@
             });
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
 </script>
 
 @endsection

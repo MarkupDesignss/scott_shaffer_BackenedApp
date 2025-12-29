@@ -91,11 +91,20 @@
                                 </td>
                                 <td class="pe-4">
                                     <div class="d-flex gap-2">
-                                        <a href="{{ route('admin.featured-list-items.edit', $item) }}"
+                                        {{-- <a href="{{ route('admin.featured-list-items.edit', $item) }}"
                                            class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1 px-3">
                                             <i class="fas fa-edit fa-sm"></i>
                                             Edit
-                                        </a>
+                                        </a> --}}
+
+
+                                    <a href="{{ route('admin.featured-list-items.edit', $item) }}"
+                                    class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Edit Category">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
 
                                         <!-- <form method="POST"
                                               action="{{ route('admin.featured-list-items.destroy', $item) }}"
@@ -130,3 +139,12 @@
 </div>
 @endsection
 
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>

@@ -40,7 +40,7 @@
                             <!-- Title -->
                             <div class="col-md-12 mb-4">
                                 <label class="form-label fw-semibold">List Title *</label>
-                                <input type="text" name="title" class="form-control form-control-lg @error('title') is-invalid @enderror" value="{{ old('title', $featuredList->title) }}" required>
+                                <input type="text" name="title" class="form-control form-control-lg @error('title') is-invalid @enderror" value="{{ old('title', $featuredList->title) }}">
                                 @error('title')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -71,66 +71,41 @@
                                 @enderror
                             </div>
 
-                            <!-- Image Upload / URL -->
-                            <div class="mb-4">
+                            <!-- Image -->
+                            <div class="col-md-12 mb-4">
                                 <label class="form-label fw-semibold">Image</label>
-                                <div class="row">
-                                    <!-- Current Image & URL -->
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Current Image</label>
-                                            @if($featuredList->image)
-                                                @php
-                                                    $imgSrc = Str::startsWith($featuredList->image, ['http://', 'https://']) ? $featuredList->image : asset('storage/'.$featuredList->image);
-                                                @endphp
-                                                <div class="mb-2">
-                                                    <img src="{{ $imgSrc }}" alt="{{ $featuredList->title }}" class="img-thumbnail" style="max-height: 100px;">
-                                                </div>
-                                            @else
-                                                <div class="text-muted mb-2">
-                                                    <i class="fas fa-image me-1"></i> No image set
-                                                </div>
-                                            @endif
 
-                                            <label class="form-label">New Image URL</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text bg-light border-end-0">
-                                                    <i class="fas fa-link text-muted"></i>
-                                                </span>
-                                                <input type="url" name="image_url" id="image_url" class="form-control @error('image_url') is-invalid @enderror" value="{{ old('image_url', $featuredList->image) }}" placeholder="https://example.com/image.jpg">
-                                            </div>
-                                            @error('image_url')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                                {{-- Existing Image --}}
+                                @if($featuredList->image)
+                                    <div class="mb-3">
+                                        <img
+                                            src="{{ asset($featuredList->image) }}"
+                                            class="img-thumbnail"
+                                            style="max-height: 200px;"
+                                            alt="Featured Image">
                                     </div>
+                                @endif
 
-                                    <!-- Upload New Image -->
-                                    <div class="col-md-6">
-                                        <label class="form-label">Or Upload New Image</label>
-                                        <div class="input-group">
-                                            <input type="file" name="image_upload" id="image_upload" class="form-control @error('image_upload') is-invalid @enderror" accept="image/*">
-                                        </div>
-                                        @error('image_upload')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                        <div class="form-text mt-2">
-                                            <small class="text-muted">
-                                                <i class="fas fa-info-circle me-1"></i> Leave empty to keep the current image
-                                            </small>
-                                        </div>
-                                    </div>
+                                {{-- Upload New Image --}}
+                                <input type="file"
+                                    name="image"
+                                    class="form-control @error('image') is-invalid @enderror"
+                                    accept="image/*">
+
+                                @error('image')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+
+                                {{-- Preview --}}
+                                <div class="mt-3 d-none" id="imagePreview">
+                                    <img id="previewImage" class="img-fluid rounded" style="max-height:200px;">
                                 </div>
 
-                                <!-- Preview -->
-                                <div class="mt-3">
-                                    <div class="image-preview rounded border p-3 text-center" id="imagePreview" style="{{ $featuredList->image ? '' : 'display:none;' }}">
-                                        <img id="previewImage" class="img-fluid rounded" style="max-height: 200px;" src="{{ $featuredList->image ? $imgSrc : '' }}">
-                                    </div>
+                                <div class="form-text">
+                                    Leave empty to keep existing image.
                                 </div>
-
-                                <div class="form-text">Provide either an image URL or upload an image file.</div>
                             </div>
+
 
                             <!-- Status & Order -->
                             <div class="col-md-6 mb-4">
@@ -171,43 +146,23 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const imageUrlInput = document.getElementById('image_url');
-    const imageUploadInput = document.getElementById('image_upload');
-    const imagePreviewDiv = document.getElementById('imagePreview');
-    const previewImage = document.getElementById('previewImage');
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.querySelector('input[name="image"]');
+    const previewBox = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImage');
 
-    imageUrlInput.addEventListener('input', function() {
-        if(this.value.trim() !== '') {
-            imageUploadInput.value = '';
-            imageUploadInput.disabled = true;
-            previewImage.src = this.value;
-            imagePreviewDiv.style.display = 'block';
-        } else {
-            imageUploadInput.disabled = false;
-            previewImage.src = '{{ $featuredList->image ? $imgSrc : "" }}';
-            imagePreviewDiv.style.display = '{{ $featuredList->image ? "block" : "none" }}';
-        }
-    });
-
-    imageUploadInput.addEventListener('change', function() {
-        if(this.files.length > 0) {
-            imageUrlInput.value = '';
-            imageUrlInput.disabled = true;
-            const file = this.files[0];
+    input.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
-                imagePreviewDiv.style.display = 'block';
-            }
-            reader.readAsDataURL(file);
-        } else {
-            imageUrlInput.disabled = false;
-            previewImage.src = '{{ $featuredList->image ? $imgSrc : "" }}';
-            imagePreviewDiv.style.display = '{{ $featuredList->image ? "block" : "none" }}';
+            reader.onload = e => {
+                previewImg.src = e.target.result;
+                previewBox.classList.remove('d-none');
+            };
+            reader.readAsDataURL(this.files[0]);
         }
     });
 });
 </script>
+
 
 @endsection
