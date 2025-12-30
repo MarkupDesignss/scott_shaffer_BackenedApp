@@ -2,7 +2,13 @@
 
 @section('content')
 <div class="container-fluid px-4">
-
+    <!-- Success Message -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
     <!-- Page Header -->
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
@@ -76,6 +82,7 @@
                             <th width="60">S.No.</th>
                             <th>List Title</th>
                             <th>Category</th>
+                            <th>Image</th>
                             <th>Size</th>
                             <th>Status</th>
                             <th>Order</th>
@@ -107,15 +114,28 @@
                                     </span>
                                 </td>
                                 <td>
+                                @if($list->image)
+                                    <img src="{{ asset($list->image) }}" alt="{{ $list->title }}" width="80" height="80" style="object-fit:cover; border-radius:5px;">
+                                @else
+                                    <span>No Image</span>
+                                @endif
+                            </td>
+                                <td>
                                     <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">
                                         Top {{ $list->list_size }}
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="badge {{ $list->status === 'live' ? 'bg-success' : 'bg-secondary' }} rounded-pill px-3 py-1">
-                                        <i class="fas fa-circle me-1" style="font-size: 8px"></i>
-                                        {{ ucfirst($list->status) }}
-                                    </span>
+                                <form method="POST"
+                                        action="{{ route('admin.feature-list.toggle-status', $list->id) }}"
+                                        class="toggle-status-form">
+                                        @csrf
+                                        <button type="submit"
+                                                class="btn btn-sm status-btn {{ $list->status === 'live' ? 'btn-active' : 'btn-inactive' }}">
+                                            <i class="bi {{ $list->status === 'live' ? 'bi-toggle-on' : 'bi-toggle-off' }} me-1"></i>
+                                            {{ ucfirst($list->status) }}
+                                        </button>
+                                    </form>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
@@ -129,12 +149,21 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <div class="btn-group" role="group">
+                                    {{-- <div class="btn-group" role="group">
                                         <a href="{{ route('admin.featured-lists.edit', $list) }}"
                                            class="btn btn-sm btn-outline-primary"
                                            title="Edit">
                                             <i class="fas fa-edit"></i>
-                                        </a>
+                                        </a> --}}
+
+                                    <a href="{{ route('admin.featured-lists.edit', $list) }}"
+                                    class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Edit Category">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
                                         {{-- <a href="#" class="btn btn-sm btn-outline-success" title="Preview">
                                             <i class="fas fa-eye"></i>
                                         </a> --}}
@@ -209,6 +238,13 @@
             });
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
 </script>
 
 @endsection

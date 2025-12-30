@@ -16,6 +16,13 @@ class CampaignController extends Controller
 
             // 1️⃣ User ke interest IDs
             $userIntrestIds = $user->interests()->pluck('interests.id')->toArray();
+
+            // 1a️⃣ Optional: specific interest filter from query parameter
+            $specificInterest = $request->query('interest_id');
+            if ($specificInterest) {
+                $userIntrestIds[] = (int) $specificInterest;
+            }
+
             if (empty($userIntrestIds)) {
                 return response()->json([
                     'success' => true,
@@ -23,28 +30,29 @@ class CampaignController extends Controller
                 ]);
             }
 
-            // 2️⃣ Matching Segments (filters->intrest_ids overlap)
-            $segmentIds = Segment::where(function ($q) use ($userIntrestIds) {
-                foreach ($userIntrestIds as $intrestId) {
-                    $q->orWhereJsonContains(
-                        'filters->intrest_ids',
-                        (string) $intrestId
-                    );
+            // 2️⃣ Matching Segments (filters->intrest_ids overlap) and status = active
+            $segmentIds = Segment::where('status', 'active')
+                ->where(function ($q) use ($userIntrestIds) {
+                    foreach ($userIntrestIds as $intrestId) {
+                        $q->orWhereJsonContains(
+                            'filters->intrest_ids',
+                            (string) $intrestId
+                        );
+                    }
+                })->pluck('id');
+                if ($segmentIds->isEmpty()) {
+                    return response()->json([
+                        'success' => true,
+                        'campaigns' => []
+                    ]);
                 }
-            })->pluck('id');
 
-            if ($segmentIds->isEmpty()) {
-                return response()->json([
-                    'success' => true,
-                    'campaigns' => []
-                ]);
-            }
-
-            // 3️⃣ Campaigns mapped with those segments
-            $campaigns = Campaign::with('segments')
+                // 3️⃣ Campaigns mapped with those segments
+                $campaigns = Campaign::with('segments')
                 ->where('status', 'live')
                 ->whereHas('segments', function ($q) use ($segmentIds) {
-                    $q->whereIn('segments.id', $segmentIds);
+                    $q->whereIn('segments.id', $segmentIds)
+                    ->where('status', 'active');
                 })
                 ->latest()
                 ->get();
@@ -52,13 +60,13 @@ class CampaignController extends Controller
             return response()->json([
                 'success' => true,
                 'campaigns' => $campaigns,
-                "message"   => "campsigns fetched"
+                'message'   => 'campaigns fetched'
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
                 'data' => $th->getMessage(),
-                "message"   => "campsigns cant be fetched"
+                'message'   => 'campaigns cannot be fetched'
             ]);
         }
     }

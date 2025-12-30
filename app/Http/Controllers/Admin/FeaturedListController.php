@@ -32,26 +32,53 @@ class FeaturedListController extends Controller
         $validated = $request->validate([
             'title'         => 'required|string|max:150',
             'category_id'   => 'required|exists:catalog_categories,id',
-            'list_size'     => 'required',
+            'list_size'     => 'required|integer|min:1',
             'display_order' => 'required|integer|min:0',
-            'image_url'     => 'nullable|url|required_without:image_upload',
-            'image_upload'  => 'nullable|image|mimes:jpg,jpeg,png,webp|required_without:image_url',
-            'status'        => 'required|in:draft,live'
+            'status'        => 'required|in:draft,live',
+            'image'         => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        if ($request->hasFile('image_upload')) {
-            $path = $request->file('image_upload')->store('featured_lists', 'public');
-            $validated['image'] = $path;
-            unset($validated['image_upload']);
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('featured_lists'), $imageName); // Move to public/featured_lists
+            $validated['image'] = 'featured_lists/' . $imageName;
         }
 
-        FeaturedList::create(
-            $validated + ['created_by' => auth('admin')->id()]
-        );
+        FeaturedList::create($validated + [
+            'created_by' => auth('admin')->id(),
+        ]);
 
         return redirect()
             ->route('admin.featured-lists.index')
-            ->with('success', 'Featured list created');
+            ->with('success', 'Featured list created successfully');
+    }
+
+    public function update(Request $request, FeaturedList $featuredList)
+    {
+        $validated = $request->validate([
+            'title'         => 'required|string|max:150',
+            'category_id'   => 'required|exists:catalog_categories,id',
+            'list_size'     => 'required|integer|min:1',
+            'display_order' => 'required|integer|min:0',
+            'status'        => 'required|in:draft,live',
+            'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('featured_lists'), $imageName);
+            $validated['image'] = 'featured_lists/' . $imageName;
+        } else {
+            unset($validated['image']); // Don't update if no image uploaded
+        }
+
+        $featuredList->update($validated);
+
+        return redirect()
+            ->route('admin.featured-lists.index')
+            ->with('success', 'Featured list updated successfully');
     }
 
 
@@ -67,33 +94,15 @@ class FeaturedListController extends Controller
         ]);
     }
 
-    public function update(Request $request, FeaturedList $featuredList)
+    public function toggleStatus(FeaturedList $featuredList)
     {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:150',
-            'category_id'   => 'required|exists:catalog_categories,id',
-            'list_size'     => 'required|integer|min:1',
-            'display_order' => 'required|integer|min:0',
-            'image_url'     => 'nullable|url|required_without:image_upload',
-            'image_upload'  => 'nullable|image|mimes:jpg,jpeg,png,webp|required_without:image_url',
-            'status'        => 'required|in:draft,live'
+        $featuredList->update([
+            'status' => $featuredList->status === 'live' ? 'draft' : 'live'
         ]);
 
-        // Handle uploaded image
-        if ($request->hasFile('image_upload')) {
-            $path = $request->file('image_upload')->store('featured_lists', 'public');
-            $validated['image'] = $path;
-        }
-
-        // Remove image_upload from validated array to avoid mass-assignment error
-        unset($validated['image_upload']);
-
-        $featuredList->update($validated);
-
-        return redirect()
-            ->route('admin.featured-lists.index')
-            ->with('success', 'Featured list updated successfully');
+        return back()->with('success', 'Status updated.');
     }
+
 
 
     public function destroy(FeaturedList $featuredList)

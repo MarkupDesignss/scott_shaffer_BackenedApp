@@ -28,11 +28,12 @@ class SegmentController extends Controller
     {
         $validated = $request->validate([
             'name'    => 'required|string|max:255',
+            'status'  => 'required|in:active,inactive',
             'filters' => 'required|array',
         ]);
-
         Segment::create([
             'name'    => $validated['name'],
+            'status'    => $validated['status'],
             'filters' => $validated['filters'],
         ]);
 
@@ -53,21 +54,27 @@ class SegmentController extends Controller
         $segment = Segment::findOrFail($id);
         $validated = $request->validate([
             'name'    => 'required|string|max:255',
+            'status'  => 'required|in:active,inactive',
             'filters' => 'required|array',
         ]);
 
+        // dd($validated);
         $segment->update($validated);
 
         return redirect()->route('admin.segments.index')
             ->with('success', 'Segment updated successfully');
     }
-
     public function destroy($id)
     {
-        $segment = Segment::findOrFail($id);
+        $segment = Segment::with('campaigns')->findOrFail($id);
+
+        foreach ($segment->campaigns as $campaign) {
+            $campaign->delete();
+        }
+
         $segment->delete();
 
-        return back()->with('success', 'Segment deleted');
+        return back()->with('success', 'Segment and related campaigns deleted');
     }
 
     /**
@@ -117,6 +124,16 @@ class SegmentController extends Controller
         ]);
 
         return back()->with('success', 'Segment exported successfully');
+    }
+
+    public function toggleStatus($id)
+    {
+        $segment = Segment::findOrFail($id);
+        $segment->update([
+            'status' => $segment->status === 'active' ? 'inactive' : 'active'
+        ]);
+
+        return back()->with('success', 'Status updated.');
     }
 
     /**

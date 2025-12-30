@@ -113,23 +113,32 @@
 
                                 <td>
                                     <form method="POST"
-                                          action="{{ route('admin.interest.toggle-status', $interest) }}">
+                                        action="{{ route('admin.interest.toggle-status', $interest->id) }}"
+                                        class="toggle-status-form">
                                         @csrf
+
                                         <button type="submit"
                                                 class="btn btn-sm status-btn {{ $interest->is_active ? 'btn-active' : 'btn-inactive' }}">
+                                            <i class="bi {{ $interest->is_active ? 'bi-toggle-on' : 'bi-toggle-off' }} me-1"></i>
                                             {{ $interest->is_active ? 'Active' : 'Inactive' }}
                                         </button>
                                     </form>
                                 </td>
 
                                 <td>
-                                    <div class="d-flex justify-content-end gap-2 pe-4">
-                                        <a href="{{ route('admin.interest.edit', $interest) }}"
-                                           class="btn btn-sm btn-outline-primary">
-                                            Edit
-                                        </a>
+                                    <div class="d-flex justify-content-center gap-2 pe-4">
 
-                                        <form action="{{ route('admin.interest.destroy', $interest) }}"
+
+                                    <a href="{{ route('admin.interest.edit', $interest) }}"
+                                    class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Edit Segment">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+
+                                        <!-- <form action="{{ route('admin.interest.destroy', $interest) }}"
                                               method="POST"
                                               class="delete-form">
                                             @csrf
@@ -139,7 +148,7 @@
                                                     onclick="return confirmDelete(event)">
                                                 Delete
                                             </button>
-                                        </form>
+                                        </form> -->
                                     </div>
                                 </td>
                             </tr>
@@ -167,6 +176,39 @@
         </div>
     @endif
 </div>
+
+<style>
+    .btn-active {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.btn-inactive {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.btn-active:hover {
+    background-color: #a7f3d0;
+}
+
+.btn-inactive:hover {
+    background-color: #fecaca;
+}
+
+.status-btn {
+    min-width: 100px;
+    border-radius: 50px;
+    transition: all 0.2s ease;
+}
+
+.toggle-status-form {
+    margin: 0;
+}
+
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

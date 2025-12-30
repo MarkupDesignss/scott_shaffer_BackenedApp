@@ -39,12 +39,24 @@
                                    name="name"
                                    class="form-control form-control-lg @error('name') is-invalid @enderror"
                                    value="{{ old('name') }}"
-                                   placeholder="e.g., Young Professionals in Mumbai"
                                    required>
                             @error('name')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="active" selected>
+                                    <i class="fas fa-pencil-alt me-2"></i>active
+                                </option>
+                                <option value="inactive">
+                                    <i class="fas fa-play-circle me-2"></i>inactive
+                                </option>
+                            </select>
+                        </div>
+
 
                         <!-- Description -->
                         {{-- <div class="mb-4">

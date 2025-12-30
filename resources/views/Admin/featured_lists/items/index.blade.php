@@ -62,6 +62,7 @@
                             </th>
                             <th class="py-3 text-uppercase text-muted fw-semibold small">Item Name</th>
                             <th class="py-3 text-uppercase text-muted fw-semibold small">List Name</th>
+                            <th class="py-3 text-uppercase text-muted fw-semibold small">Status</th>
                             <th class="py-3 text-uppercase text-muted fw-semibold small" style="width: 120px">Position</th>
                             <th class="pe-4 py-3 text-uppercase text-muted fw-semibold small" style="width: 150px">Actions</th>
                         </tr>
@@ -86,16 +87,38 @@
                                         <span class="text-danger fst-italic">List not found</span>
                                     @endif
                                 </td>
+                                <td class="py-3">
+                                    <form method="POST"
+                                        action="{{ route('admin.feature-list-items.toggle-status', $item) }}"
+                                        class="toggle-status-form">
+                                        @csrf
+
+                                        <button type="submit"
+                                                class="btn btn-sm status-btn {{ $item->status === 'active' ? 'btn-active' : 'btn-inactive' }}">
+                                            <i class="bi {{ $item->status === 'active' ? 'bi-toggle-on' : 'bi-toggle-off' }} me-1"></i>
+                                            {{ ucfirst($item->status) }}
+                                        </button>
+                                    </form>
+                                </td>
                                 <td>
                                     <span class="badge bg-light text-dark border px-3 py-2">{{ $item->position }}</span>
                                 </td>
                                 <td class="pe-4">
                                     <div class="d-flex gap-2">
-                                        <a href="{{ route('admin.featured-list-items.edit', $item) }}"
+                                        {{-- <a href="{{ route('admin.featured-list-items.edit', $item) }}"
                                            class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1 px-3">
                                             <i class="fas fa-edit fa-sm"></i>
                                             Edit
-                                        </a>
+                                        </a> --}}
+
+
+                                    <a href="{{ route('admin.featured-list-items.edit', $item) }}"
+                                    class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Edit Category">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
 
                                         <!-- <form method="POST"
                                               action="{{ route('admin.featured-list-items.destroy', $item) }}"
@@ -130,3 +153,12 @@
 </div>
 @endsection
 
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>

@@ -78,20 +78,33 @@ class FeaturedListItemController extends Controller
     public function update(Request $request, $id)
     {
         $item = FeaturedListItem::findOrFail($id);
-        // dd($request->all());
+
         $validated = $request->validate([
             'featured_list_id' => 'required|exists:featured_lists,id',
             'catalog_item_id'  => 'required|exists:catalog_items,id',
             'position'         => 'required|integer|min:1'
         ]);
 
-        if (
-            $item->featured_list_id !== (int) $validated['featured_list_id']
-        ) {
+        // ✅ DUPLICATE CHECK (MOST IMPORTANT)
+        $duplicate = FeaturedListItem::where('featured_list_id', $validated['featured_list_id'])
+            ->where('catalog_item_id', $validated['catalog_item_id'])
+            ->where('id', '!=', $item->id) // current record ko ignore
+            ->exists();
+
+        if ($duplicate) {
+            return back()
+                ->withErrors('This item already exists in the selected featured list.')
+                ->withInput();
+        }
+
+        // ✅ LIST SIZE CHECK (only if list is changing)
+        if ($item->featured_list_id != $validated['featured_list_id']) {
             $list = FeaturedList::findOrFail($validated['featured_list_id']);
 
             if ($list->items()->count() >= $list->list_size) {
-                return back()->withErrors('List size limit reached')->withInput();
+                return back()
+                    ->withErrors('List size limit reached')
+                    ->withInput();
             }
         }
 
@@ -101,6 +114,17 @@ class FeaturedListItemController extends Controller
             ->route('admin.featured-list-items.index')
             ->with('success', 'Item updated successfully');
     }
+
+    public function toggleStatus($id)
+    {
+        $item = FeaturedListItem::findOrFail($id);
+        $item->update([
+            'status' => $item->status === 'active' ? 'inactive' : 'active'
+        ]);
+
+        return back()->with('success', 'Status updated.');
+    }
+
 
     public function destroy($id)
     {

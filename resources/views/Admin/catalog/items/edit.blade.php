@@ -23,7 +23,10 @@
                 </div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('admin.catalog-items.update', $item->id) }}" enctype="multipart/form-data">
+                    <form method="POST"
+                            action="{{ route('admin.catalog-items.update', $item->id) }}"
+                            enctype="multipart/form-data"
+                            novalidate>
                         @csrf
                         @method('PUT')
 
@@ -137,11 +140,12 @@
                                                             <span class="input-group-text bg-light border-end-0">
                                                                 <i class="fas fa-link text-muted"></i>
                                                             </span>
-                                                            <input type="url"
-                                                                   class="form-control @error('image_url') is-invalid @enderror"
-                                                                   name="image_url"
-                                                                   value="{{ old('image_url', $item->image_url) }}"
-                                                                   placeholder="https://example.com/image.jpg">
+                                                           <input type="text"
+                                                                class="form-control @error('image_url') is-invalid @enderror"
+                                                                name="image_url"
+                                                                value="{{ old('image_url', $item->image_url) }}"
+                                                                placeholder="https://example.com/image.jpg">
+
                                                         </div>
                                                         @error('image_url')
                                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -254,6 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const imageUrlInput = document.querySelector('input[name="image_url"]');
     const imageUploadInput = document.querySelector('input[name="image_upload"]');
     const liveImagePreview = document.getElementById('liveImagePreview');
+
 
     function updatePreview(src) {
         liveImagePreview.innerHTML = src

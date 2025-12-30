@@ -37,7 +37,6 @@
                                 <input type="text"
                                        name="title"
                                        class="form-control form-control-lg @error('title') is-invalid @enderror"
-                                       placeholder="e.g., Top 10 Web Development Tools"
                                        value="{{ old('title') }}"
                                        required
                                        autofocus>
@@ -73,7 +72,6 @@
                                     class="form-control text-center"
                                     min="1"
                                     max="100"
-                                    placeholder="Enter list size (e.g. 3, 5, 10)"
                                     value="{{ old('list_size', 3) }}"
                                     required>
                                 <div class="form-text">Enter how many items this list will contain.</div>
@@ -116,32 +114,26 @@
                                         <h6 class="mb-0 fw-semibold">Media</h6>
                                     </div>
                                     <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label class="form-label">Image URL</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-light border-end-0">
-                                                        <i class="fas fa-link text-muted"></i>
-                                                    </span>
-                                                    <input type="url" class="form-control" name="image_url" value="{{ old('image_url') }}" placeholder="https://example.com/image.jpg">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Or Upload Image</label>
-                                                <div class="input-group">
-                                                    <input type="file" class="form-control" name="image_upload" accept="image/*">
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <label class="form-label">Upload Image *</label>
+                                        <input type="file"
+                                            class="form-control @error('image') is-invalid @enderror"
+                                            name="image"
+                                            accept="image/*"
+                                            required>
+
+                                        @error('image')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
 
                                         <div class="mt-3">
-                                            <div class="image-preview rounded border p-3 text-center" id="imagePreview" style="display: none;">
+                                            <div class="image-preview rounded border p-3 text-center d-none" id="imagePreview">
                                                 <img id="previewImage" class="img-fluid rounded" style="max-height: 200px;">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
 
                         </div>
 
@@ -170,38 +162,19 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const imageUrlInput = document.querySelector('input[name="image_url"]');
-    const imageUploadInput = document.querySelector('input[name="image_upload"]');
-    const imagePreview = document.getElementById('imagePreview');
-    const previewImage = document.getElementById('previewImage');
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.querySelector('input[name="image"]');
+    const previewBox = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImage');
 
-    imageUrlInput.addEventListener('input', function() {
-        if (this.value.trim() !== '') {
-            imageUploadInput.value = '';
-            imageUploadInput.disabled = true;
-            previewImage.src = this.value;
-            imagePreview.style.display = 'block';
-        } else {
-            imageUploadInput.disabled = false;
-            imagePreview.style.display = 'none';
-        }
-    });
-
-    imageUploadInput.addEventListener('change', function() {
-        if (this.files.length > 0) {
-            imageUrlInput.value = '';
-            imageUrlInput.disabled = true;
-            const file = this.files[0];
+    input.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
-                imagePreview.style.display = 'block';
+            reader.onload = e => {
+                previewImg.src = e.target.result;
+                previewBox.classList.remove('d-none');
             };
-            reader.readAsDataURL(file);
-        } else {
-            imageUrlInput.disabled = false;
-            imagePreview.style.display = 'none';
+            reader.readAsDataURL(this.files[0]);
         }
     });
 });
