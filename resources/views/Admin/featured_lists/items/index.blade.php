@@ -62,6 +62,7 @@
                             </th>
                             <th class="py-3 text-uppercase text-muted fw-semibold small">Item Name</th>
                             <th class="py-3 text-uppercase text-muted fw-semibold small">List Name</th>
+                            <th class="py-3 text-uppercase text-muted fw-semibold small">Status</th>
                             <th class="py-3 text-uppercase text-muted fw-semibold small" style="width: 120px">Position</th>
                             <th class="pe-4 py-3 text-uppercase text-muted fw-semibold small" style="width: 150px">Actions</th>
                         </tr>
@@ -85,6 +86,19 @@
                                     @else
                                         <span class="text-danger fst-italic">List not found</span>
                                     @endif
+                                </td>
+                                <td class="py-3">
+                                    <form method="POST"
+                                        action="{{ route('admin.feature-list-items.toggle-status', $item) }}"
+                                        class="toggle-status-form">
+                                        @csrf
+
+                                        <button type="submit"
+                                                class="btn btn-sm status-btn {{ $item->status === 'active' ? 'btn-active' : 'btn-inactive' }}">
+                                            <i class="bi {{ $item->status === 'active' ? 'bi-toggle-on' : 'bi-toggle-off' }} me-1"></i>
+                                            {{ ucfirst($item->status) }}
+                                        </button>
+                                    </form>
                                 </td>
                                 <td>
                                     <span class="badge bg-light text-dark border px-3 py-2">{{ $item->position }}</span>

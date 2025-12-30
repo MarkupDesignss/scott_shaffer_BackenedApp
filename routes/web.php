@@ -95,17 +95,35 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
     // Featured Lists
     Route::resource('featured-lists', FeaturedListController::class);
+    Route::post(
+        'feature-list/{featuredList}/toggle-status',
+        [FeaturedListController::class, 'toggleStatus']
+    )->name('feature-list.toggle-status');
 
     Route::resource(
         'featured-list-items',
         FeaturedListItemController::class
     );
+    Route::post(
+        'feature-list-items/{featuredListItems}/toggle-status',
+        [FeaturedListItemController::class, 'toggleStatus']
+    )->name('feature-list-items.toggle-status');
+
+
 
     Route::resource('campaigns', CampaignController::class);
+    Route::post(
+        'campaigns/{id}/toggle-status',
+        [CampaignController::class, 'toggleStatus']
+    )->name('campaigns.toggle-status');
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
 
 
     Route::resource('segments', SegmentController::class);
+    Route::post(
+        'segments/{id}/toggle-status',
+        [SegmentController::class, 'toggleStatus']
+    )->name('segments.toggle-status');
     Route::post('segments/{segment}/estimate', [SegmentController::class, 'estimate']);
     Route::post('segments/{segment}/export', [SegmentController::class, 'export']);
     Route::get('segments/{segment}/exports', [SegmentController::class, 'exports'])->name('segments.exports');

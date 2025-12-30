@@ -39,7 +39,7 @@ class CatalogItemController extends Controller
     /**
      * Store new catalog item
      */
-  public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'name'         => 'required|string|max:255',
@@ -57,7 +57,7 @@ class CatalogItemController extends Controller
 
         if ($request->hasFile('image_upload')) {
             $imageValue = $request->file('image_upload')
-                                ->store('catalog-items', 'public');
+                ->store('catalog-items', 'public');
         }
 
         if ($request->filled('image_url')) {
@@ -105,12 +105,14 @@ class CatalogItemController extends Controller
     {
         $item = CatalogItem::findOrFail($id);
 
+        // dd($request->all());
         $validated = $request->validate([
             'name'        => 'required|string|max:150',
             'category_id' => 'required|exists:catalog_categories,id',
             'description' => 'nullable|string',
-            'image_url'   => 'nullable|string',
-            'image_upload'=> 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            // 'image_url' => 'nullable|required_without:image_upload|url',
+            'image_url' => 'nullable|required_without:image_upload|string',
+            'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'status'      => 'required',
         ]);
 

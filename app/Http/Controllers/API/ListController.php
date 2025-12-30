@@ -44,6 +44,43 @@ class ListController extends Controller
     /* =========================
        Create List
     ========================== */
+    // public function store(Request $request)
+    // {
+    //     try {
+    //         $validated = $request->validate([
+    //             'title'       => 'required|string|max:80',
+    //             'category_id' => 'required|exists:catalog_categories,id',
+    //             'list_size'   => 'nullable|integer|min:1|max:20',
+    //             'is_group'    => 'nullable|boolean',
+    //         ]);
+
+    //         $list = ListModel::create([
+    //             'user_id'     => Auth::id(),
+    //             'title'       => $validated['title'],
+    //             'category_id' => $validated['category_id'],
+    //             'list_size'   => $validated['list_size'],
+    //             'is_group'    => $validated['is_group'] ?? false,
+    //         ]);
+
+    //         // Group list → owner as accepted member
+    //         if ($list->is_group) {
+    //             $list->members()->create([
+    //                 'user_id' => Auth::id(),
+    //                 'status'  => 'accepted'
+    //             ]);
+    //         }
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'List created successfully',
+    //             'data' => $list
+    //         ], 201);
+
+    //     } catch (Throwable $e) {
+    //         return $this->serverError($e);
+    //     }
+    // }
+
     public function store(Request $request)
     {
         try {
@@ -52,13 +89,15 @@ class ListController extends Controller
                 'category_id' => 'required|exists:catalog_categories,id',
                 'list_size'   => 'nullable|integer|min:1|max:20',
                 'is_group'    => 'nullable|boolean',
+                'user_ids'    => 'nullable|array',
+                'user_ids.*'  => 'exists:users,id',
             ]);
 
             $list = ListModel::create([
                 'user_id'     => Auth::id(),
                 'title'       => $validated['title'],
                 'category_id' => $validated['category_id'],
-                'list_size'   => $validated['list_size'],
+                'list_size'   => $validated['list_size'] ?? null,
                 'is_group'    => $validated['is_group'] ?? false,
             ]);
 
@@ -68,18 +107,34 @@ class ListController extends Controller
                     'user_id' => Auth::id(),
                     'status'  => 'accepted'
                 ]);
+
+                // Invite members if provided
+                if (!empty($validated['user_ids'])) {
+                    foreach ($validated['user_ids'] as $userId) {
+                        ListMember::firstOrCreate(
+                            [
+                                'list_id' => $list->id,
+                                'user_id' => $userId
+                            ],
+                            [
+                                'status' => 'invited'
+                            ]
+                        );
+                    }
+                }
             }
 
             return response()->json([
                 'success' => true,
                 'message' => 'List created successfully',
-                'data' => $list
+                'data'    => $list->load('members')
             ], 201);
 
         } catch (Throwable $e) {
             return $this->serverError($e);
         }
     }
+
 
     /* =========================
        Show List

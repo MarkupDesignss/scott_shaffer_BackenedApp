@@ -2,7 +2,13 @@
 
 @section('content')
 <div class="container-fluid px-4">
-
+    <!-- Success Message -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
     <!-- Page Header -->
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
@@ -120,10 +126,16 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="badge {{ $list->status === 'live' ? 'bg-success' : 'bg-secondary' }} rounded-pill px-3 py-1">
-                                        <i class="fas fa-circle me-1" style="font-size: 8px"></i>
-                                        {{ ucfirst($list->status) }}
-                                    </span>
+                                <form method="POST"
+                                        action="{{ route('admin.feature-list.toggle-status', $list->id) }}"
+                                        class="toggle-status-form">
+                                        @csrf
+                                        <button type="submit"
+                                                class="btn btn-sm status-btn {{ $list->status === 'live' ? 'btn-active' : 'btn-inactive' }}">
+                                            <i class="bi {{ $list->status === 'live' ? 'bi-toggle-on' : 'bi-toggle-off' }} me-1"></i>
+                                            {{ ucfirst($list->status) }}
+                                        </button>
+                                    </form>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">

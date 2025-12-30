@@ -44,6 +44,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/lists/{id}', [ListController::class, 'show']);      // Show list
     Route::put('/lists/{id}', [ListController::class, 'update']);    // Update list
     Route::delete('/lists/{id}', [ListController::class, 'destroy']); // Delete list
+    Route::get('/catalog/categories', [CategoryController::class, 'categories']); // Categories list
+    Route::get('/catalog/items', [CategoryController::class, 'items']); // Items list
 
 
     /* =========================
@@ -57,8 +59,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/lists/{id}/members/{userId}', [ListController::class, 'removeMember']); // Remove member
     Route::post('/lists/{id}/leave', [ListController::class, 'leaveGroup']);       // Leave group
 
-    Route::post('/lists/{list}/items', [ListItemController::class, 'store']);
-    Route::delete('/lists/{list}/items/{item}', [ListItemController::class, 'destroy']);
+    /* =========================
+       List Items
+    ========================== */
+    Route::get('lists/{list}/items', [ListItemController::class, 'index']);
+    Route::post('lists/{list}/items', [ListItemController::class, 'store']);
+    Route::put('lists/{list}/items/reorder', [ListItemController::class, 'reorder']);
+    Route::put('lists/{list}/items/{item}', [ListItemController::class, 'update']);
+    Route::delete('lists/{list}/items/{item}', [ListItemController::class, 'destroy']);
 
     // Fetch all featured lists (user ke interests) OR filter by specific interest
     Route::get('/featured-lists', [FeatureListController::class, 'index']);

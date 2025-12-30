@@ -164,6 +164,12 @@ class AuthController extends Controller
 
             $user = User::where('phone', $validated['phone'])->first();
 
+            if ($user->status == 0) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "Invalid or inactive user",
+                ]);
+            }
             if (!$user) {
                 return response()->json([
                     'success' => false,

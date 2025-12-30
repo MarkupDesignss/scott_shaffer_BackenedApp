@@ -106,16 +106,17 @@
                                 @endif
                             </td>
                             <td>
-                                @php
-                                    $statusColors = [
-                                        'draft' => 'secondary',
-                                        'live' => 'success',
-                                        'paused' => 'warning'
-                                    ];
-                                @endphp
-                                <span class="badge bg-{{ $statusColors[$campaign->status] ?? 'secondary' }}">
-                                    {{ ucfirst($campaign->status) }}
-                                </span>
+                                <form method="POST"
+                                    action="{{ route('admin.campaigns.toggle-status', $campaign->id) }}"
+                                    class="toggle-status-form">
+                                    @csrf
+
+                                    <button type="submit"
+                                            class="btn btn-sm status-btn {{ $campaign->status === 'live' ? 'btn-active' : 'btn-inactive' }}">
+                                        <i class="bi {{ $campaign->status === 'live' ? 'bi-toggle-on' : 'bi-toggle-off' }} me-1"></i>
+                                        {{ ucfirst($campaign->status) }}
+                                    </button>
+                                </form>
                             </td>
                             <td>
                                 <div class="small">

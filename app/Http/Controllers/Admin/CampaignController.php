@@ -118,7 +118,15 @@ class CampaignController extends Controller
     }
 
 
+    public function toggleStatus($id)
+    {
+        $campaign = Campaign::findOrFail($id);
+        $campaign->update([
+            'status' => $campaign->status === 'live' ? 'draft' : 'live'
+        ]);
 
+        return back()->with('success', 'Status updated.');
+    }
 
     public function destroy($id)
     {

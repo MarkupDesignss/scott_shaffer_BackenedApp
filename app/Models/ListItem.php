@@ -9,6 +9,7 @@ class ListItem extends Model
     protected $fillable = [
         'list_id',
         'catalog_item_id',
+        'custom_item_name',
         'custom_text',
         'position'
     ];

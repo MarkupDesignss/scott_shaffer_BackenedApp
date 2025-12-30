@@ -80,13 +80,19 @@
                                     </div>
                                 </td>
                                 <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                       @if($segment->status === 'active')
-                                        <span class="badge bg-success">Active</span>
-                                    @else
-                                        <span class="badge bg-secondary">Inactive</span>
-                                    @endif
+                                    <form method="POST"
+                                        action="{{ route('admin.segments.toggle-status', $segment) }}"
+                                        class="toggle-status-form">
+                                        @csrf
+
+                                        <button type="submit"
+                                                class="btn btn-sm status-btn {{ $segment->status === 'active' ? 'btn-active' : 'btn-inactive' }}">
+                                            <i class="bi {{ $segment->status === 'active' ? 'bi-toggle-on' : 'bi-toggle-off' }} me-1"></i>
+                                            {{ ucfirst($segment->status) }}
+                                        </button>
+                                    </form>
                                 </td>
+
                                 <td class="py-3">
                                     <span class="text-muted">{{ $segment->created_at->format('d M Y') }}</span>
                                 </td>
@@ -149,7 +155,39 @@
         @endif
     </div>
 </div>
-@endsection
+
+<style>
+    .btn-active {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.btn-inactive {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.btn-active:hover {
+    background-color: #a7f3d0;
+}
+
+.btn-inactive:hover {
+    background-color: #fecaca;
+}
+
+.status-btn {
+    min-width: 100px;
+    border-radius: 50px;
+    transition: all 0.2s ease;
+}
+
+.toggle-status-form {
+    margin: 0;
+}
+
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -191,3 +229,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+@endsection

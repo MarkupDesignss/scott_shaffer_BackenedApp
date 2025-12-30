@@ -94,7 +94,14 @@ class FeaturedListController extends Controller
         ]);
     }
 
+    public function toggleStatus(FeaturedList $featuredList)
+    {
+        $featuredList->update([
+            'status' => $featuredList->status === 'live' ? 'draft' : 'live'
+        ]);
 
+        return back()->with('success', 'Status updated.');
+    }
 
 
 
