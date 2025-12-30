@@ -16,40 +16,76 @@ class ListItemController extends Controller
     /* =========================
        GET: List Items
     ========================== */
+    // public function index($listId)
+    // {
+    //     try {
+    //         $list = ListModel::findOrFail($listId);
+    //         //$this->authorizeList($list);
+
+    //         $items = ListItem::with('catalogItem.category')
+    //             ->where('list_id', $listId)
+    //             ->orderBy('position')
+    //             ->get()
+    //             ->map(function ($item) {
+    //                 $catalog = $item->catalogItem; // check relation
+    //                 return [
+    //                     'id' => $item->id,
+    //                     'type' => $item->catalog_item_id ? 'catalog' : 'custom',
+    //                     'position' => $item->position,
+    //                     'catalog_item' => $catalog ? [
+    //                         'id' => $catalog->id,
+    //                         'name' => $catalog->name,
+    //                         'category' => $catalog->category->name ?? null,
+    //                     ] : null,
+    //                     'custom_item_name' => $item->custom_item_name,
+    //                     'custom_text' => $item->custom_text,
+    //                 ];
+    //             });
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'data' => $items
+    //         ]);
+    //     } catch (Throwable $e) {
+    //         return $this->serverError($e);
+    //     }
+    // }
+
     public function index($listId)
     {
         try {
-            $list = ListModel::findOrFail($listId);
-            //$this->authorizeList($list);
+            ListModel::findOrFail($listId);
 
             $items = ListItem::with('catalogItem.category')
                 ->where('list_id', $listId)
-                ->orderBy('position')
+                ->orderBy('id', 'asc') 
                 ->get()
                 ->map(function ($item) {
-                    $catalog = $item->catalogItem; // check relation
+
+                    $catalog = $item->catalogItem;
+
                     return [
-                        'id' => $item->id,
-                        'type' => $item->catalog_item_id ? 'catalog' : 'custom',
-                        'position' => $item->position,
-                        'catalog_item' => $catalog ? [
-                            'id' => $catalog->id,
-                            'name' => $catalog->name,
-                            'category' => $catalog->category->name ?? null,
-                        ] : null,
-                        'custom_item_name' => $item->custom_item_name,
-                        'custom_text' => $item->custom_text,
+                        'id'   => $item->id, 
+                        'type' => $catalog ? 'catalog' : 'custom',
+
+                        // ✅ SAME FIELDS FOR BOTH
+                        'item_id'   => $catalog?->id,
+                        'name'      => $catalog?->name ?? $item->custom_item_name,
+                        'category'  => $catalog?->category?->name,
+                        'description' => $catalog?->description ?? $item->custom_text,
                     ];
                 });
 
             return response()->json([
                 'success' => true,
-                'data' => $items
+                'data' => $items   // ✅ catalog + custom together
             ]);
+
         } catch (Throwable $e) {
             return $this->serverError($e);
         }
     }
+
 
 
     /* =========================

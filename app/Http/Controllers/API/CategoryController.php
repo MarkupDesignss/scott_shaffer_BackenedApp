@@ -47,58 +47,59 @@ class CategoryController extends Controller
 
 
     public function items(Request $request)
-{
-    try {
-        // ✅ Validate query params
-        $validator = Validator::make($request->all(), [
-            'category_id' => 'nullable|exists:catalog_categories,id',
-            'search'      => 'nullable|string|max:100',
-        ]);
+    {
+        try {
+            //  Validate query params
+            $validator = Validator::make($request->all(), [
+                'category_id' => 'required|exists:catalog_categories,id', // mandatory now
+                'search'      => 'nullable|string|max:100',
+            ]);
 
-        if ($validator->fails()) {
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid request parameters.',
+                    'errors'  => $validator->errors()
+                ], 422);
+            }
+
+            //  Fetch items filtered by category_id (mandatory) and optional search
+            $items = CatalogItem::where('status', '1')
+                ->with('category:id,name')
+                ->where('category_id', $request->category_id)
+                ->when($request->filled('search'), function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->search . '%');
+                })
+                ->select('id', 'category_id', 'name', 'description', 'image_url')
+                ->get();
+
+            if ($items->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No items found for this category.',
+                    'data' => []
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Catalog items fetched successfully.',
+                'data' => $items
+            ], 200);
+
+        } catch (\Throwable $e) {
+            Log::error('Catalog Items API Error', [
+                'request' => $request->all(),
+                'error'   => $e->getMessage()
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid request parameters.',
-                'errors'  => $validator->errors()
-            ], 422);
+                'message' => 'Something went wrong while fetching catalog items.'
+            ], 500);
         }
-
-        $items = CatalogItem::where('status', '1')
-            ->with('category:id,name')
-            ->when($request->category_id, function ($q) use ($request) {
-                $q->where('category_id', $request->category_id);
-            })
-            ->when($request->search, function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
-            })
-            ->select('id', 'category_id', 'name', 'description', 'image_url')
-            ->get(); // ✅ get() instead of paginate
-
-        if ($items->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No items found.',
-                'data' => []
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Catalog items fetched successfully.',
-            'data' => $items
-        ], 200);
-    } catch (\Throwable $e) {
-        Log::error('Catalog Items API Error', [
-            'request' => $request->all(),
-            'error'   => $e->getMessage()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Something went wrong while fetching catalog items.'
-        ], 500);
     }
-}
+
 
 
     // public function itemsByCategory($categoryId)
