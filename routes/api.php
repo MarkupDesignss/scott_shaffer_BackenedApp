@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\ActionController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
@@ -46,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/lists/{id}', [ListController::class, 'destroy']); // Delete list
     Route::get('/catalog/categories', [CategoryController::class, 'categories']); // Categories list
     Route::get('/catalog/items', [CategoryController::class, 'items']); // Items list
+    Route::post('lists/publish', [ListController::class, 'publishLists']);
 
 
     /* =========================
@@ -90,6 +92,30 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get(
         '/campaigns',
         [CampaignController::class, 'index']
+    );
+
+
+    // ❤️ Like / Unlike Featured List Item
+    Route::post(
+        '/featured-items/{featuredListItem}/like',
+        [ActionController::class, 'toggleLike']
+    );
+
+    // 🔖 Save / Unsave (Bookmark) Featured List Item
+    Route::post(
+        '/featured-items/{featuredListItem}/bookmark',
+        [ActionController::class, 'toggleBookmark']
+    );
+
+    Route::get('/featured-items/{id}/share-link', [
+        ActionController::class,
+        'generateShareLink'
+    ]);
+
+    // 🔁 Share Featured List Item (log only)
+    Route::post(
+        '/featured-items/{featuredListItem}/share',
+        [ActionController::class, 'share']
     );
 });
 

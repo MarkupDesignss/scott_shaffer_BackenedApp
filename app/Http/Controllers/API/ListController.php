@@ -24,13 +24,13 @@ class ListController extends Controller
 
             $lists = ListModel::where(function ($q) use ($user) {
                 $q->where('user_id', $user->id)
-                  ->orWhereHas('members', function ($m) use ($user) {
-                      $m->where('user_id', $user->id)
-                        ->where('status', 'accepted');
-                  });
+                    ->orWhereHas('members', function ($m) use ($user) {
+                        $m->where('user_id', $user->id)
+                            ->where('status', 'accepted');
+                    });
             })
-            ->with('items.catalogItem')
-            ->get();
+                ->with('items.catalogItem')
+                ->get();
 
             return response()->json([
                 'success' => true,
@@ -129,7 +129,6 @@ class ListController extends Controller
                 'message' => 'List created successfully',
                 'data'    => $list->load('members')
             ], 201);
-
         } catch (Throwable $e) {
             return $this->serverError($e);
         }
@@ -389,5 +388,46 @@ class ListController extends Controller
             'message' => 'Something went wrong',
             'error' => $e->getMessage()
         ], 500);
+    }
+
+
+    /* =========================
+   Publish Multiple Lists
+========================= */
+    public function publishLists(Request $request)
+    {
+        try {
+            $request->validate([
+                'list_ids' => 'required|array',
+                'list_ids.*' => 'integer',
+            ]);
+
+            $userId = Auth::id();
+            $requestedIds = $request->list_ids;
+
+            // Owner lists only
+            $lists = ListModel::whereIn('id', $requestedIds)
+                ->where('user_id', $userId)
+                ->get();
+
+            $updatedIds = $lists->pluck('id')->toArray();
+            $invalidIds = array_diff($requestedIds, $updatedIds);
+
+            // Update status & visibility
+            $lists->each(function ($list) {
+                $list->update([
+                    'status' => 'published',
+                    'visibility' => 'public'
+                ]);
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lists processed',
+                'published_lists' => $lists,
+            ]);
+        } catch (Throwable $e) {
+            return $this->serverError($e);
+        }
     }
 }

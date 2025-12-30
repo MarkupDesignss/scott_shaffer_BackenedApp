@@ -15,8 +15,25 @@ class SegmentController extends Controller
     public function index()
     {
         $segments = Segment::latest()->paginate(20);
+
+        foreach ($segments as $segment) {
+
+            // ✅ correct key name from DB
+            $interestIds = $segment->filters['intrest_ids'] ?? [];
+
+            if (!empty($interestIds)) {
+                $segment->users_count = \App\Models\User::whereHas('interests', function ($q) use ($interestIds) {
+                    $q->whereIn('interests.id', $interestIds);
+                })
+                    ->distinct()
+                    ->count();
+            } else {
+                $segment->users_count = 0;
+            }
+        }
         return view('admin.segments.index', compact('segments'));
     }
+
 
     public function create()
     {
