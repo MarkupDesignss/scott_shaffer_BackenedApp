@@ -73,10 +73,11 @@
                                         </div>
                                     </div>
                                 </td>
+                                {{-- @dd($segment); --}}
                                 <td class="py-3">
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-user me-2 text-muted"></i>
-                                        <span class="fw-medium">{{ number_format($segment->estimated_users ?? 0) }}</span>
+                                        <span class="fw-medium">{{ number_format($segment->users_count ?? 0) }}</span>
                                     </div>
                                 </td>
                                 <td class="py-3">
