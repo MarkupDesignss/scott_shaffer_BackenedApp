@@ -17,18 +17,7 @@
     <div class="card shadow-sm border-0">
         <div class="card-body p-4">
 
-            <!-- Live Preview -->
-            <div class="text-center mb-5">
-                <div class="preview-icon-wrapper rounded-circle bg-light mx-auto d-flex align-items-center justify-content-center"
-                    style="width:90px;height:90px">
 
-                    <img id="imagePreview" style="display:none;width:48px;height:48px;">
-                    <span id="iconPlaceholder" class="fs-3 text-muted">+</span>
-                </div>
-
-                <h4 class="mt-3" id="namePreview">New Interest</h4>
-                <small class="text-muted">Live Preview</small>
-            </div>
 
             <!-- Errors -->
             @if($errors->any())
@@ -58,13 +47,26 @@
 
                 <!-- Upload Icon -->
                 <div class="mb-4">
-                    <label class="fw-semibold">Upload Icon *</label>
+                    <label class="fw-semibold">Upload Image *</label>
                     <input type="file" name="icon_image" id="iconImage" class="form-control"
                         accept="image/png,image/svg+xml,image/webp" required>
                     <small class="text-muted">
                         PNG / SVG / WEBP • Max 1MB • 128×128 recommended
                     </small>
                 </div>
+
+                            <!-- Live Preview -->
+            <div class="text-center mb-5">
+                <div class="preview-icon-wrapper rounded-circle bg-light mx-auto d-flex align-items-center justify-content-center"
+                    style="width:90px;height:90px">
+
+                    <img id="imagePreview" style="display:none;width:48px;height:48px;">
+                    <span id="iconPlaceholder" class="fs-3 text-muted">+</span>
+                </div>
+
+                <h4 class="mt-3" id="namePreview">New Interest</h4>
+                <small class="text-muted">Live Preview</small>
+            </div>
 
                 <!-- Status -->
                 <div class="mb-4 form-check form-switch">

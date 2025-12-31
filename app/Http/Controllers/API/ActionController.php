@@ -74,6 +74,72 @@ class ActionController extends Controller
         ]);
     }
 
+    public function myBookmarks()
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Authentication required'
+                ], 401);
+            }
+
+            $bookmarks = FeaturedItemBookmark::with([
+                'item.catalogItem',
+                'item.likes',
+                'item.bookmarks',
+                'item.shares'
+            ])
+                ->where('user_id', $user->id)
+                ->latest()
+                ->get()
+                ->map(function ($bookmark) use ($user) {
+                    $item = $bookmark->item;
+
+                    if (!$item || !$item->catalogItem) {
+                        return null;
+                    }
+
+                    return [
+                        'featured_list_item_id' => $item->id,
+                        'catalog_item_id'       => $item->catalogItem->id,
+                        'name'                  => $item->catalogItem->name,
+                        'description'           => $item->catalogItem->description,
+                        'image'                 => $item->catalogItem->image_url
+                            ? url('storage/' . $item->catalogItem->image_url)
+                            : null,
+
+                        // COUNTS
+                        'likes_count'  => $item->likes->count(),
+                        'saves_count'  => $item->bookmarks->count(),
+                        'shares_count' => $item->shares->count(),
+
+                        // USER STATES
+                        'is_liked' => $item->likes->where('user_id', $user->id)->isNotEmpty(),
+                        'is_saved' => true,
+
+                        'saved_at' => $bookmark->created_at
+                    ];
+                })
+                ->filter()
+                ->values();
+
+            return response()->json([
+                'success' => true,
+                'data'    => $bookmarks
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch bookmarked items',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     public function generateShareLink($id)
     {
         $item = FeaturedListItem::with('catalogItem')->findOrFail($id);

@@ -8,6 +8,7 @@ use App\Models\AdminPasswordOtp;
 use App\Mail\AdminResetOtpMail;
 use App\Models\CatalogCategory;
 use App\Models\CatalogItem;
+use App\Models\FeaturedList;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,8 +23,8 @@ class AdminController extends Controller
     public function dashboard()
     {
         $data = [
-            'activeUsers'   => User::where('status', '1')->count(),
-            'inactiveUsers' => User::where('status', '0')->count(),
+            'users'   => User::count(),
+            'featurelist' => FeaturedList::count(),
             'totalCategories' => CatalogCategory::count(),
             'totalItems'    => CatalogItem::count(),
         ];
@@ -179,5 +180,27 @@ class AdminController extends Controller
 
         return redirect()->route('admin.login')
             ->with('success', 'Password reset successfully');
+    }
+
+    public function update(Request $request)
+    {
+        $admin = Auth::guard('admin')->user();
+
+        $validated = $request->validate([
+            'name'     => 'required|string|max:150',
+            'email'    => 'required|email|unique:admins,email,' . $admin->id,
+            'password' => 'nullable|min:6',
+        ]);
+
+        $admin->name  = $validated['name'];
+        $admin->email = $validated['email'];
+
+        if (!empty($validated['password'])) {
+            $admin->password = Hash::make($validated['password']);
+        }
+
+        $admin->save();
+
+        return back()->with('success', 'Profile updated successfully.');
     }
 }

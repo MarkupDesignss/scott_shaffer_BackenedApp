@@ -116,25 +116,25 @@
                                     {{ $policy->updated_at->format('M d, Y') }}
                                 </small>
                             </td>
-                            <td>
-                                <div class="d-flex justify-content-center gap-2">
+                            <td class="align-middle">
+                                <div class="d-flex justify-content-center align-items-center">
                                     <a href="{{ route('admin.policies.edit', $policy) }}"
-                                       class="btn btn-sm btn-outline-primary"
-                                       data-bs-toggle="tooltip"
-                                       title="Edit">
+                                    class="btn btn-sm btn-outline-primary"
+                                    data-bs-toggle="tooltip"
+                                    title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
 
                                     <a href="{{ route('admin.policies.show', $policy) }}"
-                                       class="btn btn-sm btn-outline-info"
-                                       data-bs-toggle="tooltip"
-                                       title="View">
+                                    class="btn btn-sm btn-outline-info"
+                                    data-bs-toggle="tooltip"
+                                    title="View">
                                         <i class="fas fa-eye"></i>
                                     </a>
 
                                     <form action="{{ route('admin.policies.destroy', $policy) }}"
-                                          method="POST"
-                                          class="d-inline delete-form">
+                                        method="POST"
+                                        class="d-inline delete-form m-0">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
@@ -146,6 +146,7 @@
                                     </form>
                                 </div>
                             </td>
+
                         </tr>
                         @empty
                         <tr>

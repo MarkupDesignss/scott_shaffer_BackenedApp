@@ -136,7 +136,7 @@ class ProfileController extends Controller
                 'age_band'      => 'nullable|string',
                 'city'          => 'nullable|string|max:150',
                 'dining_budget' => 'nullable|string|max:100',
-                'has_dogs'      => 'nullable|boolean',
+                'has_dogs'      => 'nullable',
 
                 'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'interests'     => 'nullable|array',
@@ -213,6 +213,7 @@ class ProfileController extends Controller
                     'profile_image' => $profile->profile_image
                         ? asset($profile->profile_image)
                         : null,
+                    'user' => $user
                 ]
             ], 200);
         } catch (\Throwable $e) {

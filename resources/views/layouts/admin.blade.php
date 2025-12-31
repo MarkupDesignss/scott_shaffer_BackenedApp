@@ -631,11 +631,15 @@
                 <div class="user-name">{{ Auth::guard('admin')->user()->name ?? 'Admin User' }}</div>
                 <div class="user-role">Administrator</div>
             </div>
-            <div class="user-avatar">
+            <div class="user-avatar"
+                data-bs-toggle="modal"
+                data-bs-target="#adminProfileModal"
+                style="cursor:pointer;">
                 {{ substr(Auth::guard('admin')->user()->name ?? 'A', 0, 1) }}
             </div>
         </div>
     </header>
+
 
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -898,3 +902,223 @@
     </script>
 </body>
 </html>
+<div class="modal fade" id="adminProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+
+            <!-- Modal Header -->
+            <div class="modal-header bg-gradient-primary text-white">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-circle bg-white text-primary d-flex align-items-center justify-content-center me-3">
+                        <i class="fas fa-user-cog fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0 fw-semibold">Admin Profile</h5>
+                        <small class="text-white-50">Update your account information</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="POST" action="{{ route('admin.profile.update') }}" class="needs-validation" novalidate>
+                @csrf
+
+                <div class="modal-body p-4">
+                    <!-- Profile Section -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="alert alert-info bg-light-info border-info d-flex align-items-center" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <small>Update your personal information below. Changes will take effect immediately.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Name Field -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-dark mb-2">
+                            <i class="fas fa-user me-2 text-primary"></i>Full Name
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light">
+                                <i class="fas fa-id-card text-muted"></i>
+                            </span>
+                            <input type="text"
+                                   class="form-control form-control-lg py-2"
+                                   name="name"
+                                   value="{{ Auth::guard('admin')->user()->name }}"
+                                   required
+                                   placeholder="Enter your full name">
+                            <div class="invalid-feedback">
+                                Please provide a valid name.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-dark mb-2">
+                            <i class="fas fa-envelope me-2 text-primary"></i>Email
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light">
+                                <i class="fas fa-at text-muted"></i>
+                            </span>
+                            <input type="email"
+                                   class="form-control form-control-lg py-2"
+                                   name="email"
+                                   value="{{ Auth::guard('admin')->user()->email }}"
+                                   required
+                                   placeholder="Enter your email address">
+                            <div class="invalid-feedback">
+                                Please provide a valid email address.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark mb-2">
+                            <i class="fas fa-key me-2 text-primary"></i>Password
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light">
+                                <i class="fas fa-lock text-muted"></i>
+                            </span>
+                            <input type="password"
+                                   class="form-control form-control-lg py-2"
+                                   name="password"
+                                   id="passwordField"
+                                   placeholder="Enter new password">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+
+                        <div class="password-strength mt-2 d-none">
+                            <small class="text-muted">Password strength:</small>
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer bg-light border-top px-4 py-3">
+                    <button type="button"
+                            class="btn btn-lg btn-outline-secondary px-4"
+                            data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit"
+                            class="btn btn-lg btn-primary px-4 shadow-sm">
+                        <i class="fas fa-save me-2"></i>Update Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+    }
+
+    .modal-content {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .input-group-lg .form-control {
+        border-left: 0;
+        padding-left: 0;
+    }
+
+    .input-group-lg .input-group-text {
+        border-right: 0;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(78, 84, 200, 0.25);
+        border-color: #8f94fb;
+    }
+
+    .btn-close-white {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    .card {
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .password-strength .progress-bar {
+        transition: width 0.3s ease;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Password visibility toggle
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordField = document.getElementById('passwordField');
+
+    if (togglePassword && passwordField) {
+        togglePassword.addEventListener('click', function() {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+    }
+
+    // Password strength indicator (optional feature)
+    passwordField?.addEventListener('input', function() {
+        const strengthBar = document.querySelector('.password-strength .progress-bar');
+        const strengthContainer = document.querySelector('.password-strength');
+        const password = this.value;
+
+        if (password.length > 0) {
+            strengthContainer.classList.remove('d-none');
+            let strength = 0;
+
+            if (password.length >= 8) strength += 25;
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[0-9]/.test(password)) strength += 25;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 25;
+
+            strengthBar.style.width = strength + '%';
+            strengthBar.className = 'progress-bar';
+
+            if (strength < 50) {
+                strengthBar.classList.add('bg-danger');
+            } else if (strength < 75) {
+                strengthBar.classList.add('bg-warning');
+            } else {
+                strengthBar.classList.add('bg-success');
+            }
+        } else {
+            strengthContainer.classList.add('d-none');
+        }
+    });
+
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+</script>
