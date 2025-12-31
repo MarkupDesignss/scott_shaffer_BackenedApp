@@ -34,7 +34,7 @@
                             <div class="h5 mb-0 fw-bold text-gray-800">{{ $data['users']->total() }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                            <i class="fas fa-users fa-2x text-primary"></i>
                         </div>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
                             </div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                            <i class="fas fa-user-check fa-2x text-success"></i>
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                             </div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-globe fa-2x text-gray-300"></i>
+                            <i class="fas fa-globe fa-2x text-warning"></i>
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                             </div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-calendar-alt fa-2x text-info opacity-50"></i>
+                           <i class="fas fa-calendar-alt fa-2x text-info"></i>
                         </div>
                     </div>
                 </div>
@@ -146,14 +146,6 @@
 
                             <td class="py-3">
                                 <div class="d-flex align-items-center">
-                                    <div class="me-3">
-                                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
-                                             style="width: 40px; height: 40px;">
-                                            <span class="text-primary fw-bold">
-                                                {{ strtoupper(substr($user->full_name, 0, 1)) }}
-                                            </span>
-                                        </div>
-                                    </div>
                                     <div>
                                         <h6 class="mb-0 fw-bold text-gray-800">{{ $user->full_name }}</h6>
                                         {{-- <small class="text-muted">ID: {{ $user->id }}</small> --}}

@@ -105,7 +105,6 @@ class CatalogItemController extends Controller
     {
         $item = CatalogItem::findOrFail($id);
 
-        // dd($request->all());
         $validated = $request->validate([
             'name'        => 'required|string|max:150',
             'category_id' => 'required|exists:catalog_categories,id',

@@ -106,6 +106,10 @@ Route::middleware('auth:sanctum')->group(function () {
         '/featured-items/{featuredListItem}/bookmark',
         [ActionController::class, 'toggleBookmark']
     );
+    Route::get(
+        '/my/bookmarked-items',
+        [ActionController::class, 'myBookmarks']
+    );
 
     Route::get('/featured-items/{id}/share-link', [
         ActionController::class,

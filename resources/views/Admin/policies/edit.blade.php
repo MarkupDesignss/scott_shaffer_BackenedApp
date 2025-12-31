@@ -133,6 +133,7 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="form-check form-switch mb-3">
+                                            <input type="hidden" name="is_active" value="0">
                                             <input class="form-check-input"
                                                    type="checkbox"
                                                    name="is_active"

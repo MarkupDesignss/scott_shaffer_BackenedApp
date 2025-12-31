@@ -53,6 +53,7 @@ class PolicyController extends Controller
 
     public function update(Request $request, Policy $policy)
     {
+        // dd($request->all());
         $data = $request->validate([
             'name'        => 'required|string|max:255',
             'description' => 'required',
