@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Campaign;
 use App\Models\Segment;
+use Carbon\Carbon;
+
 
 class CampaignController extends Controller
 {
@@ -13,6 +15,7 @@ class CampaignController extends Controller
     {
         try {
             $user = $request->user();
+            $now  = Carbon::now();
 
             // 1️⃣ User ke interest IDs
             $userIntrestIds = $user->interests()->pluck('interests.id')->toArray();
@@ -25,7 +28,7 @@ class CampaignController extends Controller
 
             if (empty($userIntrestIds)) {
                 return response()->json([
-                    'success' => true,
+                    'success'   => true,
                     'campaigns' => []
                 ]);
             }
@@ -39,34 +42,49 @@ class CampaignController extends Controller
                             (string) $intrestId
                         );
                     }
-                })->pluck('id');
-                if ($segmentIds->isEmpty()) {
-                    return response()->json([
-                        'success' => true,
-                        'campaigns' => []
-                    ]);
-                }
+                })
+                ->pluck('id');
 
-                // 3️⃣ Campaigns mapped with those segments
-                $campaigns = Campaign::with('segments')
+            if ($segmentIds->isEmpty()) {
+                return response()->json([
+                    'success'   => true,
+                    'campaigns' => []
+                ]);
+            }
+
+            // 3️⃣ Campaigns mapped with those segments
+            $campaigns = Campaign::with('segments')
                 ->where('status', 'live')
+
+                // ✅ Campaign must be started
+                ->where(function ($q) use ($now) {
+                    $q->whereNull('starts_at')
+                        ->orWhere('starts_at', '<=', $now);
+                })
+
+                // ✅ Campaign must not be ended
+                ->where(function ($q) use ($now) {
+                    $q->whereNull('ends_at')
+                        ->orWhere('ends_at', '>=', $now);
+                })
+
                 ->whereHas('segments', function ($q) use ($segmentIds) {
                     $q->whereIn('segments.id', $segmentIds)
-                    ->where('status', 'active');
+                        ->where('status', 'active');
                 })
                 ->latest()
                 ->get();
 
             return response()->json([
-                'success' => true,
+                'success'   => true,
                 'campaigns' => $campaigns,
                 'message'   => 'campaigns fetched'
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
-                'data' => $th->getMessage(),
-                'message'   => 'campaigns cannot be fetched'
+                'data'    => $th->getMessage(),
+                'message' => 'campaigns cannot be fetched'
             ]);
         }
     }

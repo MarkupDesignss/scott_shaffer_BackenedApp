@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CatalogCategoryController;
 use App\Http\Controllers\Admin\CatalogItemController;
 use App\Http\Controllers\Admin\FeaturedListController;
 use App\Http\Controllers\Admin\FeaturedListItemController;
+
 use App\Http\Controllers\Admin\SegmentController;
 use App\Http\Controllers\Admin\PolicyController;
 use Illuminate\Support\Facades\Route;
@@ -19,7 +20,7 @@ Route::get('/', function () {
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
 
-
+Route::get('/featured-lists/{id}', [FeaturedListController::class, 'show']);
 Route::prefix('admin')->name('admin.')->group(function () {
 
     // Login

@@ -9,8 +9,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Services\FirebaseNotificationService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Throwable;
+use App\Models\UserDevice;
 
 class ListController extends Controller
 {
@@ -41,9 +43,7 @@ class ListController extends Controller
         }
     }
 
-    /* =========================
-       Create List
-    ========================== */
+
     // public function store(Request $request)
     // {
     //     try {
@@ -52,13 +52,15 @@ class ListController extends Controller
     //             'category_id' => 'required|exists:catalog_categories,id',
     //             'list_size'   => 'nullable|integer|min:1|max:20',
     //             'is_group'    => 'nullable|boolean',
+    //             'user_ids'    => 'nullable|array',
+    //             'user_ids.*'  => 'exists:users,id',
     //         ]);
 
     //         $list = ListModel::create([
     //             'user_id'     => Auth::id(),
     //             'title'       => $validated['title'],
     //             'category_id' => $validated['category_id'],
-    //             'list_size'   => $validated['list_size'],
+    //             'list_size'   => $validated['list_size'] ?? null,
     //             'is_group'    => $validated['is_group'] ?? false,
     //         ]);
 
@@ -68,14 +70,28 @@ class ListController extends Controller
     //                 'user_id' => Auth::id(),
     //                 'status'  => 'accepted'
     //             ]);
+
+    //             // Invite members if provided
+    //             if (!empty($validated['user_ids'])) {
+    //                 foreach ($validated['user_ids'] as $userId) {
+    //                     ListMember::firstOrCreate(
+    //                         [
+    //                             'list_id' => $list->id,
+    //                             'user_id' => $userId
+    //                         ],
+    //                         [
+    //                             'status' => 'invited'
+    //                         ]
+    //                     );
+    //                 }
+    //             }
     //         }
 
     //         return response()->json([
     //             'success' => true,
     //             'message' => 'List created successfully',
-    //             'data' => $list
+    //             'data'    => $list->load('members')
     //         ], 201);
-
     //     } catch (Throwable $e) {
     //         return $this->serverError($e);
     //     }
@@ -101,14 +117,17 @@ class ListController extends Controller
                 'is_group'    => $validated['is_group'] ?? false,
             ]);
 
-            // Group list → owner as accepted member
+            $firebase = new FirebaseNotificationService();
+
+            // Group list logic
             if ($list->is_group) {
+                // Owner
                 $list->members()->create([
                     'user_id' => Auth::id(),
                     'status'  => 'accepted'
                 ]);
 
-                // Invite members if provided
+                // Invite members
                 if (!empty($validated['user_ids'])) {
                     foreach ($validated['user_ids'] as $userId) {
                         ListMember::firstOrCreate(
@@ -120,6 +139,17 @@ class ListController extends Controller
                                 'status' => 'invited'
                             ]
                         );
+
+                        // 🔔 Firebase Notification
+                        $firebase->sendToUser(
+                            $userId,
+                            'You are invited to a list',
+                            Auth::user()->name . ' invited you to join "' . $list->title . '"',
+                            [
+                                'list_id' => (string) $list->id,
+                                'type'    => 'list_invite'
+                            ]
+                        );
                     }
                 }
             }
@@ -129,10 +159,32 @@ class ListController extends Controller
                 'message' => 'List created successfully',
                 'data'    => $list->load('members')
             ], 201);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             return $this->serverError($e);
         }
     }
+
+    // public function registerDevice(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'user_id'      => 'required|exists:users,id',
+    //         'device_token' => 'required|string',
+    //         'device_type'  => 'nullable|string',
+    //     ]);
+
+    //     UserDevice::updateOrCreate(
+    //         ['user_id' => $validated['user_id']],
+    //         [
+    //             'device_token' => $validated['device_token'],
+    //             'device_type'  => $validated['device_type'] ?? 'android',
+    //         ]
+    //     );
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Device registered successfully'
+    //     ]);
+    // }
 
 
     /* =========================

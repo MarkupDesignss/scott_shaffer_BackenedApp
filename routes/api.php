@@ -21,6 +21,8 @@ Route::post('/register', [AuthController::class, 'signup']);
 Route::post('/check-user-status', [AuthController::class, 'checkUserStatus']);
 Route::post('/request-otp', [AuthController::class, 'requestOtp']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+Route::post('/register-device', [AuthController::class, 'registerDevice']);
+
 
 // Routes that require authentication
 Route::middleware('auth:sanctum')->group(function () {

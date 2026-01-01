@@ -31,4 +31,32 @@ class FeaturedList extends Model
     {
         return $this->belongsTo(Admin::class, 'created_by');
     }
+    public function likes()
+    {
+        return $this->hasMany(
+            FeaturedItemLike::class,
+            'featured_list_item_id', // FK column (same table)
+            'id'                      // FeaturedList id
+        );
+    }
+
+    // Bookmarks (list level)
+    public function bookmarks()
+    {
+        return $this->hasMany(
+            FeaturedItemBookmark::class,
+            'featured_list_item_id',
+            'id'
+        );
+    }
+
+    // Shares (list level)
+    public function shares()
+    {
+        return $this->hasMany(
+            FeaturedItemShare::class,
+            'featured_list_item_id',
+            'id'
+        );
+    }
 }

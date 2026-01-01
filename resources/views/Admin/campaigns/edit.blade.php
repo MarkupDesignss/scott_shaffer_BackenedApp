@@ -2,6 +2,15 @@
 
 @section('content')
 <div class="container-fluid">
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
@@ -172,7 +181,7 @@
                 </div>
 
                 <!-- Call to Action Card -->
-                <div class="card border-0 shadow-sm mb-4">
+                {{-- <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white py-3 border-bottom">
                         <h6 class="mb-0 fw-bold">
                             <i class="fas fa-mouse-pointer text-success me-2"></i>Call to Action
@@ -228,7 +237,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <!-- Right Column: Settings -->
