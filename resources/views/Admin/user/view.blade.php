@@ -3,7 +3,14 @@
 @section('content')
 <div class="container-fluid">
 
-    <h4 class="mb-4" style="font-size:1.3rem;font-weight:800">User Details</h4>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-4" style="font-size:1.3rem;font-weight:800">User Details</h4>
+        </div>
+        <a href="{{ route('admin.user.index') }}" class="btn btn-outline-secondary">
+            Back to List
+        </a>
+    </div>
 
     {{-- BASIC USER INFO --}}
     <div class="card mb-4">
@@ -53,7 +60,7 @@
                     <td>{{ $user->profile->city }}</td>
                 </tr>
                 <tr>
-                    <th>Dining Budget</th>
+                    <th>Budget</th>
                     <td>{{ $user->profile->dining_budget }}</td>
                 </tr>
                 <tr>

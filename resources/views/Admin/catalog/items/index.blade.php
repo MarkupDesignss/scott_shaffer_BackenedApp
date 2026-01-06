@@ -11,9 +11,9 @@
             <a href="{{ route('admin.catalog-items.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus-circle me-2"></i>Add New Item
             </a>
-            <a href="{{ route('admin.catalog-categories.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-folder me-2"></i>Manage Categories
-            </a>
+            <!--<a href="{{ route('admin.catalog-categories.index') }}" class="btn btn-outline-secondary">-->
+            <!--    <i class="fas fa-folder me-2"></i>Manage Categories-->
+            <!--</a>-->
         </div>
     </div>
 
@@ -33,183 +33,155 @@
     </div>
     @endif
 
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3">
-            <div class="row align-items-center">
-                <div class="col-md-4">
-                    <h6 class="mb-0 fw-semibold">All Items</h6>
-                </div>
-                <div class="col-md-8">
-                    <div class="row g-2">
-                        <div class="col-md-6">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="fas fa-search text-muted"></i>
-                                </span>
-                                <input type="text" id="itemSearch" class="form-control border-start-0"
-                                    placeholder="Search items...">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select form-select-sm" id="categoryFilter">
-                                <option value="">All Categories</option>
-                                @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select form-select-sm" id="statusFilter">
-                                <option value="">All Status</option>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
+ <div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <h6 class="mb-0 fw-semibold">All Items</h6>
+            </div>
+            <div class="col-md-8">
+                <div class="row g-2 justify-content-end">
+                    <div class="col-md-6">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input
+                                type="text"
+                                id="itemSearch"
+                                class="form-control border-start-0"
+                                placeholder="Search items..."
+                            >
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0" id="itemsTable">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4" width="60">#</th>
-                            <th>Item</th>
-                            <th>Category</th>
-                            <th>Status</th>
-                            <th class="text-center" width="180">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($items as $item)
-                        <tr class="align-middle">
-                            <td class="ps-4 fw-semibold text-muted">{{ $loop->iteration }}</td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="item-thumbnail me-3">
-                                        @if($item->image_url)
-                                        @php
-                                        // Check if image_url is a full URL or relative path
-                                        $imgSrc = Str::startsWith($item->image_url, ['http://', 'https://'])
-                                        ? $item->image_url
-                                        : asset('storage/' . $item->image_url);
-                                        @endphp
-                                        <img src="{{ $imgSrc }}" alt="{{ $item->name }}" class="rounded"
-                                            style="width: 40px; height: 40px; object-fit: cover;">
-                                        @else
-                                        <div class="bg-light-primary rounded d-flex align-items-center justify-content-center"
-                                            style="width: 40px; height: 40px;">
-                                            <i class="fas fa-image text-muted"></i>
-                                        </div>
-                                        @endif
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="itemsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4" width="60">#</th>
+                        <th>Item</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th class="text-center" width="180">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($items as $item)
+                    <tr class="align-middle">
+                        <td class="ps-4 fw-semibold text-muted">{{ $loop->iteration }}</td>
 
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-semibold">{{ $item->name }}</h6>
-                                        @if($item->description)
-                                        <small class="text-muted text-truncate d-block" style="max-width: 200px;">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="item-thumbnail me-3">
+                                                @php
+                                                    $imgSrc = asset('images/no-image.png'); // default image
+
+                                                    if (!empty($item->image_url)) {
+                                                        $imgSrc = Str::startsWith($item->image_url, ['http://', 'https://'])
+                                                            ? $item->image_url
+                                                            : asset($item->image_url);
+                                                    }
+                                                @endphp
+                                            
+                                                <img
+                                                    src="{{ $imgSrc }}"
+                                                    alt="{{ $item->name }}"
+                                                    class="rounded"
+                                                    style="width:40px;height:40px;object-fit:cover;"
+                                                    onerror="this.src='{{ asset('images/no-image.png') }}'"
+                                                >
+                                            </div>
+
+
+                                <div>
+                                    <h6 class="mb-0 fw-semibold">{{ $item->name }}</h6>
+                                    @if($item->description)
+                                        <small class="text-muted d-block text-truncate" style="max-width:200px;">
                                             {{ Str::limit($item->description, 50) }}
                                         </small>
-                                        @endif
-                                    </div>
+                                    @endif
                                 </div>
-                            </td>
-                            <td>
-                                @if($item->category)
+                            </div>
+                        </td>
+
+                        <td>
+                            @if($item->category)
                                 <span class="badge bg-light-primary text-primary rounded-pill px-3 py-2">
                                     <i class="fas fa-folder me-1"></i>
                                     {{ $item->category->name }}
                                 </span>
-                                @else
+                            @else
                                 <span class="badge bg-light-secondary text-secondary rounded-pill px-3 py-2">
                                     <i class="fas fa-times me-1"></i>
                                     Uncategorized
                                 </span>
-                                @endif
-                            </td>
-                            <td>
-                                <form method="POST" action="{{ route('admin.items.toggle-status', $item->id) }}"
-                                    class="toggle-status-form d-inline">
-                                    @csrf
-                                    @method('PATCH')
+                            @endif
+                        </td>
 
-                                    @php
-                                    $isActive = $item->status === 'active' || $item->status == 1 || $item->status ===
-                                    true;
-                                    @endphp
+                        <td>
+                            <form method="POST"
+                                  action="{{ route('admin.items.toggle-status', $item->id) }}"
+                                  class="d-inline">
+                                @csrf
+                                @method('PATCH')
 
-                                    <button type="submit"
-                                        class="btn btn-sm status-btn {{ $isActive ? 'btn-active' : 'btn-inactive' }}">
-                                        <i class="bi {{ $isActive ? 'bi-toggle-on' : 'bi-toggle-off' }} me-1"></i>
-                                        {{ $isActive ? 'Active' : 'Inactive' }}
-                                    </button>
-                                </form>
-                            </td>
+                                @php
+                                    $isActive = $item->status === 'active' || $item->status == 1;
+                                @endphp
 
-                            <td>
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a href="{{ route('admin.catalog-items.show', $item->id) }}"
-                                        class="btn btn-sm btn-outline-info rounded-pill px-3" data-bs-toggle="tooltip"
-                                        title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                <button type="submit"
+                                    class="btn btn-sm status-btn {{ $isActive ? 'btn-active' : 'btn-inactive' }}">
+                                    <i class="bi {{ $isActive ? 'bi-toggle-on' : 'bi-toggle-off' }} me-1"></i>
+                                    {{ $isActive ? 'Active' : 'Inactive' }}
+                                </button>
+                            </form>
+                        </td>
 
-                                    <a href="{{ route('admin.catalog-items.edit', $item->id) }}"
-                                        class="btn btn-sm btn-outline-primary rounded-pill px-3"
-                                        data-bs-toggle="tooltip" title="Edit Item">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="{{ route('admin.catalog-items.show', $item->id) }}"
+                                   class="btn btn-sm btn-outline-info rounded-pill px-3">
+                                    <i class="fas fa-eye"></i>
+                                </a>
 
-                                    <!-- <form action="{{ route('admin.catalog-items.destroy', $item->id) }}" method="POST"
-                                        class="delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button"
-                                            class="btn btn-sm btn-outline-danger rounded-pill px-3 delete-btn"
-                                            data-bs-toggle="tooltip" title="Delete Item">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form> -->
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center py-5">
-                                <div class="empty-state">
-                                    <div class="empty-state-icon bg-light-primary rounded-circle p-4 mb-3">
-                                        <i class="fas fa-box-open fa-2x text-primary"></i>
-                                    </div>
-                                    <h5 class="text-muted">No items found</h5>
-                                    <p class="text-muted mb-4">Get started by creating your first catalog item</p>
-                                    <a href="{{ route('admin.catalog-items.create') }}" class="btn btn-primary">
-                                        <i class="fas fa-plus me-2"></i>Create Item
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                <a href="{{ route('admin.catalog-items.edit', $item->id) }}"
+                                   class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            No items found
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-
-        @if($items->count())
-        <div class="card-footer bg-white border-top py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="text-muted">
-                    Showing {{ $items->firstItem() ?? 0 }} to {{ $items->lastItem() ?? 0 }}
-                    of {{ $items->total() }} items
-                </div>
-                <nav>
-                    {{ $items->links('pagination::bootstrap-5') }}
-                </nav>
-            </div>
-        </div>
-        @endif
     </div>
+
+    @if($items->count())
+    <div class="card-footer bg-white border-top py-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Showing {{ $items->firstItem() ?? 0 }} to {{ $items->lastItem() ?? 0 }}
+                of {{ $items->total() }} items
+            </div>
+            {{ $items->links('pagination::bootstrap-5') }}
+        </div>
+    </div>
+    @endif
+</div>
+
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -241,21 +213,35 @@
     </div>
 </div>
 
+
 <style>
-.item-thumbnail img {
-    transition: transform 0.2s;
+.category-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+ .btn-active {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+
+    .btn-inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+.status-btn {
+    border-radius: 50px;
+    padding: 6px 14px;
+    transition: all 0.2s ease;
 }
 
-.item-thumbnail img:hover {
-    transform: scale(1.1);
-}
 
 .bg-light-primary {
     background-color: rgba(13, 110, 253, 0.1) !important;
-}
-
-.bg-light-secondary {
-    background-color: rgba(108, 117, 125, 0.1) !important;
 }
 
 .bg-success-soft {
@@ -288,32 +274,7 @@
 .delete-form {
     display: inline;
 }
-
-.text-truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.btn-active {
-    background-color: #d1fae5;
-    color: #065f46;
-    border: 1px solid #10b981;
-}
-
-.btn-inactive {
-    background-color: #f3f4f6;
-    color: #6b7280;
-    border: 1px solid #9ca3af;
-}
-
-.status-btn {
-    border-radius: 50px;
-    padding: 6px 14px;
-    transition: all 0.2s ease;
-}
 </style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize tooltips
@@ -370,9 +331,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (statusValue && statusCell) {
-                const statusBadge = statusCell.querySelector('.badge');
-                const isActive = statusBadge.classList.contains('bg-success-soft');
-                const rowStatus = isActive ? 'active' : 'inactive';
+                const statusBtn = statusCell.querySelector('.status-btn, button');
+                const rowStatus = statusBtn && statusBtn.classList.contains('btn-active') ? 'active' : 'inactive';
                 if (rowStatus !== statusValue) {
                     showRow = false;
                 }

@@ -18,6 +18,7 @@ Route::get('/', function () {
 
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
+Route::get('/featured-lists/{id}', [FeaturedListController::class, 'show']);
 
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -53,8 +54,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(function () {
-
-    Route::post('/profile/update', [AdminController::class, 'update'])
+        Route::post('/profile/update', [AdminController::class, 'update'])
         ->name('profile.update');
 
     Route::get('/dashboard', [AdminController::class, 'dashboard'])
@@ -102,20 +102,18 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
         'feature-list/{featuredList}/toggle-status',
         [FeaturedListController::class, 'toggleStatus']
     )->name('feature-list.toggle-status');
-
+    
     Route::resource(
         'featured-list-items',
         FeaturedListItemController::class
     );
-    Route::post(
+        Route::post(
         'feature-list-items/{featuredListItems}/toggle-status',
         [FeaturedListItemController::class, 'toggleStatus']
     )->name('feature-list-items.toggle-status');
 
-
-
     Route::resource('campaigns', CampaignController::class);
-    Route::post(
+        Route::post(
         'campaigns/{id}/toggle-status',
         [CampaignController::class, 'toggleStatus']
     )->name('campaigns.toggle-status');

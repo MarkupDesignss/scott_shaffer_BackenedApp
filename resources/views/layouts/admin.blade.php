@@ -30,7 +30,7 @@
             --light-bg: #f8fafc;
             --dark-bg: #1e293b;
             --card-bg: #ffffff;
-            --sidebar-width: 250px;
+            --sidebar-width: 265px;
             --header-height: 70px;
         }
 
@@ -640,7 +640,6 @@
         </div>
     </header>
 
-
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -674,7 +673,7 @@
 
                 <a href="javascript:void(0);" class="sidebar-link">
                     <i class="bi bi-folder"></i>
-                    <span class="nav-label">Catalog Mgmt.</span>
+                    <span class="nav-label">Catalog Management</span>
                     <i class="bi bi-chevron-down ms-auto arrow"></i>
                 </a>
 
@@ -730,14 +729,14 @@
             <a href="{{ route('admin.segments.index') }}"
             class="nav-item {{ request()->routeIs('admin.segments.*') ? 'active' : '' }}">
                 <i class="nav-icon bi bi-bullseye"></i>
-                <span class="nav-label">Segment Mgmt.</span>
+                <span class="nav-label">Segment Management</span>
             </a>
 
 
             <a href="{{ route('admin.campaigns.index') }}"
             class="nav-item {{ request()->routeIs('admin.campaigns.*') ? 'active' : '' }}">
                 <i class="nav-icon bi bi-megaphone-fill"></i>
-                <span class="nav-label">Campaigns Mgmt.</span>
+                <span class="nav-label">Campaigns Management</span>
             </a>
 
 

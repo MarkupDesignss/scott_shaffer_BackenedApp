@@ -38,7 +38,7 @@
                                        name="title"
                                        class="form-control form-control-lg @error('title') is-invalid @enderror"
                                        value="{{ old('title') }}"
-                                       required
+
                                        autofocus>
                                 <div class="form-text">Give your list a clear, descriptive title.</div>
                                 @error('title')
@@ -51,7 +51,7 @@
                                 <label class="form-label fw-semibold">Category *</label>
                                 <select name="category_id"
                                         class="form-select @error('category_id') is-invalid @enderror"
-                                        required>
+                                        >
                                     <option value="">Select a category</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
@@ -69,11 +69,11 @@
                                 <label class="form-label fw-semibold">List Size *</label>
                                 <input type="number"
                                     name="list_size"
-                                    class="form-control text-center"
+                                    class="form-control text-start"
                                     min="1"
                                     max="100"
-                                    value="{{ old('list_size', 3) }}"
-                                    required>
+                                    value="{{ old('list_size', 1) }}"
+                                    >
                                 <div class="form-text">Enter how many items this list will contain.</div>
                                 @error('list_size')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
@@ -98,7 +98,7 @@
                                 <input type="number"
                                        name="display_order"
                                        id="displayOrder"
-                                       class="form-control text-center @error('display_order') is-invalid @enderror"
+                                       class="form-control text-start @error('display_order') is-invalid @enderror"
                                        value="{{ old('display_order', 0) }}"
                                        min="0">
                                 <div class="form-text">Lower numbers appear first.</div>
@@ -119,7 +119,7 @@
                                             class="form-control @error('image') is-invalid @enderror"
                                             name="image"
                                             accept="image/*"
-                                            required>
+                                            >
 
                                         @error('image')
                                             <div class="invalid-feedback">{{ $message }}</div>

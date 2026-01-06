@@ -35,6 +35,11 @@ return [
         ],
     ],
 
+    'firebase' => [
+        'credentials' => json_decode(env('FIREBASE_CREDENTIALS_JSON'), true),
+    ],
+
+
     'google' => [
         'client_id'     => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
@@ -44,6 +49,12 @@ return [
         'client_id'     => env('APPLE_CLIENT_ID'),
         'client_secret' => env('APPLE_CLIENT_SECRET'),
         'redirect'      => env('APPLE_REDIRECT_URI'),
+    ],
+
+    'twilio' => [
+        'sid' => env('TWILIO_SID'),
+        'token' => env('TWILIO_AUTH_TOKEN'),
+        'from' => env('TWILIO_FROM'),
     ],
 
 

@@ -31,36 +31,38 @@ class CampaignController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'title' => 'required|string|max:60',
-            'subtitle' => 'nullable|string|max:120',
-            'image_url' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'cta_text' => 'nullable|string|max:30',
-            'cta_url' => 'nullable|url',
-            'status' => 'required|in:draft,live,paused',
-            'requires_consent' => 'boolean',
-            'starts_at' => 'nullable|date',
-            'ends_at' => 'nullable|date|after_or_equal:starts_at',
-            'segments' => 'required|array',
-            'segments.*' => 'exists:segments,id',
+            'name'              => 'required|string|max:255',
+            'title'             => 'required|string|max:60',
+            'subtitle'          => 'nullable|string|max:120',
+            'image_url'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'cta_text'          => 'nullable|string|max:30',
+            'cta_url'           => 'nullable|url',
+            'status'            => 'required|in:draft,live,paused',
+            'requires_consent'  => 'boolean',
+
+            // ✅ DATE VALIDATION
+            'starts_at'         => 'nullable|date',
+            'ends_at'           => 'nullable|date|after_or_equal:starts_at',
+
+            'segments'          => 'required|array',
+            'segments.*'        => 'exists:segments,id',
         ]);
 
-        // IMAGE UPLOAD (move)
+        // IMAGE UPLOAD
         if ($request->hasFile('image_url')) {
             $file = $request->file('image_url');
-
             $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
             $file->move(public_path('uploads/campaigns'), $fileName);
-
             $data['image_url'] = 'uploads/campaigns/' . $fileName;
         }
+
         $campaign = Campaign::create($data);
         $campaign->segments()->sync($data['segments']);
 
         return redirect()->route('admin.campaigns.index')
             ->with('success', 'Campaign created successfully');
     }
+
 
 
 
@@ -81,32 +83,32 @@ class CampaignController extends Controller
     public function update(Request $request, Campaign $campaign)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'title' => 'required|string|max:60',
-            'subtitle' => 'nullable|string|max:120',
-            'image_url' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'cta_text' => 'nullable|string|max:30',
-            'cta_url' => 'nullable|url',
-            'status' => 'required|in:draft,live,paused',
-            'requires_consent' => 'boolean',
-            'starts_at' => 'nullable|date',
-            'ends_at' => 'nullable|date|after_or_equal:starts_at',
-            'segments' => 'required|array',
-            'segments.*' => 'exists:segments,id',
+            'name'              => 'required|string|max:255',
+            'title'             => 'required|string|max:60',
+            'subtitle'          => 'nullable|string|max:120',
+            'image_url'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'cta_text'          => 'nullable|string|max:30',
+            'cta_url'           => 'nullable|url',
+            'status'            => 'required|in:draft,live,paused',
+            'requires_consent'  => 'boolean',
+
+            // ✅ DATE VALIDATION
+            'starts_at'         => 'nullable|date',
+            'ends_at'           => 'nullable|date|after_or_equal:starts_at',
+
+            'segments'          => 'required|array',
+            'segments.*'        => 'exists:segments,id',
         ]);
 
-        // IMAGE REPLACE (move)
+        // IMAGE REPLACE
         if ($request->hasFile('image_url')) {
-
             if ($campaign->image_url && file_exists(public_path($campaign->image_url))) {
                 unlink(public_path($campaign->image_url));
             }
 
             $file = $request->file('image_url');
             $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
             $file->move(public_path('uploads/campaigns'), $fileName);
-
             $data['image_url'] = 'uploads/campaigns/' . $fileName;
         }
 
@@ -118,6 +120,7 @@ class CampaignController extends Controller
     }
 
 
+
     public function toggleStatus($id)
     {
         $campaign = Campaign::findOrFail($id);
@@ -127,6 +130,7 @@ class CampaignController extends Controller
 
         return back()->with('success', 'Status updated.');
     }
+
 
     public function destroy($id)
     {

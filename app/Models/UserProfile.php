@@ -15,7 +15,7 @@ class UserProfile extends Model
         'city',
         'dining_budget',
         'has_dogs',
-        'profile_image'
+        'profile_image',
     ];
 
     /**
@@ -24,5 +24,10 @@ class UserProfile extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    
+        public function getProfileImageAttribute($value)
+    {
+        return $value ? asset($value) : null;
     }
 }

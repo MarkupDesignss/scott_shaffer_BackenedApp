@@ -8,9 +8,9 @@ use App\Models\AdminPasswordOtp;
 use App\Mail\AdminResetOtpMail;
 use App\Models\CatalogCategory;
 use App\Models\CatalogItem;
-use App\Models\FeaturedList;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\FeaturedList;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -19,7 +19,6 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
-
     public function dashboard()
     {
         $data = [
@@ -181,8 +180,8 @@ class AdminController extends Controller
         return redirect()->route('admin.login')
             ->with('success', 'Password reset successfully');
     }
-
-    public function update(Request $request)
+    
+        public function update(Request $request)
     {
         $admin = Auth::guard('admin')->user();
 

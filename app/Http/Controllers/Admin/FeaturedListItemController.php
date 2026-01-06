@@ -20,7 +20,6 @@ class FeaturedListItemController extends Controller
         ]);
     }
 
-
     public function create()
     {
         return view('admin.featured_lists.items.create', [
@@ -52,10 +51,11 @@ class FeaturedListItemController extends Controller
 
         if ($alreadyExists) {
             return back()
-                ->withErrors('This item is already added to the selected featured list')
+                ->withErrors([
+                    'duplicate' => 'This item is already added to the selected featured list'
+                ])
                 ->withInput();
         }
-
         FeaturedListItem::create($validated);
 
         return redirect()
@@ -75,45 +75,72 @@ class FeaturedListItemController extends Controller
         ]);
     }
 
+    // public function update(Request $request, $id)
+    // {
+    //     $item = FeaturedListItem::findOrFail($id);
+    //     // dd($request->all());
+    //     $validated = $request->validate([
+    //         'featured_list_id' => 'required|exists:featured_lists,id',
+    //         'catalog_item_id'  => 'required|exists:catalog_items,id',
+    //         'position'         => 'required|integer|min:1'
+    //     ]);
+
+    //     if (
+    //         $item->featured_list_id !== (int) $validated['featured_list_id']
+    //     ) {
+    //         $list = FeaturedList::findOrFail($validated['featured_list_id']);
+
+    //         if ($list->items()->count() >= $list->list_size) {
+    //             return back()->withErrors('List size limit reached')->withInput();
+    //         }
+    //     }
+
+    //     $item->update($validated);
+
+    //     return redirect()
+    //         ->route('admin.featured-list-items.index')
+    //         ->with('success', 'Item updated successfully');
+    // }
+    
     public function update(Request $request, $id)
-    {
-        $item = FeaturedListItem::findOrFail($id);
+{
+    $item = FeaturedListItem::findOrFail($id);
 
-        $validated = $request->validate([
-            'featured_list_id' => 'required|exists:featured_lists,id',
-            'catalog_item_id'  => 'required|exists:catalog_items,id',
-            'position'         => 'required|integer|min:1'
-        ]);
+    $validated = $request->validate([
+        'featured_list_id' => 'required|exists:featured_lists,id',
+        'catalog_item_id'  => 'required|exists:catalog_items,id',
+        'position'         => 'required|integer|min:1'
+    ]);
 
-        // ✅ DUPLICATE CHECK (MOST IMPORTANT)
-        $duplicate = FeaturedListItem::where('featured_list_id', $validated['featured_list_id'])
-            ->where('catalog_item_id', $validated['catalog_item_id'])
-            ->where('id', '!=', $item->id) // current record ko ignore
-            ->exists();
+    // ✅ DUPLICATE CHECK (MOST IMPORTANT)
+    $duplicate = FeaturedListItem::where('featured_list_id', $validated['featured_list_id'])
+        ->where('catalog_item_id', $validated['catalog_item_id'])
+        ->where('id', '!=', $item->id) // current record ko ignore
+        ->exists();
 
-        if ($duplicate) {
+    if ($duplicate) {
+        return back()
+            ->withErrors('This item already exists in the selected featured list.')
+            ->withInput();
+    }
+
+    // ✅ LIST SIZE CHECK (only if list is changing)
+    if ($item->featured_list_id != $validated['featured_list_id']) {
+        $list = FeaturedList::findOrFail($validated['featured_list_id']);
+
+        if ($list->items()->count() >= $list->list_size) {
             return back()
-                ->withErrors('This item already exists in the selected featured list.')
+                ->withErrors('List size limit reached')
                 ->withInput();
         }
-
-        // ✅ LIST SIZE CHECK (only if list is changing)
-        if ($item->featured_list_id != $validated['featured_list_id']) {
-            $list = FeaturedList::findOrFail($validated['featured_list_id']);
-
-            if ($list->items()->count() >= $list->list_size) {
-                return back()
-                    ->withErrors('List size limit reached')
-                    ->withInput();
-            }
-        }
-
-        $item->update($validated);
-
-        return redirect()
-            ->route('admin.featured-list-items.index')
-            ->with('success', 'Item updated successfully');
     }
+
+    $item->update($validated);
+
+    return redirect()
+        ->route('admin.featured-list-items.index')
+        ->with('success', 'Item updated successfully');
+}
 
     public function toggleStatus($id)
     {

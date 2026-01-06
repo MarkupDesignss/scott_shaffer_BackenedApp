@@ -39,7 +39,7 @@
                                 <span class="fw-semibold">Segment Name</span>
                             </th>
                             <th class="py-3 border-0">
-                                <span class="fw-semibold">Users</span>
+                                <span class="fw-semibold">Estimate Users</span>
                             </th>
                             <th class="py-3 border-0">
                                 <span class="fw-semibold">Status</span>
@@ -73,7 +73,6 @@
                                         </div>
                                     </div>
                                 </td>
-                                {{-- @dd($segment); --}}
                                 <td class="py-3">
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-user me-2 text-muted"></i>
@@ -113,21 +112,21 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
 
-                                    <form action="{{ route('admin.segments.destroy', $segment) }}"
-                                              method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="btn btn-sm btn-outline-danger rounded-pill px-3 delete-btn"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="top"
-                                            data-bs-container="body"
-                                            data-bs-offset="0,8"
-                                            title="Delete Segment"
-                                            data-segment-name="{{ $segment->name }}">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
+                                    <!--<form action="{{ route('admin.segments.destroy', $segment) }}"-->
+                                    <!--          method="POST" class="d-inline delete-form">-->
+                                    <!--    @csrf-->
+                                    <!--    @method('DELETE')-->
+                                    <!--    <button type="submit"-->
+                                    <!--        class="btn btn-sm btn-outline-danger rounded-pill px-3 delete-btn"-->
+                                    <!--        data-bs-toggle="tooltip"-->
+                                    <!--        data-bs-placement="top"-->
+                                    <!--        data-bs-container="body"-->
+                                    <!--        data-bs-offset="0,8"-->
+                                    <!--        title="Delete Segment"-->
+                                    <!--        data-segment-name="{{ $segment->name }}">-->
+                                    <!--        <i class="fas fa-trash-alt"></i>-->
+                                    <!--    </button>-->
+                                    <!--</form>-->
                                     </div>
                                 </td>
                             </tr>

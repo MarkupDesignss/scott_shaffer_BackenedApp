@@ -108,7 +108,7 @@
                                                             <span class="input-group-text bg-light border-end-0">
                                                                 <i class="fas fa-link text-muted"></i>
                                                             </span>
-                                                            <input type="url"
+                                                            <input type="text"
                                                                 class="form-control @error('image_url') is-invalid @enderror"
                                                                 name="image_url" value="{{ old('image_url') }}"
                                                                 placeholder="https://example.com/image.jpg">

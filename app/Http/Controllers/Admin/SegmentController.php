@@ -34,7 +34,6 @@ class SegmentController extends Controller
         return view('admin.segments.index', compact('segments'));
     }
 
-
     public function create()
     {
         $intrest = Intrest::get();
@@ -142,14 +141,14 @@ class SegmentController extends Controller
 
         return back()->with('success', 'Segment exported successfully');
     }
-
+    
     public function toggleStatus($id)
     {
         $segment = Segment::findOrFail($id);
+        // dd($segment);
         $segment->update([
-            'status' => $segment->status === 'active' ? 'inactive' : 'active'
+            'status' => $segment->status == 'active' ? 'inactive' : 'active'
         ]);
-
         return back()->with('success', 'Status updated.');
     }
 

@@ -62,7 +62,7 @@
                             <th>Campaign Image</th>
                             <th>Segments</th>
                             <th>Status</th>
-                            <th>Schedule</th>
+                            <!--<th>Schedule</th>-->
                             <th>Consent</th>
                             <th class="text-center pe-4">Actions</th>
                         </tr>
@@ -118,18 +118,18 @@
                                     </button>
                                 </form>
                             </td>
-                            <td>
-                                <div class="small">
-                                    <div class="d-flex align-items-center mb-1">
-                                        <i class="fas fa-play text-success me-2 small"></i>
-                                        <span>{{ $campaign->starts_at->format('M d, Y H:i') }}</span>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-stop text-danger me-2 small"></i>
-                                        <span>{{ $campaign->ends_at->format('M d, Y H:i') }}</span>
-                                    </div>
-                                </div>
-                            </td>
+                            <!--<td>-->
+                            <!--    <div class="small">-->
+                            <!--        <div class="d-flex align-items-center mb-1">-->
+                            <!--            <i class="fas fa-play text-success me-2 small"></i>-->
+                            <!--            <span>{{ $campaign->starts_at->format('M d, Y H:i') }}</span>-->
+                            <!--        </div>-->
+                            <!--        <div class="d-flex align-items-center">-->
+                            <!--            <i class="fas fa-stop text-danger me-2 small"></i>-->
+                            <!--            <span>{{ $campaign->ends_at->format('M d, Y H:i') }}</span>-->
+                            <!--        </div>-->
+                            <!--    </div>-->
+                            <!--</td>-->
                             <td>
                                 @if($campaign->requires_consent)
                                 <span class="badge bg-info">
@@ -148,23 +148,16 @@
                                        title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('admin.campaigns.destroy', $campaign) }}"
-                                          method="POST"
-                                          class="d-inline"
-                                          onsubmit="return confirm('Are you sure you want to delete this campaign? This action cannot be undone.')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                    @if($campaign->cta_url)
-                                    <a href="{{ $campaign->cta_url }}"
-                                       target="_blank"
-                                       class="btn btn-outline-success btn-sm"
-                                       title="Preview">
-                                        <i class="fas fa-external-link-alt"></i>
-                                    </a>
-                                    @endif
+                                    <!--<form action="{{ route('admin.campaigns.destroy', $campaign) }}"-->
+                                    <!--      method="POST"-->
+                                    <!--      class="d-inline"-->
+                                    <!--      onsubmit="return confirm('Are you sure you want to delete this campaign? This action cannot be undone.')">-->
+                                    <!--    @csrf @method('DELETE')-->
+                                    <!--    <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">-->
+                                    <!--        <i class="fas fa-trash"></i>-->
+                                    <!--    </button>-->
+                                    <!--</form>-->
+
                                 </div>
                             </td>
                         </tr>
@@ -206,5 +199,68 @@
         font-size: 0.85rem;
         font-weight: 500;
     }
+    
+    
+<style>
+.category-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+ .btn-active {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+
+    .btn-inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+.status-btn {
+    border-radius: 50px;
+    padding: 6px 14px;
+    transition: all 0.2s ease;
+}
+
+
+.bg-light-primary {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+.bg-success-soft {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+}
+
+.bg-secondary-soft {
+    background-color: rgba(108, 117, 125, 0.1) !important;
+}
+
+.bg-danger-soft {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+.empty-state {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.delete-form {
+    display: inline;
+}
+
 </style>
 @endsection

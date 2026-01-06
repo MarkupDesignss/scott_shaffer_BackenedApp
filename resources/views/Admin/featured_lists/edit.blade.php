@@ -64,7 +64,7 @@
                             <!-- List Size -->
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-semibold">List Size *</label>
-                                <input type="number" name="list_size" class="form-control text-center" min="1" max="100" value="{{ old('list_size', $featuredList->list_size) }}" placeholder="Enter list size" required>
+                                <input type="number" name="list_size" class="form-control text-start" min="1" max="100" value="{{ old('list_size', $featuredList->list_size) }}" placeholder="Enter list size" required>
                                 <div class="form-text">Enter how many items this list will contain.</div>
                                 @error('list_size')
                                     <div class="text-danger small mt-1">{{ $message }}</div>

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Interest;
 use App\Models\Intrest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class InterestController extends Controller
@@ -22,30 +23,43 @@ class InterestController extends Controller
     }
 
    public function store(Request $request)
-    {
-        $request->validate([
-            'name'       => 'required|string|max:255',
-            'icon_image' => 'required|image|mimes:png,svg,webp|max:1024',
-            'is_active'  => 'nullable|boolean',
-        ]);
+{
+    $request->validate([
+        'name'       => 'required|string|max:255',
+        'icon_image' => 'required|image|mimes:png,svg,webp|max:1024',
+        'is_active'  => 'nullable|boolean',
+    ]);
 
-        // Upload icon image
-        $iconPath = null;
-        if ($request->hasFile('icon_image')) {
-            $iconPath = $request->file('icon_image')
-                                ->store('interest-icons', 'public');
+    $iconPath = null;
+
+    if ($request->hasFile('icon_image')) {
+
+        $uploadPath = public_path('interest-icons');
+
+        // create folder if not exists
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
         }
 
-        Intrest::create([
-            'name'       => $request->name,
-            'icon' => $iconPath,
-            'is_active'  => $request->has('is_active'),
-        ]);
+        $file = $request->file('icon_image');
+        $fileName = uniqid().'_'.$file->getClientOriginalName();
 
-        return redirect()
-            ->route('admin.interest.index')
-            ->with('success', 'Interest created successfully.');
+        $file->move($uploadPath, $fileName);
+
+        // path saved in DB
+        $iconPath = 'interest-icons/'.$fileName;
     }
+
+    Intrest::create([
+        'name'      => $request->name,
+        'icon'      => $iconPath,
+        'is_active' => $request->has('is_active'),
+    ]);
+
+    return redirect()
+        ->route('admin.interest.index')
+        ->with('success', 'Interest created successfully.');
+}
 
 
     public function edit(Intrest $interest)
@@ -53,44 +67,55 @@ class InterestController extends Controller
         return view('admin.interest.edit', compact('interest'));
     }
 
-
-
     public function update(Request $request, Intrest $interest)
-    {
-        $request->validate([
-            'name'       => 'required|string|max:255',
-            'icon_image' => 'nullable|image|mimes:png,svg,webp|max:1024',
-            'is_active'  => 'nullable|boolean',
-        ]);
+{
+    $request->validate([
+        'name'       => 'required|string|max:255',
+        'icon_image' => 'nullable|image|mimes:png,svg,webp|max:1024',
+        'is_active'  => 'nullable|boolean',
+    ]);
 
-        // ✅ Only delete if old image path exists AND is not null
-        if ($request->hasFile('icon_image')) {
+    if ($request->hasFile('icon_image')) {
 
-            if (!empty($interest->icon)
-                && Storage::disk('public')->exists($interest->icon)) {
-
-                Storage::disk('public')->delete($interest->icon);
-            }
-
-            $interest->icon = $request->file('icon_image')
-                                            ->store('interest-icons', 'public');
+        // delete old file
+        if (!empty($interest->icon) && file_exists(public_path($interest->icon))) {
+            unlink(public_path($interest->icon));
         }
 
-        $interest->name = $request->name;
-        $interest->is_active = $request->has('is_active');
-        $interest->save();
+        $uploadPath = public_path('interest-icons');
 
-        return redirect()
-            ->route('admin.interest.index')
-            ->with('success', 'Interest updated successfully.');
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
+        }
+
+        $file = $request->file('icon_image');
+        $fileName = uniqid().'_'.$file->getClientOriginalName();
+
+        $file->move($uploadPath, $fileName);
+
+        $interest->icon = 'interest-icons/'.$fileName;
     }
 
+    $interest->name = $request->name;
+    $interest->is_active = $request->has('is_active');
+    $interest->save();
+
+    return redirect()
+        ->route('admin.interest.index')
+        ->with('success', 'Interest updated successfully.');
+}
 
     public function destroy(Intrest $interest)
     {
+        if (!empty($interest->icon) &&
+            Storage::disk('public')->exists($interest->icon)) {
+            Storage::disk('public')->delete($interest->icon);
+        }
+
         $interest->delete();
 
-        return redirect()->route('admin.interest.index')
+        return redirect()
+            ->route('admin.interest.index')
             ->with('success', 'Interest deleted successfully.');
     }
 

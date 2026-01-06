@@ -163,19 +163,20 @@ class AuthController extends Controller
             ]);
 
             $user = User::where('phone', $validated['phone'])->first();
-
-            if (!$user) {
+                       if (!$user) {
                 return response()->json([
-                    'success' => false,
+                    'success' => true,
                     'message' => 'User not found',
-                ], 404);
+                ], 200);
             }
+            
             if ($user->status == 0) {
                 return response()->json([
                     'success' => true,
                     'message' => "Invalid or inactive user",
-                ]);
+                ],200);
             }
+
 
             /* ---------------------------------
          | SEND OTP (NO ONBOARDING CHECK)

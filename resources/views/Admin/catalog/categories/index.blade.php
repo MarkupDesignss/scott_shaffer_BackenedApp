@@ -64,7 +64,7 @@
                             <tr class="align-middle">
                                 <td class="ps-4 fw-semibold text-muted">{{ $loop->iteration }}</td>
                                 <td>
-                                    <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center">                  
                                         <div>
                                             <h6 class="mb-0 fw-semibold">{{ $category->name }}</h6>
                                             @if($category->parent_id)
@@ -209,18 +209,17 @@
     align-items: center;
     justify-content: center;
 }
-.btn-active {
-    background-color: #d1fae5;
-    color: #065f46;
-    border: 1px solid #10b981;
-}
+ .btn-active {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
 
-.btn-inactive {
-    background-color: #f3f4f6;
-    color: #6b7280;
-    border: 1px solid #9ca3af;
-}
-
+    .btn-inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
 .status-btn {
     border-radius: 50px;
     padding: 6px 14px;

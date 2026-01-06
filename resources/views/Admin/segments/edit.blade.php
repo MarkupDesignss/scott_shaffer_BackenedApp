@@ -24,10 +24,6 @@
                         </div>
                     </div>
                 </div>
-                <span class="badge bg-light text-dark border">
-                    <i class="fas fa-user me-1"></i>
-                    {{ number_format($segment->estimated_users ?? 0) }} users
-                </span>
             </div>
         </div>
     </div>
