@@ -2,7 +2,15 @@
 
 @section('content')
 <div class="container-fluid px-4">
-
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
     <!-- Page Header -->
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
@@ -99,7 +107,7 @@
                                 <input type="number"
                                     name="position"
                                     id="positionInput"
-                                    class="form-control text-center @error('position') is-invalid @enderror"
+                                    class="form-control text-start @error('position') is-invalid @enderror"
                                     min="1"
                                     required>
 

@@ -31,7 +31,7 @@ class FeaturedList extends Model
     {
         return $this->belongsTo(Admin::class, 'created_by');
     }
-    public function likes()
+        public function likes()
     {
         return $this->hasMany(
             FeaturedItemLike::class,

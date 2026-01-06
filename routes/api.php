@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\API\ActionController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
@@ -8,11 +7,14 @@ use App\Http\Controllers\API\FeatureListController;
 use App\Http\Controllers\API\UserConsentController;
 use App\Http\Controllers\API\InterestController;
 use App\Http\Controllers\API\ListController;
+use App\Http\Controllers\Admin\PolicyController;
 use App\Http\Controllers\API\ListItemController;
+use App\Http\Controllers\API\ActionController;
 use App\Http\Controllers\API\PasswordController;
 use App\Http\Controllers\API\RecommenededItemsController;
 use App\Http\Controllers\API\SearchController;
 use App\Http\Controllers\API\CampaignController;
+use App\Http\Controllers\API\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,8 +23,10 @@ Route::post('/register', [AuthController::class, 'signup']);
 Route::post('/check-user-status', [AuthController::class, 'checkUserStatus']);
 Route::post('/request-otp', [AuthController::class, 'requestOtp']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
-Route::post('/register-device', [AuthController::class, 'registerDevice']);
 
+Route::get('/login', function () {
+    return response()->json(['success' => false, 'message' => 'Authentication token is require to access this api.'], 401);
+})->name('login');
 
 // Routes that require authentication
 Route::middleware('auth:sanctum')->group(function () {
@@ -49,7 +53,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/lists/{id}', [ListController::class, 'destroy']); // Delete list
     Route::get('/catalog/categories', [CategoryController::class, 'categories']); // Categories list
     Route::get('/catalog/items', [CategoryController::class, 'items']); // Items list
-    Route::post('lists/publish', [ListController::class, 'publishLists']);
+        Route::post('lists/publish', [ListController::class, 'publishLists']);
+
 
 
     /* =========================
@@ -62,6 +67,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/lists/{id}/reject', [ListController::class, 'rejectInvite']);    // Reject invite
     Route::delete('/lists/{id}/members/{userId}', [ListController::class, 'removeMember']); // Remove member
     Route::post('/lists/{id}/leave', [ListController::class, 'leaveGroup']);       // Leave group
+    Route::post('/list-invites/accept',  [ListController::class, 'accept']);
+    Route::post('/list-invites/reject',  [ListController::class, 'reject']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/my/notifications', [NotificationController::class, 'myNotifications']);
+
 
     /* =========================
        List Items
@@ -74,6 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Fetch all featured lists (user ke interests) OR filter by specific interest
     Route::get('/featured-lists', [FeatureListController::class, 'index']);
+    Route::get('/featured-lists/search', [FeatureListController::class, 'searchFeatureList']);
     Route::get('/featured-lists/{id}', [FeatureListController::class, 'show']);
 
     // Fetch items for a specific featured list
@@ -95,9 +106,9 @@ Route::middleware('auth:sanctum')->group(function () {
         '/campaigns',
         [CampaignController::class, 'index']
     );
-
-
-    // ❤️ Like / Unlike Featured List Item
+    
+    
+        // ❤️ Like / Unlike Featured List Item
     Route::post(
         '/featured-items/{featuredListItem}/like',
         [ActionController::class, 'toggleLike']
@@ -107,10 +118,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post(
         '/featured-items/{featuredListItem}/bookmark',
         [ActionController::class, 'toggleBookmark']
-    );
-    Route::get(
-        '/my/bookmarked-items',
-        [ActionController::class, 'myBookmarks']
     );
 
     Route::get('/featured-items/{id}/share-link', [
@@ -136,6 +143,8 @@ Route::post('/add-interest', [InterestController::class, 'addUserInterests']);
 Route::get('/termsAndPrivacy', [UserConsentController::class, 'index']);
 Route::get('/termsAndPrivacy/{slug}', [UserConsentController::class, 'show']);
 Route::post('/termsAndPrivacy', [UserConsentController::class, 'update']);
+Route::get('/termsandpolicy', [PolicyController::class, 'termsAndPolicy']);
+
 // Route::get('/account/export', [UserConsentController::class, 'exportUserData']);
 
 Route::get('/auth/google', [AuthController::class, 'googleRedirect']);

@@ -58,20 +58,22 @@ class ListItemController extends Controller
 
             $items = ListItem::with('catalogItem.category')
                 ->where('list_id', $listId)
-                ->orderBy('id', 'asc')
+                ->orderBy('id', 'asc') 
                 ->get()
                 ->map(function ($item) {
 
                     $catalog = $item->catalogItem;
 
                     return [
-                        'id'   => $item->id,
+                        'id'   => $item->id, 
                         'type' => $catalog ? 'catalog' : 'custom',
 
                         // ✅ SAME FIELDS FOR BOTH
                         'item_id'   => $catalog?->id,
                         'name'      => $catalog?->name ?? $item->custom_item_name,
-                        'image_url' => $catalog?->image_url,
+                        'image_url' => $catalog?->image_url
+                                    ? asset('storage/' . $catalog->image_url)
+                                    : null,
                         'category'  => $catalog?->category?->name,
                         'description' => $catalog?->description ?? $item->custom_text,
                     ];

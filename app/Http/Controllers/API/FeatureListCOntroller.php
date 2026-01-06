@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class FeatureListController extends Controller
 {
-
+    
 // public function index(Request $request)
 // {
 //     try {
@@ -318,5 +318,99 @@ public function show($id)
     }
 }
 
+
+    public function searchFeatureList(Request $request)
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Authentication token missing or invalid',
+                ], 401);
+            }
+
+            $search = $request->query('q');
+
+            if (!$search) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [],
+                ]);
+            }
+
+            $userInterestIds = $user->interests()
+                ->pluck('interests.id')
+                ->toArray();
+
+            $lists = FeaturedList::where('status', 'live')
+                ->whereHas('category', function ($q) use ($userInterestIds) {
+                    $q->whereIn('interest_id', $userInterestIds);
+                })
+                ->where(function ($q) use ($search) {
+                    $q->where('title', 'LIKE', "%{$search}%")
+                        ->orWhereHas('category', function ($q) use ($search) {
+                            $q->where('name', 'LIKE', "%{$search}%");
+                        })
+                        ->orWhereHas('category.interest', function ($q) use ($search) {
+                            $q->where('name', 'LIKE', "%{$search}%");
+                        });
+                })
+                ->with('category.interest')
+                ->withCount([
+                    'likes as likes_count',
+                    'bookmarks as saves_count',
+                    'shares as shares_count',
+                ])
+                ->withExists([
+                    'likes as is_liked' => function ($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    },
+                    'bookmarks as is_saved' => function ($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    },
+                ])
+                ->orderBy('display_order')
+                ->get()
+                ->map(function ($list) {
+                    return [
+                        'id'            => $list->id,
+                        'title'         => $list->title,
+                        'image'         => $list->image ? url($list->image) : null,
+                        'list_size'     => $list->list_size,
+                        'status'        => $list->status,
+                        'display_order' => $list->display_order,
+
+                        'likes_count'  => (int) $list->likes_count,
+                        'saves_count'  => (int) $list->saves_count,
+                        'shares_count' => (int) $list->shares_count,
+
+                        'is_liked' => (bool) $list->is_liked,
+                        'is_saved' => (bool) $list->is_saved,
+
+                        'category' => [
+                            'id'   => $list->category->id,
+                            'name' => $list->category->name,
+                        ],
+                        'interest' => [
+                            'id'   => $list->category->interest->id,
+                            'name' => $list->category->interest->name,
+                        ],
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'data'    => $lists,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to search featured lists',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 
 }

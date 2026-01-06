@@ -108,7 +108,7 @@
                 <div class="col">
                     <h5 class="mb-0 fw-bold text-gray-800">User List</h5>
                 </div>
-                <div class="col-auto">
+                <div class="col-md-6">
                     <div class="input-group input-group-sm">
                         <input type="text" class="form-control" name="search" placeholder="Search users...">
                         <button class="btn btn-outline-secondary" type="button">

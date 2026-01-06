@@ -90,25 +90,24 @@
 
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="bg-light p-2 rounded me-3">
-                                            @if($interest->icon)
-                                                <img src="{{ asset('storage/'.$interest->icon) }}"
-                                                     width="40" height="40">
-                                            @else
-                                                <span class="text-muted">N/A</span>
-                                            @endif
-                                        </div>
+                                        <!--<div class="bg-light p-2 rounded me-3">-->
+                                        <!--    @if($interest->icon)-->
+                                        <!--        <img src="{{ asset($interest->icon) }}" width="40" height="40">-->
+                                        <!--    @else-->
+                                        <!--        <span class="text-muted">N/A</span>-->
+                                        <!--    @endif-->
+                                        <!--</div>-->
                                         <span class="fw-medium">{{ $interest->name }}</span>
                                     </div>
                                 </td>
 
                                 <td>
                                     @if($interest->icon)
-                                        <img src="{{ asset('storage/'.$interest->icon) }}"
-                                             width="45" height="45">
+                                        <img src="{{ asset($interest->icon) }}" width="40" height="40">
                                     @else
                                         <span class="text-muted">No icon</span>
                                     @endif
+
                                 </td>
 
                                 <td>
@@ -178,18 +177,17 @@
 </div>
 
 <style>
-    .btn-active {
-    background-color: #d1fae5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-}
+ .btn-active {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
 
-.btn-inactive {
-    background-color: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
-}
-
+    .btn-inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
 .btn-active:hover {
     background-color: #a7f3d0;
 }

@@ -12,15 +12,15 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('list_id')
-                  ->constrained('lists')
-                  ->cascadeOnDelete();
+                ->constrained('lists')
+                ->cascadeOnDelete();
 
             $table->foreignId('user_id')
-                  ->constrained('users')
-                  ->cascadeOnDelete();
+                ->constrained('users')
+                ->cascadeOnDelete();
 
-            $table->enum('status', ['invited', 'accepted'])
-                  ->default('invited');
+            $table->enum('status', ['invited', 'accepted', 'rejected'])
+                ->default('invited');
 
             $table->timestamps();
 

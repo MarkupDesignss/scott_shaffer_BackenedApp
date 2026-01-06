@@ -46,4 +46,8 @@ class ListModel extends Model
     {
         return $this->belongsTo(ListModel::class, 'cloned_from_id');
     }
+        public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

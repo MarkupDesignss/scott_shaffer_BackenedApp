@@ -93,9 +93,9 @@
                                         <i class="fas fa-chevron-left"></i>
                                     </button> --}}
                                     <input name="position" type="number"
-                                            id="positionSelect" placeholder="0"
-                                            class="form-select text-center @error('position') is-invalid @enderror"
-                                            required>
+                                        id="positionSelect"
+                                        class="form-control text-start @error('position') is-invalid @enderror"
+                                        required>
                                         <!-- Positions will be dynamically populated -->
                                     {{-- </input> --}}
                                     {{-- <button type="button" class="btn btn-outline-secondary" onclick="changePosition(1)">

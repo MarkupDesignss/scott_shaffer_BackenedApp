@@ -39,43 +39,94 @@ class CatalogItemController extends Controller
     /**
      * Store new catalog item
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name'         => 'required|string|max:255',
-            'category_id'  => 'required|exists:catalog_categories,id',
-            'description'  => 'nullable|string',
+//   public function store(Request $request)
+//     {
+//         $request->validate([
+//             'name'         => 'required|string|max:255',
+//             'category_id'  => 'required|exists:catalog_categories,id',
+//             'description'  => 'nullable|string',
 
-            // ONE OF THEM REQUIRED
-            'image_url'    => 'nullable|url|required_without:image_upload',
-            'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,webp|required_without:image_url',
+//             // ONE OF THEM REQUIRED
+//             'image_url'    => 'nullable|url|required_without:image_upload',
+//             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,webp|required_without:image_url',
 
-            'status'       => 'required|boolean',
-        ]);
+//             'status'       => 'required|boolean',
+//         ]);
 
-        $imageValue = null;
+//         $imageValue = null;
 
-        if ($request->hasFile('image_upload')) {
-            $imageValue = $request->file('image_upload')
-                ->store('catalog-items', 'public');
+//         if ($request->hasFile('image_upload')) {
+//             $imageValue = $request->file('image_upload')
+//                                 ->store('catalog-items', 'public');
+//         }
+
+//         if ($request->filled('image_url')) {
+//             $imageValue = $request->image_url;
+//         }
+
+//         CatalogItem::create([
+//             'name'        => $request->name,
+//             'category_id' => $request->category_id,
+//             'description' => $request->description,
+//             'image_url'   => $imageValue, // SAME COLUMN
+//             'status'      => $request->status,
+//         ]);
+
+//         return redirect()
+//             ->route('admin.catalog-items.index')
+//             ->with('success', 'Catalog item created successfully.');
+//     }
+
+public function store(Request $request)
+{
+    $request->validate([
+        'name'        => 'required|string|max:255',
+        'category_id' => 'required|exists:catalog_categories,id',
+        'description' => 'nullable|string',
+
+        // one of them required
+        'image_url'    => 'nullable|url|required_without:image_upload',
+        'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,webp|required_without:image_url',
+
+        'status'      => 'required|boolean',
+    ]);
+
+    $imageValue = null;
+
+    // Image upload (public/catalog-items)
+    if ($request->hasFile('image_upload')) {
+
+        $uploadPath = public_path('catalog-items');
+
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
         }
 
-        if ($request->filled('image_url')) {
-            $imageValue = $request->image_url;
-        }
+        $file = $request->file('image_upload');
+        $fileName = uniqid() . '_' . $file->getClientOriginalName();
+        $file->move($uploadPath, $fileName);
 
-        CatalogItem::create([
-            'name'        => $request->name,
-            'category_id' => $request->category_id,
-            'description' => $request->description,
-            'image_url'   => $imageValue, // SAME COLUMN
-            'status'      => $request->status,
-        ]);
-
-        return redirect()
-            ->route('admin.catalog-items.index')
-            ->with('success', 'Catalog item created successfully.');
+        $imageValue = 'catalog-items/' . $fileName;
     }
+
+    // Image URL
+    if ($request->filled('image_url')) {
+        $imageValue = $request->image_url;
+    }
+
+    CatalogItem::create([
+        'name'        => $request->name,
+        'category_id' => $request->category_id,
+        'description' => $request->description,
+        'image_url'   => $imageValue,
+        'status'      => $request->status,
+    ]);
+
+    return redirect()
+        ->route('admin.catalog-items.index')
+        ->with('success', 'Catalog item created successfully.');
+}
+
 
 
     /**
@@ -101,33 +152,90 @@ class CatalogItemController extends Controller
     /**
      * Update catalog item
      */
+    // public function update(Request $request, $id)
+    // {
+    //     $item = CatalogItem::findOrFail($id);
+
+    //     $validated = $request->validate([
+    //         'name'        => 'required|string|max:150',
+    //         'category_id' => 'required|exists:catalog_categories,id',
+    //         'description' => 'nullable|string',
+    //         'image_url'   => 'nullable|string',
+    //         'image_upload'=> 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+    //         'status'      => 'required',
+    //     ]);
+
+    //     // Agar image upload hua hai
+    //     if ($request->hasFile('image_upload')) {
+    //         $file = $request->file('image_upload');
+    //         $path = $file->store('catalog-items', 'public'); // storage/app/public/catalog-items
+    //         $validated['image_url'] = $path; // store path in image_url column
+    //     }
+
+    //     $item->update($validated);
+
+    //     return redirect()
+    //         ->route('admin.catalog-items.index')
+    //         ->with('success', 'Catalog item updated successfully.');
+    // }
+    
     public function update(Request $request, $id)
-    {
-        $item = CatalogItem::findOrFail($id);
+{
+    $item = CatalogItem::findOrFail($id);
 
-        $validated = $request->validate([
-            'name'        => 'required|string|max:150',
-            'category_id' => 'required|exists:catalog_categories,id',
-            'description' => 'nullable|string',
-            // 'image_url' => 'nullable|required_without:image_upload|url',
-            'image_url' => 'nullable|required_without:image_upload|string',
-            'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
-            'status'      => 'required',
-        ]);
+    $request->validate([
+        'name'        => 'required|string|max:150',
+        'category_id' => 'required|exists:catalog_categories,id',
+        'description' => 'nullable|string',
 
-        // Agar image upload hua hai
-        if ($request->hasFile('image_upload')) {
-            $file = $request->file('image_upload');
-            $path = $file->store('catalog-items', 'public'); // storage/app/public/catalog-items
-            $validated['image_url'] = $path; // store path in image_url column
+        // optional but same logic
+        'image_url'    => 'nullable|string',
+        'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,webp',
+
+        'status'      => 'required|boolean',
+    ]);
+
+    // New image upload
+    if ($request->hasFile('image_upload')) {
+
+        // delete old local image
+        if (
+            !empty($item->image_url) &&
+            !filter_var($item->image_url, FILTER_VALIDATE_URL) &&
+            file_exists(public_path($item->image_url))
+        ) {
+            unlink(public_path($item->image_url));
         }
 
-        $item->update($validated);
+        $uploadPath = public_path('catalog-items');
 
-        return redirect()
-            ->route('admin.catalog-items.index')
-            ->with('success', 'Catalog item updated successfully.');
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
+        }
+
+        $file = $request->file('image_upload');
+        $fileName = uniqid() . '_' . $file->getClientOriginalName();
+        $file->move($uploadPath, $fileName);
+
+        $item->image_url = 'catalog-items/' . $fileName;
     }
+
+    // If image URL manually updated
+    if ($request->filled('image_url')) {
+        $item->image_url = $request->image_url;
+    }
+
+    $item->name        = $request->name;
+    $item->category_id = $request->category_id;
+    $item->description = $request->description;
+    $item->status      = $request->status;
+    $item->save();
+
+    return redirect()
+        ->route('admin.catalog-items.index')
+        ->with('success', 'Catalog item updated successfully.');
+}
+
 
 
     /**

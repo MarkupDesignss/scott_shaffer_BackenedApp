@@ -2,6 +2,18 @@
 
 @section('content')
 <div class="container-fluid py-4">
+    @if ($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show">
+        <strong>There were some problems with your input.</strong>
+        <ul class="mb-0 mt-2">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm border-0">
@@ -23,10 +35,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form method="POST"
-                            action="{{ route('admin.catalog-items.update', $item->id) }}"
-                            enctype="multipart/form-data"
-                            novalidate>
+                    <form method="POST" action="{{ route('admin.catalog-items.update', $item->id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -140,12 +149,11 @@
                                                             <span class="input-group-text bg-light border-end-0">
                                                                 <i class="fas fa-link text-muted"></i>
                                                             </span>
-                                                           <input type="text"
-                                                                class="form-control @error('image_url') is-invalid @enderror"
-                                                                name="image_url"
-                                                                value="{{ old('image_url', $item->image_url) }}"
-                                                                placeholder="https://example.com/image.jpg">
-
+                                                            <input type="text"
+                                                                   class="form-control @error('image_url') is-invalid @enderror"
+                                                                   name="image_url"
+                                                                   value="{{ old('image_url', $item->image_url) }}"
+                                                                   placeholder="https://example.com/image.jpg">
                                                         </div>
                                                         @error('image_url')
                                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -258,7 +266,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const imageUrlInput = document.querySelector('input[name="image_url"]');
     const imageUploadInput = document.querySelector('input[name="image_upload"]');
     const liveImagePreview = document.getElementById('liveImagePreview');
-
 
     function updatePreview(src) {
         liveImagePreview.innerHTML = src

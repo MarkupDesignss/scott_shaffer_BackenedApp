@@ -12,8 +12,8 @@ class Segment extends Model
     protected $fillable = [
         'name',
         'filters',
-        'status',
         'estimated_users',
+        'status',
     ];
 
     protected $casts = [

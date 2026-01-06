@@ -10,9 +10,6 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
 use MessageFormatter;
 use Illuminate\Validation\ValidationException;
-use App\Models\UserDevice;
-use App\Services\TwilioService;
-
 
 class AuthController extends Controller
 {
@@ -157,62 +154,7 @@ class AuthController extends Controller
     /**
      * Request OTP
      */
-    // public function requestOtp(Request $request)
-    // {
-    //     try {
-    //         $validated = $request->validate([
-    //             'phone'   => 'required|string',
-    //             'country' => 'required|string',
-    //         ]);
-
-    //         $user = User::where('phone', $validated['phone'])->first();
-
-    //         if (!$user) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'User not found',
-    //             ], 404);
-    //         }
-    //         if ($user->status == 0) {
-    //             return response()->json([
-    //                 'success' => true,
-    //                 'message' => "Invalid or inactive user",
-    //             ]);
-    //         }
-
-    //         /* ---------------------------------
-    //      | SEND OTP (NO ONBOARDING CHECK)
-    //      |----------------------------------*/
-    //         $otp = random_int(100000, 999999);
-
-    //         $user->update([
-    //             'otp'            => $otp,
-    //             'otp_expires_at' => now()->addMinutes(10),
-    //         ]);
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'OTP sent successfully',
-    //             'otp'     => $otp, // testing only
-    //         ], 200);
-    //     } catch (\Illuminate\Validation\ValidationException $e) {
-
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Validation error',
-    //             'errors'  => $e->errors(),
-    //         ], 422);
-    //     } catch (\Throwable $th) {
-
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Failed to send OTP',
-    //             'error'   => $th->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
-    public function requestOtp(Request $request, TwilioService $twilio)
+    public function requestOtp(Request $request)
     {
         try {
             $validated = $request->validate([
@@ -221,22 +163,24 @@ class AuthController extends Controller
             ]);
 
             $user = User::where('phone', $validated['phone'])->first();
-
-            if (!$user) {
+                       if (!$user) {
                 return response()->json([
-                    'success' => false,
+                    'success' => true,
                     'message' => 'User not found',
-                ], 404);
+                ], 200);
             }
-
+            
             if ($user->status == 0) {
                 return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid or inactive user',
-                ], 403);
+                    'success' => true,
+                    'message' => "Invalid or inactive user",
+                ],200);
             }
 
-            // Generate OTP
+
+            /* ---------------------------------
+         | SEND OTP (NO ONBOARDING CHECK)
+         |----------------------------------*/
             $otp = random_int(100000, 999999);
 
             $user->update([
@@ -244,27 +188,24 @@ class AuthController extends Controller
                 'otp_expires_at' => now()->addMinutes(10),
             ]);
 
-            // Send OTP via Twilio
-            $twilio->sendOtp(
-                $validated['phone'],
-                "Your verification code is {$otp}. It will expire in 10 minutes."
-            );
-
             return response()->json([
                 'success' => true,
                 'message' => 'OTP sent successfully',
+                'otp'     => $otp, // testing only
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
                 'errors'  => $e->errors(),
             ], 422);
         } catch (\Throwable $th) {
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to send OTP',
-                'error'   => $th->getMessage(),
+                'error'   => $th->getMessage()
             ], 500);
         }
     }
@@ -343,29 +284,6 @@ class AuthController extends Controller
                 'error'   => $th->getMessage(),
             ], 500);
         }
-    }
-
-
-    public function registerDevice(Request $request)
-    {
-        $validated = $request->validate([
-            'user_id'      => 'required|exists:users,id',
-            'device_token' => 'required|string',
-            'device_type'  => 'nullable|string',
-        ]);
-
-        UserDevice::updateOrCreate(
-            ['user_id' => $validated['user_id']],
-            [
-                'device_token' => $validated['device_token'],
-                'device_type'  => $validated['device_type'] ?? 'android',
-            ]
-        );
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Device registered successfully'
-        ]);
     }
 
 

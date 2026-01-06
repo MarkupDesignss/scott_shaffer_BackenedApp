@@ -63,6 +63,10 @@ class CampaignController extends Controller
             ->with('success', 'Campaign created successfully');
     }
 
+
+
+
+
     public function edit(Campaign $campaign)
     {
         $segments = Segment::get();
@@ -74,6 +78,7 @@ class CampaignController extends Controller
             'selectedSegments'
         ));
     }
+
 
     public function update(Request $request, Campaign $campaign)
     {

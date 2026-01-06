@@ -27,11 +27,11 @@ class FeaturedListController extends Controller
         ]);
     }
 
-    public function show($id)
+        public function show($id)
     {
         $featuredList = FeaturedList::find($id);
         return response()->view(
-            'featured-list.show',
+            'admin.featured_lists.show',
             compact('featuredList'),
             200
         );
@@ -112,6 +112,7 @@ class FeaturedListController extends Controller
 
         return back()->with('success', 'Status updated.');
     }
+
 
 
 

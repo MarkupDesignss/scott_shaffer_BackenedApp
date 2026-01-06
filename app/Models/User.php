@@ -64,7 +64,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(ListModel::class, 'user_id');
     }
-
+    
+    
     public function likedFeaturedItems()
     {
         return $this->belongsToMany(

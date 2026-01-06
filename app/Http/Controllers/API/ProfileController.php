@@ -18,55 +18,52 @@ class ProfileController extends Controller
      * GET: /api/profile
      * User + Profile + Interests + Categories + Items
      */
-    public function getProfile()
-    {
-        try {
-            $userId = Auth::id();
+public function getProfile()
+{
+    try {
+        $userId = Auth::id();
 
-            if (!$userId) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized'
-                ], 401);
-            }
-
-            $user = User::with([
-                'profile:id,user_id,age_band,city,dining_budget,has_dogs,profile_image',
-                'consent:id,user_id,accepted_terms_privacy,campaign_marketing,accepted_at',
-                'interests:id,name'
-            ])
-                ->select('id', 'full_name', 'email', 'phone', 'country', 'country_code')
-                ->find($userId);
-
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User not found'
-                ], 404);
-            }
-
-            /** 🔥 Convert profile_image to full URL */
-            if ($user->profile && $user->profile->profile_image) {
-                $user->profile->profile_image = asset($user->profile->profile_image);
-            } else {
-                $user->profile->profile_image = null;
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Profile fetched successfully',
-                'data' => [
-                    'user' => $user
-                ]
-            ], 200);
-        } catch (\Throwable $e) {
+        if (!$userId) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch profile',
-                'error'   => $e->getMessage()
-            ], 500);
+                'message' => 'Unauthorized'
+            ], 401);
         }
+
+        /** -----------------------
+         *  Fetch User with Relations
+         * ---------------------- */
+        $user = User::with([
+            'profile:id,user_id,age_band,city,dining_budget,has_dogs,profile_image',
+            'consent:id,user_id,accepted_terms_privacy,campaign_marketing,accepted_at',
+            'interests:id,name'
+        ])
+        ->select('id', 'full_name', 'email', 'phone', 'country', 'country_code')
+        ->find($userId);
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile fetched successfully',
+            'data' => [
+                'user' => $user
+            ]
+        ], 200);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch profile',
+            'error'   => $e->getMessage()
+        ], 500);
     }
+}
 
 
     /**
@@ -224,4 +221,5 @@ class ProfileController extends Controller
             ], 500);
         }
     }
+
 }
