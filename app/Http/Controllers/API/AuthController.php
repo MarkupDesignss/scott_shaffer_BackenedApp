@@ -165,16 +165,17 @@ class AuthController extends Controller
             $user = User::where('phone', $validated['phone'])->first();
                        if (!$user) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'User not found',
-                ], 200);
+                    'success' => false,
+                  'message' => 'No registered account was found with the provided details.'
+
+                ], 404);
             }
             
             if ($user->status == 0) {
                 return response()->json([
-                    'success' => true,
+                    'success' => false,
                     'message' => "Invalid or inactive user",
-                ],200);
+                ],400);
             }
 
 

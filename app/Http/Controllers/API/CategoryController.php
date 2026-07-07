@@ -6,38 +6,112 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\CatalogCategory;
 use App\Models\CatalogItem;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
+    // public function categories()
+    // {
+    //     try {
+    //         $categories = CatalogCategory::where('status', '1')
+    //             ->select('id', 'name')
+    //             ->orderBy('name')
+    //             ->get();
+
+    //         if ($categories->isEmpty()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'No categories found.',
+    //                 'data' => []
+    //             ], 404);
+    //         }
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Categories fetched successfully.',
+    //             'data' => $categories
+    //         ], 200);
+    //     } catch (\Throwable $e) {
+    //         Log::error('Catalog Categories API Error', [
+    //             'error' => $e->getMessage()
+    //         ]);
+
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Something went wrong while fetching categories.'
+    //         ], 500);
+    //     }
+    // }
+    
     public function categories()
     {
         try {
-            $categories = CatalogCategory::where('status', '1')
-                ->select('id', 'name')
-                ->orderBy('name')
-                ->get();
-
-            if ($categories->isEmpty()) {
+            // Get the authenticated user
+            $user = auth()->user();
+            
+            if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No categories found.',
+                    'message' => 'User not authenticated.',
+                    'data' => []
+                ], 401);
+            }
+            
+            // Get user's interests using DB query
+            $userInterests = DB::table('user_interest')
+                ->where('user_id', $user->id)
+                ->pluck('interest_id')
+                ->toArray();
+                
+            
+            if (empty($userInterests)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No interests found for this user.',
                     'data' => []
                 ], 404);
             }
-
+            
+            // Fetch categories matching user's interests using DB query with join
+            $categories = DB::table('catalog_categories')
+                ->where('catalog_categories.status', '1')
+                ->whereIn('catalog_categories.interest_id', $userInterests)
+                ->select(
+                    'catalog_categories.id',
+                    'catalog_categories.name',
+                    'catalog_categories.slug',
+                    'catalog_categories.icon',
+                    'catalog_categories.color',
+                    'catalog_categories.interest_id'
+                )
+                ->orderBy('catalog_categories.name')
+                ->get();
+            
+            if ($categories->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No categories found matching your interests.',
+                    'data' => []
+                ], 404);
+            }
+            
             return response()->json([
                 'success' => true,
-                'message' => 'Categories fetched successfully.',
+                'message' => 'Categories fetched successfully based on your interests.',
                 'data' => $categories
             ], 200);
+            
         } catch (\Throwable $e) {
             Log::error('Catalog Categories API Error', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
             ]);
-
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong while fetching categories.'
@@ -46,15 +120,14 @@ class CategoryController extends Controller
     }
 
 
-    public function items(Request $request)
+    public function items(Request $request, $category_id)
     {
         try {
-            //  Validate query params
+            // Validate query params
             $validator = Validator::make($request->all(), [
-                'category_id' => 'required|exists:catalog_categories,id', // mandatory now
-                'search'      => 'nullable|string|max:100',
+                'search' => 'nullable|string|max:100',
             ]);
-
+    
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
@@ -62,92 +135,50 @@ class CategoryController extends Controller
                     'errors'  => $validator->errors()
                 ], 422);
             }
-
-            //  Fetch items filtered by category_id (mandatory) and optional search
+    
+            // Fetch items
             $items = CatalogItem::where('status', '1')
                 ->with('category:id,name')
-                ->where('category_id', $request->category_id)
+                ->where('category_id', $category_id)
                 ->when($request->filled('search'), function ($q) use ($request) {
                     $q->where('name', 'like', '%' . $request->search . '%');
                 })
                 ->select('id', 'category_id', 'name', 'description', 'image_url')
-                ->get();
-
+                ->get()
+                ->map(function ($item) {
+                    $item->image_url = $item->image_url
+                        ? url('storage/' . $item->image_url)
+                        : null;
+    
+                    return $item;
+                });
+    
             if ($items->isEmpty()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No items found for this category.',
-                    'data' => []
+                    'data'    => []
                 ], 404);
             }
-
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Catalog items fetched successfully.',
-                'data' => $items
+                'data'    => $items
             ], 200);
-
+    
         } catch (\Throwable $e) {
             Log::error('Catalog Items API Error', [
                 'request' => $request->all(),
                 'error'   => $e->getMessage()
             ]);
-
+    
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong while fetching catalog items.'
             ], 500);
         }
     }
-
-
-
-    // public function itemsByCategory($categoryId)
-    // {
-    //     try {
-    //         $category = CatalogCategory::where('id', $categoryId)
-    //             ->where('status', '1')
-    //             ->first();
-
-    //         if (!$category) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Category not found.'
-    //             ], 404);
-    //         }
-
-    //         $items = CatalogItem::where('status', '1')
-    //             ->where('category_id', $categoryId)
-    //             ->select('id', 'name', 'description', 'image_url')
-    //             ->orderBy('name')
-    //             ->get();
-
-    //         if ($items->isEmpty()) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'No items found for this category.',
-    //                 'data' => []
-    //             ], 404);
-    //         }
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Category items fetched successfully.',
-    //             'data' => $items
-    //         ], 200);
-    //     } catch (\Throwable $e) {
-    //         Log::error('Category Items API Error', [
-    //             'category_id' => $categoryId,
-    //             'error' => $e->getMessage()
-    //         ]);
-
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Unable to fetch items.',
-    //             'reason'    => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
 
     public function categoriesByInterest($interestId)
     {

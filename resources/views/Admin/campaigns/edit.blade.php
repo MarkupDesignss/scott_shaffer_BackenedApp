@@ -134,7 +134,7 @@
                                     {{-- @dd($campaign->image_url); --}}
                                     @if($campaign->image_url)
                                         <div class="mb-2">
-                                             <img src="{{ asset($campaign->image_url) }}"
+                                             <img src="{{ asset('storage/' .$campaign->image_url) }}"
                                                 class="img-thumbnail"
                                                 style="max-height: 120px;">
                                         </div>

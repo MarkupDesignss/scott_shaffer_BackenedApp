@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Policy;
 use App\Models\UserConsent;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -16,6 +17,32 @@ class UserConsentController extends Controller
      * 1. Get all active policies
      * GET: /api/policies
      */
+     
+      public function getVersion()
+    {
+            // Get latest version from DB
+            $version = DB::table('app_versions')->latest()->first();
+    
+            // If no record found, return defaults
+            if (!$version) {
+                return response()->json([
+                    'latestVersion' => '1.0.0',
+                    'minRequiredVersion' => '1.0.0',
+                    'forceUpdate' => false,
+                    'androidUrl' => 'https://play.google.com/store/apps/details?id=com.app',
+                    'iosUrl' => 'https://apps.apple.com/app/id123456'
+                ]);
+            }
+    
+            // Return version info with URLs
+            return response()->json([
+                'latestVersion' => $version->latest_version,
+                'minRequiredVersion' => $version->min_required_version,
+                'forceUpdate' => (bool)$version->force_update,
+                'androidUrl' => $version->android_url ?? 'https://play.google.com/store/apps/details?id=com.app',
+                'iosUrl' => $version->ios_url ?? 'https://apps.apple.com/app/id123456'
+            ]);
+    }
     public function index()
     {
         try {

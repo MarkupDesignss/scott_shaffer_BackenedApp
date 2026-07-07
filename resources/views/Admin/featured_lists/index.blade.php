@@ -115,7 +115,7 @@
                                 </td>
                                 <td>
                                 @if($list->image)
-                                    <img src="{{ asset($list->image) }}" alt="{{ $list->title }}" width="80" height="80" style="object-fit:cover; border-radius:5px;">
+                                    <img src="{{ asset('storage/' . $list->image) }}" alt="{{ $list->title }}" width="80" height="80" style="object-fit:cover; border-radius:5px;">
                                 @else
                                     <span>No Image</span>
                                 @endif

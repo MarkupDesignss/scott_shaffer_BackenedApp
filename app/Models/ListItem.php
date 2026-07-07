@@ -11,7 +11,13 @@ class ListItem extends Model
         'catalog_item_id',
         'custom_item_name',
         'custom_text',
-        'position'
+        'position',
+        'user_positions',
+        'position_updated_count',
+    ];
+    
+    protected $casts = [
+        'user_positions' => 'array',
     ];
 
     public function list()

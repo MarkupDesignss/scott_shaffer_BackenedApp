@@ -10,7 +10,16 @@ use App\Http\Controllers\Admin\FeaturedListController;
 use App\Http\Controllers\Admin\FeaturedListItemController;
 use App\Http\Controllers\Admin\SegmentController;
 use App\Http\Controllers\Admin\PolicyController;
+use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\Admin\AppVersionController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+
+
+Route::get('/run-storage-link', function () {
+    Artisan::call('storage:link');
+    return 'Storage link created successfully!';
+});
 
 Route::get('/', function () {
     return view('admin.login');
@@ -19,6 +28,8 @@ Route::get('/', function () {
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
 Route::get('/featured-lists/{id}', [FeaturedListController::class, 'show']);
+Route::get('/recommended-lists/{id}', [FeaturedListController::class, 'show']);
+Route::get('/published-lists/{id}', [FeaturedListController::class, 'show']);
 
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -72,6 +83,10 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     )->name('user.toggle-status');
     Route::get('/users/{id}/view', [UserController::class, 'viewUser'])
         ->name('users.view');
+        
+        Route::get('/app-versions', [AppVersionController::class, 'index'])->name('app_versions.index');
+        Route::get('/app-versions/{id}/edit', [AppVersionController::class, 'edit'])->name('app_versions.edit');
+        Route::put('/app-versions/{id}', [AppVersionController::class, 'update'])->name('app_versions.update');
 
     // Interest
     Route::resource('interest', InterestController::class);
@@ -82,10 +97,16 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
     //Catalog
     Route::resource('catalog-items', CatalogItemController::class);
+        Route::get(
+        '/get-subcategories/{category}',
+        [CatalogItemController::class, 'getSubCategories']
+    )->name('get-subcategories');
+    
     Route::patch(
         '/items/{id}/toggle-status',
         [CatalogItemController::class, 'toggleStatus']
     )->name('items.toggle-status');
+        
     Route::resource('catalog-categories', CatalogCategoryController::class);
     Route::patch(
         '/catalog-categories/{id}/toggle-status',
@@ -118,6 +139,13 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
         [CampaignController::class, 'toggleStatus']
     )->name('campaigns.toggle-status');
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
+    
+        // Subcategory controller
+    Route::resource('sub-categories', SubCategoryController::class);
+    Route::post(
+        'sub-categories/{id}/toggle-status',
+        [SubCategoryController::class, 'toggleStatus']
+    )->name('sub-categories.toggle-status');
 
 
     Route::resource('segments', SegmentController::class);

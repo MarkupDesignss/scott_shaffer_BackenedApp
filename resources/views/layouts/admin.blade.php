@@ -7,6 +7,7 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- Summernote CSS -->
@@ -76,8 +77,8 @@
         }
 
         .logo {
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border-radius: 10px;
             background: linear-gradient(45deg, var(--primary-light), #ffffff);
             display: flex;
@@ -620,9 +621,13 @@
                 <span></span>
                 <span></span>
             </button>
-            <div class="logo-container">
-                <!-- <div class="logo"></div> -->
-                <div class="brand-text">Scott Shafer Admin</div>
+           <div class="logo-container">
+                <img 
+                    src="https://www.markupdesigns.net/scott-shafer/favicon.png" 
+                    alt="Scott Shafer Logo"
+                    class="logo"
+                >
+                <!--<div class="brand-text">Scott Shafer Admin</div>-->
             </div>
         </div>
 
@@ -695,6 +700,38 @@
                     </li>
                 </ul>
             </li>
+            
+                        {{-- Subcatagory mnagement --}}
+            <li class="sidebar-item has-submenu
+
+                {{ request()->routeIs('admin.sub-categories.*') || request()->routeIs('admin.sub-categories.*') ? 'open active' : '' }}"
+                style="list-style: none;">
+
+                <a href="javascript:void(0);" class="sidebar-link">
+                    <i class="bi bi-folder"></i>
+                    <span class="nav-label">SubCatalog Management</span>
+                    <i class="bi bi-chevron-down ms-auto arrow"></i>
+                </a>
+
+                <ul class="submenu">
+                    <li>
+                        <a href="{{ route('admin.sub-categories.index') }}"
+                            class="{{ request()->routeIs('admin.sub-categories.*') ? 'active' : '' }}">
+                            <i class="bi bi-folder2-open"></i>
+                            <span>Sub Categories</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('admin.catalog-items.index') }}"
+                            class="{{ request()->routeIs('admin.catalog-items.*') ? 'active' : '' }}">
+                            <i class="bi bi-box-seam"></i>
+                            <span>SubCategory Items</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
 
             <li class="sidebar-item has-submenu
                 {{ request()->routeIs('admin.featured-lists.*') || request()->routeIs('admin.featured-list-items.*') ? 'open active' : '' }}"
@@ -741,10 +778,10 @@
 
 
 
-            <a href="{{ route('admin.policies.index') }}"
-            class="nav-item {{ request()->routeIs('admin.policies.*') ? 'active' : '' }}">
-                <i class="nav-icon bi bi-shield-lock-fill"></i>
-                <span class="nav-label">Pages</span>
+            <a href="{{ route('admin.app_versions.index') }}"
+               class="nav-item {{ request()->routeIs('admin.app_versions.*') ? 'active' : '' }}">
+                <i class="nav-icon bi bi-phone-fill"></i>
+                <span class="nav-label">App Version</span>
             </a>
 
 

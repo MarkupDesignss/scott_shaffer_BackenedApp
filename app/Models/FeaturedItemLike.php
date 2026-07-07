@@ -8,4 +8,12 @@ class FeaturedItemLike extends Model
 {
     protected $table = 'featured_item_likes';
     protected $guarded = [];
+    public function featuredListItem()
+{
+    return $this->belongsTo(FeaturedList::class, 'featured_list_item_id');
+}
+    public function list()
+    {
+        return $this->belongsTo(ListModel::class, 'list_id');
+    }
 }

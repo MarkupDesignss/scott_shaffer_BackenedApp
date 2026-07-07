@@ -79,7 +79,7 @@
                                 @if($featuredList->image)
                                     <div class="mb-3">
                                         <img
-                                            src="{{ asset($featuredList->image) }}"
+                                            src="{{ asset('storage/' .$featuredList->image) }}"
                                             class="img-thumbnail"
                                             style="max-height: 200px;"
                                             alt="Featured Image">

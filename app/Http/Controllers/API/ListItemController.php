@@ -16,40 +16,6 @@ class ListItemController extends Controller
     /* =========================
        GET: List Items
     ========================== */
-    // public function index($listId)
-    // {
-    //     try {
-    //         $list = ListModel::findOrFail($listId);
-    //         //$this->authorizeList($list);
-
-    //         $items = ListItem::with('catalogItem.category')
-    //             ->where('list_id', $listId)
-    //             ->orderBy('position')
-    //             ->get()
-    //             ->map(function ($item) {
-    //                 $catalog = $item->catalogItem; // check relation
-    //                 return [
-    //                     'id' => $item->id,
-    //                     'type' => $item->catalog_item_id ? 'catalog' : 'custom',
-    //                     'position' => $item->position,
-    //                     'catalog_item' => $catalog ? [
-    //                         'id' => $catalog->id,
-    //                         'name' => $catalog->name,
-    //                         'category' => $catalog->category->name ?? null,
-    //                     ] : null,
-    //                     'custom_item_name' => $item->custom_item_name,
-    //                     'custom_text' => $item->custom_text,
-    //                 ];
-    //             });
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'data' => $items
-    //         ]);
-    //     } catch (Throwable $e) {
-    //         return $this->serverError($e);
-    //     }
-    // }
 
     public function index($listId)
     {
@@ -57,23 +23,24 @@ class ListItemController extends Controller
             ListModel::findOrFail($listId);
 
             $items = ListItem::with('catalogItem.category')
+                ->where('status', 'active')
                 ->where('list_id', $listId)
-                ->orderBy('id', 'asc') 
+                ->orderBy('id', 'asc')
                 ->get()
                 ->map(function ($item) {
 
                     $catalog = $item->catalogItem;
 
                     return [
-                        'id'   => $item->id, 
+                        'id'   => $item->id,
                         'type' => $catalog ? 'catalog' : 'custom',
 
-                        // ✅ SAME FIELDS FOR BOTH
+                        // âœ… SAME FIELDS FOR BOTH
                         'item_id'   => $catalog?->id,
                         'name'      => $catalog?->name ?? $item->custom_item_name,
                         'image_url' => $catalog?->image_url
-                                    ? asset('storage/' . $catalog->image_url)
-                                    : null,
+                            ? asset('storage/' . $catalog->image_url)
+                            : null,
                         'category'  => $catalog?->category?->name,
                         'description' => $catalog?->description ?? $item->custom_text,
                     ];
@@ -81,45 +48,158 @@ class ListItemController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $items   // ✅ catalog + custom together
+                'data' => $items   // âœ… catalog + custom together
+            ]);
+        } catch (Throwable $e) {
+            return $this->serverError($e);
+        }
+    }
+
+    public function updateStatus(Request $request, $itemId)
+    {
+        try {
+            $request->validate([
+                'status' => 'required|in:active,inactive',
             ]);
 
-        } catch (Throwable $e) {
+            $item = ListItem::findOrFail($itemId);
+
+            $item->status = $request->status;
+            $item->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Item status updated successfully',
+                'data' => [
+                    'id'     => $item->id,
+                    'status' => $item->status,
+                ],
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors'  => $e->errors(),
+            ], 422);
+        } catch (\Throwable $e) {
             return $this->serverError($e);
         }
     }
 
 
 
+
     /* =========================
        POST: Add Item to List
     ========================== */
-    public function store(Request $request, $listId)
+    // public function store(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(), [
+    //             'catalog_item_ids'  => 'nullable|array',
+    //             'catalog_item_ids.*' => 'exists:catalog_items,id',
+    //             'custom_item_name'  => 'nullable|string|max:120',
+    //             'custom_text'       => 'nullable|string',
+    //             //'position'          => 'required|integer|min:1',
+    //         ]);
+    //         $listId = $request->listId;
+    //         $list = ListModel::findOrFail($listId);
+    //         // $this->authorizeList($list);
+
+    //         // Validator
+
+    //         if ($validator->fails()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'errors' => $validator->errors()
+    //             ], 422);
+    //         }
+
+    //         $validated = $validator->validated();
+
+    //         $items = [];
+
+    //         // Multiple catalog items
+    //         if (!empty($validated['catalog_item_ids'])) {
+    //             foreach ($validated['catalog_item_ids'] as $catalogId) {
+    //                 $items[] = ListItem::create([
+    //                     'list_id' => $listId,
+    //                     'catalog_item_id' => $catalogId,
+    //                     'custom_item_name' => null,
+    //                     'custom_text' =>  null,
+    //                     //'position' => $validated['position'],
+    //                 ]);
+    //             }
+    //         } elseif (!empty($validated['custom_item_name'])) {
+    //             // Single custom item
+    //             $items[] = ListItem::create([
+    //                 'list_id' => $listId,
+    //                 'catalog_item_id' => null,
+    //                 'custom_item_name' => $validated['custom_item_name'],
+    //                 'custom_text' => $validated['custom_text'] ?? null,
+    //                 //'position' => $validated['position'],
+    //             ]);
+    //         } else {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Provide either catalog_item_ids or custom_item_name'
+    //             ], 422);
+    //         }
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Item(s) added successfully',
+    //             'data' => $items
+    //         ], 201);
+    //     } catch (Throwable $e) {
+    //         return $this->serverError($e);
+    //     }
+    // }
+    
+    public function store(Request $request)
     {
         try {
-            $list = ListModel::findOrFail($listId);
-            // $this->authorizeList($list);
-
-            // Validator
             $validator = Validator::make($request->all(), [
                 'catalog_item_ids'  => 'nullable|array',
                 'catalog_item_ids.*' => 'exists:catalog_items,id',
                 'custom_item_name'  => 'nullable|string|max:120',
                 'custom_text'       => 'nullable|string',
-                //'position'          => 'required|integer|min:1',
             ]);
-
+            
+            $listId = $request->listId;
+            $list = ListModel::findOrFail($listId);
+            
+            // Current items count
+            $currentItemCount = ListItem::where('list_id', $listId)->count();
+            
+            // Calculate new items to add
+            $newItemsCount = 0;
+            if (!empty($request->catalog_item_ids)) {
+                $newItemsCount = count($request->catalog_item_ids);
+            } elseif (!empty($request->custom_item_name)) {
+                $newItemsCount = 1;
+            }
+            
+            // Check list size limit
+            if ($currentItemCount + $newItemsCount > $list->list_size) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'List size limit is ' . $list->list_size . ' items'
+                ], 422);
+            }
+            
+            // $this->authorizeList($list);
+    
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'errors' => $validator->errors()
                 ], 422);
             }
-
+    
             $validated = $validator->validated();
-
             $items = [];
-
+    
             // Multiple catalog items
             if (!empty($validated['catalog_item_ids'])) {
                 foreach ($validated['catalog_item_ids'] as $catalogId) {
@@ -128,7 +208,6 @@ class ListItemController extends Controller
                         'catalog_item_id' => $catalogId,
                         'custom_item_name' => null,
                         'custom_text' =>  null,
-                        //'position' => $validated['position'],
                     ]);
                 }
             } elseif (!empty($validated['custom_item_name'])) {
@@ -138,7 +217,6 @@ class ListItemController extends Controller
                     'catalog_item_id' => null,
                     'custom_item_name' => $validated['custom_item_name'],
                     'custom_text' => $validated['custom_text'] ?? null,
-                    //'position' => $validated['position'],
                 ]);
             } else {
                 return response()->json([
@@ -146,15 +224,18 @@ class ListItemController extends Controller
                     'message' => 'Provide either catalog_item_ids or custom_item_name'
                 ], 422);
             }
-
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Item(s) added successfully',
                 'data' => $items
             ], 201);
-
         } catch (Throwable $e) {
-            return $this->serverError($e);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+               
+            ],500);
         }
     }
 
@@ -162,54 +243,282 @@ class ListItemController extends Controller
     /* =========================
        PUT: Update Custom Item
     ========================== */
+    // public function update(Request $request, $listId, $itemId)
+    // {
+    //     try {
+    //         $list = ListModel::findOrFail($listId);
+    //         // $this->authorizeList($list);
+    //         // dd($list);
+
+    //         $item = ListItem::where('list_id', $listId)->findOrFail($itemId);
+
+    //         // Catalog item editable nahi hoga
+    //         if ($item->catalog_item_id) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Catalog items cannot be edited'
+    //             ], 403);
+    //         }
+
+    //         $validator = Validator::make($request->all(), [
+    //             'custom_item_name' => 'required|string|max:120',
+    //             'custom_text' => 'nullable|string',
+    //         ]);
+    //         if ($validator->fails()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'errors' => $validator->errors()
+    //             ], 422);
+    //         }
+
+    //         $item->update($validator->validated());
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Item updated successfully',
+    //             'data' => $item
+    //         ]);
+    //     } catch (Throwable $e) {
+    //         return $this->serverError($e);
+    //     }
+    // }
+    
+    // public function update(Request $request, $listId, $itemId)
+    // {
+    //     try {
+    //         $list = ListModel::findOrFail($listId);
+    
+    //         $item = ListItem::where('list_id', $listId)
+    //             ->findOrFail($itemId);
+    
+    //         // Catalog item editable nahi hoga
+    //         if ($item->catalog_item_id) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Catalog items cannot be edited'
+    //             ], 403);
+    //         }
+    
+    //         $validator = Validator::make($request->all(), [
+    //             'custom_item_name' => 'nullable|string|max:120',
+    //             'custom_text'      => 'nullable|string',
+    
+    //             'new_items' => 'nullable|array',
+    //             'new_items.*.custom_item_name' => 'required|string|max:120',
+    //             'new_items.*.custom_text' => 'nullable|string',
+    //         ]);
+    
+    //         if ($validator->fails()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'errors' => $validator->errors()
+    //             ], 422);
+    //         }
+    
+    //         $validated = $validator->validated();
+    
+    //         /*
+    //         |--------------------------------------------------------------------------
+    //         | CHECK LIST SIZE LIMIT
+    //         |--------------------------------------------------------------------------
+    //         */
+    //         $currentItemCount = ListItem::where('list_id', $listId)->count();
+    
+    //         $newItemsCount = isset($validated['new_items'])
+    //             ? count($validated['new_items'])
+    //             : 0;
+    
+    //         if (($currentItemCount + $newItemsCount) > $list->list_size) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'List size limit is ' . $list->list_size . ' items'
+    //             ], 422);
+    //         }
+    
+    //         /*
+    //         |--------------------------------------------------------------------------
+    //         | UPDATE EXISTING ITEM
+    //         |--------------------------------------------------------------------------
+    //         */
+    //         $item->update([
+    //             'custom_item_name' => $validated['custom_item_name'],
+    //             'custom_text'      => $validated['custom_text'] ?? null,
+    //         ]);
+    
+    //         /*
+    //         |--------------------------------------------------------------------------
+    //         | CREATE NEW ITEMS
+    //         |--------------------------------------------------------------------------
+    //         */
+    //         $createdItems = [];
+    
+    //         if (!empty($validated['new_items'])) {
+    
+    //             foreach ($validated['new_items'] as $newItem) {
+    
+    //                 $createdItems[] = ListItem::create([
+    //                     'list_id'          => $listId,
+    //                     'catalog_item_id'  => null,
+    //                     'custom_item_name' => $newItem['custom_item_name'],
+    //                     'custom_text'      => $newItem['custom_text'] ?? null,
+    //                 ]);
+    //             }
+    //         }
+    
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Item updated successfully',
+    //             'data' => [
+    //                 'updated_item' => $item->fresh(),
+    //                 'new_items'    => $createdItems,
+    //                 'total_items'  => ListItem::where('list_id', $listId)->count(),
+    //                 'list_size'    => $list->list_size,
+    //             ]
+    //         ]);
+    //     } catch (Throwable $e) {
+    //         return $this->serverError($e);
+    //     }
+    // }
+    
     public function update(Request $request, $listId, $itemId)
     {
         try {
             $list = ListModel::findOrFail($listId);
-            $this->authorizeList($list);
-
-            $item = ListItem::where('list_id', $listId)->findOrFail($itemId);
-
-            // Catalog item editable nahi hoga
+    
+            $item = ListItem::where('list_id', $listId)
+                ->findOrFail($itemId);
+    
+            // Catalog items cannot be edited
             if ($item->catalog_item_id) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Catalog items cannot be edited'
-                ], 403);
+                ], 422);
             }
-
+    
             $validator = Validator::make($request->all(), [
-                'custom_item_name' => 'required|string|max:120',
-                'custom_text' => 'nullable|string',
+    
+                // Existing item update (optional)
+                'custom_item_name' => 'nullable|string|max:120',
+                'custom_text'      => 'nullable|string',
+    
+                // New items (optional)
+                'new_items' => 'nullable|array',
+                'new_items.*.custom_item_name' => 'required|string|max:120',
+                'new_items.*.custom_text'      => 'nullable|string',
             ]);
-
+    
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'errors' => $validator->errors()
                 ], 422);
             }
-
-            $item->update($validator->validated());
-
+    
+            $validated = $validator->validated();
+    
+            /*
+            |--------------------------------------------------------------------------
+            | AT LEAST ONE ACTION REQUIRED
+            |--------------------------------------------------------------------------
+            */
+            $hasUpdateData = array_key_exists('custom_item_name', $validated)
+                || array_key_exists('custom_text', $validated);
+    
+            $hasNewItems = !empty($validated['new_items']);
+    
+            if (!$hasUpdateData && !$hasNewItems) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please provide item data to update or new items to add.'
+                ], 422);
+            }
+    
+            /*
+            |--------------------------------------------------------------------------
+            | CHECK LIST SIZE LIMIT
+            |--------------------------------------------------------------------------
+            */
+            $currentItemCount = ListItem::where('list_id', $listId)->count();
+    
+            $newItemsCount = $hasNewItems
+                ? count($validated['new_items'])
+                : 0;
+    
+            if (($currentItemCount + $newItemsCount) > $list->list_size) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'List size limit is ' . $list->list_size . ' items'
+                ], 422);
+            }
+    
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE EXISTING ITEM (OPTIONAL)
+            |--------------------------------------------------------------------------
+            */
+            if ($hasUpdateData) {
+    
+                $item->update([
+                    'custom_item_name' => $validated['custom_item_name'] ?? $item->custom_item_name,
+                    'custom_text'      => array_key_exists('custom_text', $validated)
+                        ? $validated['custom_text']
+                        : $item->custom_text,
+                ]);
+            }
+    
+            /*
+            |--------------------------------------------------------------------------
+            | CREATE NEW ITEMS (OPTIONAL)
+            |--------------------------------------------------------------------------
+            */
+            $createdItems = [];
+    
+            if ($hasNewItems) {
+    
+                foreach ($validated['new_items'] as $newItem) {
+    
+                    $createdItems[] = ListItem::create([
+                        'list_id'          => $listId,
+                        'catalog_item_id'  => null,
+                        'custom_item_name' => $newItem['custom_item_name'],
+                        'custom_text'      => $newItem['custom_text'] ?? null,
+                    ]);
+                }
+            }
+    
             return response()->json([
                 'success' => true,
-                'message' => 'Item updated successfully',
-                'data' => $item
+                'message' => 'List updated successfully',
+                'data' => [
+                    'updated_item' => $item->fresh(),
+                    'new_items'    => $createdItems,
+                    'total_items'  => ListItem::where('list_id', $listId)->count(),
+                    'list_size'    => $list->list_size,
+                ]
             ]);
+    
         } catch (Throwable $e) {
-            return $this->serverError($e);
+             return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+               
+            ],500);
         }
     }
 
     /* =========================
        PUT: Reorder Items
-    ========================== */
+    // ========================== */
     public function reorder(Request $request, $listId)
     {
         try {
             $list = ListModel::findOrFail($listId);
-            //$this->authorizeList($list);
+            $userId = Auth::id();
+            $user   = Auth::user();
+
+            // OPTIONAL (recommended)
+            // $this->authorizeList($list);
 
             $validator = Validator::make($request->all(), [
                 'items' => 'required|array',
@@ -224,22 +533,143 @@ class ListItemController extends Controller
                 ], 422);
             }
 
-            DB::transaction(function () use ($validator, $listId) {
+            DB::transaction(function () use ($validator, $listId, $userId) {
+
                 foreach ($validator->validated()['items'] as $item) {
-                    ListItem::where('id', $item['id'])
+
+                    $listItem = ListItem::where('id', $item['id'])
                         ->where('list_id', $listId)
-                        ->update(['position' => $item['position']]);
+                        ->lockForUpdate()
+                        ->firstOrFail();
+
+                    $positions = $listItem->user_positions ?? [];
+
+                    if (!is_array($positions)) {
+                        $positions = [];
+                    }
+
+                    // Update current user's position
+                    $positions[$userId] = $item['position'];
+
+                    $listItem->user_positions = $positions;
+                    $listItem->position_updated_count = $listItem->position_updated_count + 1;
+                    $listItem->save();
                 }
             });
 
+            /*
+        |--------------------------------------------------------------------------
+        | Send Notification to List Owner
+        |--------------------------------------------------------------------------
+        */
+            $ownerId = $list->user_id;
+
+            // Avoid self notification
+            if ($ownerId != $userId) {
+
+                // DB notification
+                DB::table('notifications')->insert([
+                    'sender_id'   => $userId,
+                    'receiver_id' => $ownerId,
+                    'type'        => 'list_reordered',
+                    'title'       => 'List Updated',
+                    'body'        => $user->full_name . ' reordered items in your list',
+                    'data'        => json_encode([
+                        'list_id' => $listId
+                    ]),
+                    'created_at'  => now(),
+                    'updated_at'  => now(),
+                ]);
+
+                // Push notification (Firebase)
+                // try {
+                //     (new FirebaseNotificationService())->sendToUser(
+                //         $ownerId,
+                //         'List Updated',
+                //         $user->full_name . ' reordered items in your list',
+                //         [
+                //             'type'    => 'list_reordered',
+                //             'list_id' => (string) $listId,
+                //         ]
+                //     );
+                // } catch (\Throwable $e) {
+                //     // fail silently (important for production)
+                //     \Log::error('Firebase notification failed: ' . $e->getMessage());
+                // }
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'List reordered successfully'
+                'message' => 'Reordered Successfully'
             ]);
-        } catch (Throwable $e) {
-            return $this->serverError($e);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
         }
     }
+    //   public function reorder(Request $request, $listId)
+    // {
+    //     try {
+    //         $list = ListModel::findOrFail($listId);
+
+    //         $validator = Validator::make($request->all(), [
+    //             'items' => 'required|array',
+    //             'items.*.id' => 'required|exists:list_items,id',
+    //             'items.*.position' => 'required|integer|min:1',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'errors' => $validator->errors()
+    //             ], 422);
+    //         }
+
+    //         $userId = Auth::id();
+
+    //         DB::transaction(function () use ($validator, $listId, $userId) {
+
+    //             foreach ($validator->validated()['items'] as $item) {
+
+    //                 $listItem = ListItem::where('id', $item['id'])
+    //                     ->where('list_id', $listId)
+    //                     ->lockForUpdate()
+    //                     ->firstOrFail();
+
+    //                 // cast already applied → no json_encode needed
+    //                 $positions = $listItem->user_positions ?? [];
+
+    //                 // ensure array
+    //                 if (!is_array($positions)) {
+    //                     $positions = [];
+    //                 }
+
+    //                 // set current user's position
+    //                 $positions[$userId] = $item['position'];
+
+    //                 // INAL FIX (manual increment)
+    //                 $listItem->user_positions = $positions;
+    //                 $listItem->position_updated_count = $listItem->position_updated_count + 1;
+    //                 $listItem->save();
+    //             }
+    //         });
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Reordered Successfully'
+    //         ]);
+
+    //     } catch (\Throwable $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Something went wrong',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
 
     /* =========================
        DELETE: Remove Item
@@ -248,7 +678,7 @@ class ListItemController extends Controller
     {
         try {
             $list = ListModel::findOrFail($listId);
-            $this->authorizeList($list);
+            // $this->authorizeList($list);
 
             $item = ListItem::where('list_id', $listId)->findOrFail($itemId);
             $item->delete();

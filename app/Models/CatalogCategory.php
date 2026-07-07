@@ -18,4 +18,12 @@ class CatalogCategory extends Model
     {
         return $this->belongsTo(Intrest::class,'interest_id');
     }
+    public function lists()
+    {
+        return $this->hasMany(\App\Models\ListModel::class, 'category_id', 'id');
+    }
+        public function subCategories()
+    {
+        return $this->hasMany(SubCategory::class, 'category_id');
+    }
 }

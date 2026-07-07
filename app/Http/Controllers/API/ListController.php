@@ -15,247 +15,347 @@ use Throwable;
 use App\Models\Notification;
 use App\Models\UserDevice;
 use Illuminate\Support\Facades\DB;
+use App\Models\SubCategory;
+use App\Models\CatalogItem;
+use App\Models\ListItem;
+use App\Models\UserListPosition;
+use App\Models\CatalogCategory;
 
 class ListController extends Controller
 {
     /* =========================
        Get My Lists (Owner + Group)
-    ========================== */
+    ========================== */ 
+    
+//     public function index()
+// {
+//     try {
+//         $user = Auth::user();
+
+//         if (!$user) {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => 'Unauthorized'
+//             ], 401);
+//         }
+
+//         $lists = ListModel::where(function ($q) use ($user) {
+//                 $q->where('lists.user_id', $user->id) // FIX HERE
+//                   ->orWhereHas('members', function ($m) use ($user) {
+//                       $m->where('list_members.user_id', $user->id) 
+//                         ->where('list_members.status', 'accepted'); 
+//                   });
+//             })
+//             ->leftJoin('user_list_positions as ulp', function ($join) use ($user) {
+//                 $join->on('lists.id', '=', 'ulp.list_id')
+//                      ->where('ulp.user_id', $user->id);
+//             })
+//             ->with('items.catalogItem')
+//             ->select('lists.*', \DB::raw('COALESCE(ulp.position, lists.id) as final_position'))
+//             ->orderBy('final_position')
+//             ->get();
+
+//         return response()->json([
+//             'success' => true,
+//             'data' => $lists
+//         ]);
+
+//     } catch (Throwable $e) {
+//         return $this->serverError($e);
+//     }
+// }
     public function index()
     {
         try {
             $user = Auth::user();
-
+    
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 401);
+            }
+    
             $lists = ListModel::where(function ($q) use ($user) {
-                $q->where('user_id', $user->id)
-                    ->orWhereHas('members', function ($m) use ($user) {
-                        $m->where('user_id', $user->id)
-                            ->where('status', 'accepted');
-                    });
-            })
+                    $q->where('lists.user_id', $user->id)
+                      ->orWhereHas('members', function ($m) use ($user) {
+                          $m->where('list_members.user_id', $user->id)
+                            ->where('list_members.status', 'accepted');
+                      });
+                })
+                ->leftJoin('user_list_positions as ulp', function ($join) use ($user) {
+                    $join->on('lists.id', '=', 'ulp.list_id')
+                         ->where('ulp.user_id', $user->id);
+                })
                 ->with('items.catalogItem')
+                ->select(
+                    'lists.*',
+                    DB::raw('COALESCE(ulp.position, lists.id) as final_position')
+                )
+                ->orderBy('final_position')
                 ->get();
-
+    
+            foreach ($lists as $list) {
+    
+                // If this is a cloned list, show original list items
+                if (!empty($list->cloned_from_id)) {
+    
+                    $originalList = ListModel::with('items.catalogItem')
+                        ->find($list->cloned_from_id);
+    
+                    if ($originalList) {
+                        $list->setRelation('items', $originalList->items);
+                    }
+                }
+            }
+    
             return response()->json([
                 'success' => true,
                 'data' => $lists
             ]);
-        } catch (Throwable $e) {
-            return $this->serverError($e);
-        }
-    }
-
-
-    // public function store(Request $request)
-    // {
-    //     try {
-    //         $validated = $request->validate([
-    //             'title'       => 'required|string|max:80',
-    //             'category_id' => 'required|exists:catalog_categories,id',
-    //             'list_size'   => 'nullable|integer|min:1|max:20',
-    //             'is_group'    => 'nullable|boolean',
-    //             'user_ids'    => 'nullable|array',
-    //             'user_ids.*'  => 'exists:users,id',
-    //         ]);
-
-    //         $list = ListModel::create([
-    //             'user_id'     => Auth::id(),
-    //             'title'       => $validated['title'],
-    //             'category_id' => $validated['category_id'],
-    //             'list_size'   => $validated['list_size'] ?? null,
-    //             'is_group'    => $validated['is_group'] ?? false,
-    //         ]);
-
-    //         $firebase = new FirebaseNotificationService();
-
-    //         // Group list logic
-    //         if ($list->is_group) {
-    //             // Owner
-    //             $list->members()->create([
-    //                 'user_id' => Auth::id(),
-    //                 'status'  => 'accepted'
-    //             ]);
-
-    //             // Invite members
-    //             if (!empty($validated['user_ids'])) {
-    //                 foreach ($validated['user_ids'] as $userId) {
-    //                     ListMember::firstOrCreate(
-    //                         [
-    //                             'list_id' => $list->id,
-    //                             'user_id' => $userId
-    //                         ],
-    //                         [
-    //                             'status' => 'invited'
-    //                         ]
-    //                     );
-
-    //                     // 🔔 Firebase Notification
-    //                     $firebase->sendToUser(
-    //                         $userId,
-    //                         'You are invited to a list',
-    //                         Auth::user()->name . ' invited you to join "' . $list->title . '"',
-    //                         [
-    //                             'list_id' => (string) $list->id,
-    //                             'type'    => 'list_invite'
-    //                         ]
-    //                     );
-    //                 }
-    //             }
-    //         }
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'List created successfully',
-    //             'data'    => $list->load('members')
-    //         ], 201);
-    //     } catch (\Throwable $e) {
-    //         return $this->serverError($e);
-    //     }
-    // }
-
-
-    public function store(Request $request)
-    {
-        DB::beginTransaction();
-
-        try {
-            $validated = $request->validate([
-                'title'       => 'required|string|max:80',
-                'category_id' => 'required|exists:catalog_categories,id',
-                'list_size'   => 'nullable|integer|min:1|max:20',
-                'is_group'    => 'nullable|boolean',
-                'user_ids'    => 'nullable|array',
-                'user_ids.*'  => 'exists:users,id',
-            ]);
-
-            /**
-             * 🚨 SANITIZE INVITED USERS
-             * - remove duplicates
-             * - remove creator if present
-             */
-            $inviteUserIds = collect($validated['user_ids'] ?? [])
-                ->unique()
-                ->reject(fn($id) => $id == Auth::id())
-                ->values();
-
-            /**
-             * Auto-force group if users exist
-             */
-            $isGroup = $inviteUserIds->isNotEmpty()
-                ? true
-                : ($validated['is_group'] ?? false);
-
-            /**
-             * Create List
-             */
-            $list = ListModel::create([
-                'user_id'     => Auth::id(),
-                'title'       => $validated['title'],
-                'category_id' => $validated['category_id'],
-                'list_size'   => $validated['list_size'] ?? null,
-                'is_group'    => $isGroup,
-            ]);
-
-            /**
-             * Group logic
-             */
-            if ($isGroup) {
-
-                // ✅ Creator ALWAYS accepted
-                ListMember::firstOrCreate(
-                    [
-                        'list_id' => $list->id,
-                        'user_id' => Auth::id(),
-                    ],
-                    [
-                        'status' => 'accepted',
-                    ]
-                );
-
-                $firebase = new FirebaseNotificationService();
-
-                foreach ($inviteUserIds as $userId) {
-
-                    // ✅ Invited users
-                    ListMember::firstOrCreate(
-                        [
-                            'list_id' => $list->id,
-                            'user_id' => $userId,
-                        ],
-                        [
-                            'status' => 'invited',
-                        ]
-                    );
-
-                    // ✅ Save notification
-                    Notification::create([
-                        'sender_id'   => Auth::id(),
-                        'receiver_id' => $userId,
-                        'type'        => 'list_invite',
-                        'title'       => 'Group List Invitation',
-                        'body'        => Auth::user()->full_name .
-                            ' invited you to join "' . $list->title . '"',
-                        'data'        => ['list_id' => $list->id],
-                    ]);
-
-                    // 🔔 Push notification (non-DB)
-                    $firebase->sendToUser(
-                        $userId,
-                        'Group List Invitation',
-                        Auth::user()->full_name .
-                            ' invited you to join "' . $list->title . '"',
-                        [
-                            'type'    => 'list_invite',
-                            'list_id' => (string) $list->id,
-                        ]
-                    );
-                }
-            }
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'List created successfully',
-                'data'    => $list->load('members.user'),
-            ], 201);
+    
         } catch (\Throwable $e) {
-
-            DB::rollBack();
-
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create list',
-                'error'   => $e->getMessage(),
+                'message' => 'Something went wrong',
+                'error' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
+    
+    public function reorderLists(Request $request)
+{
+    try {
+        $user = Auth::user();
 
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
 
+        $request->validate([
+            'lists' => 'required|array',
+            'lists.*.id' => 'required|exists:lists,id',
+            'lists.*.position' => 'required|integer|min:1'
+        ]);
 
-    // public function registerDevice(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'user_id'      => 'required|exists:users,id',
-    //         'device_token' => 'required|string',
-    //         'device_type'  => 'nullable|string',
-    //     ]);
+        foreach ($request->lists as $list) {
 
-    //     UserDevice::updateOrCreate(
-    //         ['user_id' => $validated['user_id']],
-    //         [
-    //             'device_token' => $validated['device_token'],
-    //             'device_type'  => $validated['device_type'] ?? 'android',
-    //         ]
-    //     );
+            // Check user has access to list (owner or member)
+            $isAllowed = ListModel::where('id', $list['id'])
+                ->where(function ($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                      ->orWhereHas('members', function ($q2) use ($user) {
+                          $q2->where('user_id', $user->id);
+                      });
+                })
+                ->exists();
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Device registered successfully'
-    //     ]);
-    // }
+            if (!$isAllowed) {
+                continue;
+            }
 
+            UserListPosition::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'list_id' => $list['id']
+                ],
+                [
+                    'position' => $list['position']
+                ]
+            );
+        }
 
+        return response()->json([
+            'status' => true,
+            'message' => 'Lists reordered successfully (user-specific)'
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+    
+   public function search(Request $request)
+{
+    try {
+        $user = Auth::user();
+        $query = $re=uest->query('q');
+
+        if (!$query) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search query is required'
+            ], 422);
+        }
+
+        $lists = ListModel::where(function ($q) use ($user) {
+                // own lists
+                $q->where('user_id', $user->id)
+
+                // member lists (accepted)
+                ->orWhereHas('members', function ($m) use ($user) {
+                    $m->where('user_id', $user->id)
+                      ->where('status', 'accepted');
+                });
+            })
+            ->where(function ($q) use ($query) {
+
+                // search by list title
+                $q->where('title', 'like', "%{$query}%")
+
+                // search by list items (catalog items)
+                ->orWhereHas('items.catalogItem', function ($item) use ($query) {
+                    $item->where('name', 'like', "%{$query}%");
+                });
+            })
+            ->with('items.catalogItem')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $lists
+        ], 200);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Search failed',
+            'error'   => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function store(Request $request)
+{
+    DB::beginTransaction();
+
+    try {
+        $validated = $request->validate([
+            'title'           => 'required|string|max:80',
+            'category_id'     => 'required|exists:catalog_categories,id',
+            'sub_category_id' => 'nullable',
+            'list_size'       => 'nullable|integer|min:1',
+            'is_group'        => 'nullable|boolean',
+            'user_ids'        => 'nullable|array',
+            'user_ids.*'      => 'exists:users,id',
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Group logic
+        |--------------------------------------------------------------------------
+        */
+        $inviteUserIds = collect($validated['user_ids'] ?? [])
+            ->unique()
+            ->reject(fn ($id) => $id == Auth::id())
+            ->values();
+
+        $isGroup = $inviteUserIds->isNotEmpty()
+            ? true
+            : ($validated['is_group'] ?? false);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Prepare sub_category value
+        |--------------------------------------------------------------------------
+        */
+        $subCategoryValue = null;
+
+        if (isset($validated['sub_category_id'])) {
+            $subCategoryValue = is_array($validated['sub_category_id'])
+                ? json_encode($validated['sub_category_id'])
+                : (string) $validated['sub_category_id'];
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create List
+        |--------------------------------------------------------------------------
+        */
+        $list = ListModel::create([
+            'user_id'         => Auth::id(),
+            'title'           => $validated['title'],
+            'category_id'     => $validated['category_id'],
+            'sub_category_id' => $subCategoryValue,
+            'list_size'       => $validated['list_size'] ?? null,
+            'is_group'        => $isGroup,
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Group creator + invited users
+        |--------------------------------------------------------------------------
+        */
+        if ($isGroup) {
+
+            // Creator
+            ListMember::firstOrCreate(
+                ['list_id' => $list->id, 'user_id' => Auth::id()],
+                ['status' => 'accepted']
+            );
+
+            // Invited users + notification
+            foreach ($inviteUserIds as $userId) {
+
+                ListMember::firstOrCreate(
+                    [
+                        'list_id' => $list->id,
+                        'user_id' => $userId
+                    ],
+                    [
+                        'status' => 'invited'
+                    ]
+                );
+
+                // Insert notification
+                DB::table('notifications')->insert([
+                    'sender_id'   => Auth::id(),
+                    'receiver_id' => $userId,
+                    'type'        => 'list_invite',
+                    'title'       => 'List Invitation',
+                    'body'        => 'You have been invited to join a list: ' . $list->title,
+                    'data'        => json_encode([
+                        'list_id' => $list->id
+                    ]),
+                    'created_at'  => now(),
+                    'updated_at'  => now(),
+                ]);
+            }
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List created successfully',
+            'data' => [
+                'id'             => $list->id,
+                'title'          => $list->title,
+                'category_id'    => $list->category_id,
+                'sub_category'   => $list->sub_category_id,
+                'is_group'       => (bool) $list->is_group,
+                'list_size'      => $list->list_size,
+            ]
+        ], 201);
+
+    } catch (\Throwable $e) {
+
+        DB::rollBack();
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to create list',
+            'error'   => config('app.debug') ? $e->getMessage() : null,
+        ], 500);
+    }
+}
     /* =========================
        Show List
     ========================== */
@@ -279,25 +379,68 @@ class ListController extends Controller
     /* =========================
        Update List
     ========================== */
+    // public function update(Request $request, $id)
+    // {
+    //     try {
+    //         $list = ListModel::findOrFail($id);
+    //         // $this->authorizeList($list, true);
+
+    //         $validated = $request->validate([
+    //             'title' => 'sometimes|string|max:80'
+    //         ]);
+                
+    //         $list->update($validated);
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'List updated',
+    //             'data' => $list
+    //         ]);
+    //     } catch (Throwable $e) {
+    //         return $this->serverError($e);
+    //     }
+    // }
+    
     public function update(Request $request, $id)
     {
         try {
+    
             $list = ListModel::findOrFail($id);
-            $this->authorizeList($list, true);
-
+    
             $validated = $request->validate([
-                'title' => 'sometimes|string|max:80'
+                'title'           => 'sometimes|string|max:80',
+                'category_id'     => 'sometimes|exists:catalog_categories,id',
+                'sub_category_id' => 'nullable',
+                'list_size'       => 'nullable|integer|min:1',
             ]);
-
+    
+            /*
+            |--------------------------------------------------------------------------
+            | Prepare sub_category value
+            |--------------------------------------------------------------------------
+            */
+            if (array_key_exists('sub_category_id', $validated)) {
+    
+                $validated['sub_category_id'] = is_array($validated['sub_category_id'])
+                    ? json_encode($validated['sub_category_id'])
+                    : $validated['sub_category_id'];
+            }
+    
             $list->update($validated);
-
+    
             return response()->json([
                 'success' => true,
-                'message' => 'List updated',
-                'data' => $list
+                'message' => 'List updated successfully',
+                'data'    => $list->fresh()
             ]);
-        } catch (Throwable $e) {
-            return $this->serverError($e);
+    
+        } catch (\Throwable $e) {
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update list',
+                'error'   => config('app.debug') ? $e->getMessage() : null,
+            ], 500);
         }
     }
 
@@ -305,32 +448,68 @@ class ListController extends Controller
        Delete List
     ========================== */
     public function destroy($id)
-    {
-        try {
-            $list = ListModel::findOrFail($id);
-            $this->authorizeList($list);
+{
+    try {
+        $user = Auth::user();
 
-            $list->delete();
-
+        $list = ListModel::where('id', $id)
+            // ->where('user_id', $user->id)
+            ->first();
+            // dd($list);           
+        if (!$list) {
             return response()->json([
-                'success' => true,
-                'message' => 'List deleted'
-            ]);
-        } catch (Throwable $e) {
-            return $this->serverError($e);
+                'success' => false,
+                'message' => 'Unauthorized or list not found'
+            ], 403);
         }
+
+        $list->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List deleted successfully'
+        ], 200);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'List not deleted',
+            'error'   => $e->getMessage()
+        ], 500);
     }
-
-    /* =========================
-       Invite Uers List
-    ========================== */
-
-    public function inviteUserList()
+}
+    
+    public function inviteUserList(Request $request) // Request injection for category_id
     {
         try {
-            $users = User::where('id', '!=', Auth::id())
-                ->select('id', 'full_name', 'email')
-                ->get();
+            $categoryId = $request->input('category_id');
+
+            // Base query: active users except current user
+            $query = User::where('id', '!=', Auth::id())
+                        ->where('status', true);
+
+            // If category_id is provided, filter users by that category's interest
+            if ($categoryId) {
+                // Fetch the interest_id from catalog_categories for given category_id
+                $category = CatalogCategory::find($categoryId);
+                
+                if ($category && $category->interest_id) {
+                    $interestId = $category->interest_id;
+                    
+                    // Join user_interest to get users having that interest_id
+                    $query->whereHas('interests', function ($q) use ($interestId) {
+                        $q->where('interest_id', $interestId);
+                    });
+                } else {
+                    // If category not found or has no interest_id, return empty list or handle as needed
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Invalid category or no interest linked.'
+                    ]);
+                }
+            }
+
+            $users = $query->select('id', 'full_name', 'email')->get();
 
             return response()->json([
                 'success' => true,
@@ -552,43 +731,255 @@ class ListController extends Controller
         }
     }
 
+public function allPublishedList()
+{
+    try {
+        $user = Auth::user();
+        $baseUrl = 'https://www.markupdesigns.net/scott-shafer/storage/';
+
+        $lists = ListModel::where('status', 'published')
+            ->where(function ($q) use ($user) {
+                $q->where('visibility', 'public')
+                  ->orWhere('user_id', $user->id);
+            })
+            ->with([
+                'items.catalogItem',
+                'likes',
+                'shares',
+            ])
+            ->withCount([
+                'likes',
+                'shares',
+            ])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $lists->each(function ($list) use ($user, $baseUrl) {
+
+            //  is_liked flag
+            $list->is_liked = $user
+                ? $list->likes->contains('user_id', $user->id)
+                : false;
+
+            //  share url
+            $list->share_url = url('/published-lists/' . $list->id);
+
+            //  image url fix
+            $list->items->each(function ($item) use ($baseUrl) {
+                if (
+                    $item->catalogItem &&
+                    $item->catalogItem->image_url &&
+                    !str_starts_with($item->catalogItem->image_url, 'http')
+                ) {
+                    $item->catalogItem->image_url =
+                        $baseUrl . $item->catalogItem->image_url;
+                }
+            });
+
+            /**
+             *  SHOW sub_category_id DIRECTLY FROM LISTS TABLE
+             * (string / longtext – jo bhi save hai)
+             */
+            $list->sub_category_id = $list->sub_category_id;
+
+            unset($list->likes, $list->shares);
+        });
+
+        return response()->json([
+            'success' => true,
+            'data'    => $lists
+        ], 200);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch published lists',
+            'error'   => config('app.debug') ? $e->getMessage() : null
+        ], 500);
+    }
+}
+
+
+
+public function singlePublishedList(Request $request)
+{
+    try {
+        $user = Auth::user();
+        $baseUrl = 'https://www.markupdesigns.net/scott-shafer/storage/';
+        $listIds = $request->input('list_ids'); // array
+        
+
+        if (!is_array($listIds) || empty($listIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'list_ids array is required'
+            ], 422);
+        }
+
+        $lists = ListModel::where('status', 'published')
+            ->whereIn('id', $listIds)
+            ->where(function ($q) use ($user) {
+                $q->where('visibility', 'public')
+                  ->orWhere('user_id', $user->id);
+            })
+            ->with([
+                'items.catalogItem',
+                'likes',
+                'shares',
+            ])
+            ->withCount([
+                'likes',
+                'shares',
+            ])
+            ->get();
+
+        $lists->each(function ($list) use ($user, $baseUrl) {
+
+            $list->is_liked = $user
+                ? $list->likes->contains('user_id', $user->id)
+                : false;
+
+            $list->share_url = url('/published-lists/' . $list->id);
+
+            $list->items->each(function ($item) use ($baseUrl) {
+                if (
+                    $item->catalogItem &&
+                    $item->catalogItem->image_url &&
+                    !str_starts_with($item->catalogItem->image_url, 'http')
+                ) {
+                    $item->catalogItem->image_url =
+                        $baseUrl . $item->catalogItem->image_url;
+                }
+            });
+
+            unset($list->likes, $list->shares);
+        });
+// dd($lists);
+        return response()->json([
+            'success' => true,
+            'message' =>'List published successfully',
+            'data' => $lists
+        ], 200);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch published lists',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+/**
+ * Clone a published/featured list for the authenticated user.
+ *
+ * @param int $originalListId
+ * @return \Illuminate\Http\JsonResponse
+ */
+    public function cloneList($originalListId)
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 401);
+            }
+
+            // Find the original list (must be published or featured)
+            $originalList = ListModel::where('id', $originalListId)
+                ->where('status', 'published')   // Only published lists can be cloned
+                ->first();
+
+            if (!$originalList) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only published list can be cloned',
+                ], 404);
+            }
+
+            DB::beginTransaction();
+
+            // Create cloned list (user becomes owner)
+               $clonedList = ListModel::create([
+                'user_id'         => $user->id,
+                'title'           => $originalList->title . ' (Copy)',
+                'category_id'     => $originalList->category_id,
+                'sub_category_id' => $originalList->sub_category_id,
+                'list_size'       => $originalList->list_size,
+                'is_group'        => false,
+                'status'          => 'draft',
+                'visibility'      => 'private',
+                'cloned_from_id'  => $originalList->id, // Original list ID
+            ]);
+
+            // Clone list items (pivot table)
+            $originalItems = ListItem::where('list_id', $originalList->id)->get();
+            foreach ($originalItems as $item) {
+                ListItem::create([
+                    'list_id'         => $clonedList->id,
+                    'catalog_item_id' => $item->catalog_item_id,
+                    'quantity'        => $item->quantity,
+                    'order'           => $item->order,
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'List cloned successfully',
+                'data'    => $clonedList->load('items.catalogItem')
+            ], 201);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to clone list',
+                'error'   => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
+
+
+
 
     public function accept(Request $request)
     {
         $user   = Auth::user();
+        
         $listId = $request->list_id;
-
+    
         DB::beginTransaction();
-
+    
         try {
-            // Validate invite exists
             $member = ListMember::where([
                 'list_id' => $listId,
                 'user_id' => $user->id,
                 'status'  => 'invited',
             ])->first();
-
+    
             if (!$member) {
                 DB::rollBack();
                 return response()->json([
                     'success' => true,
                     'message' => 'Invitation not found or already handled',
-                ], 200);
+                ]);
             }
-
-            // Accept invite
+    
             $member->update(['status' => 'accepted']);
-
-            // Mark related notification as read
+    
+            //  Delete invite notification
             Notification::where('receiver_id', $user->id)
                 ->where('type', 'list_invite')
                 ->whereJsonContains('data->list_id', $listId)
                 ->update(['read_at' => now()]);
-            // dd($not);
-            // Fetch list owner
+                //->delete();
+    
             $list = ListModel::with('user')->findOrFail($listId);
-
-            // Create notification for list owner
+    
             Notification::create([
                 'sender_id'   => $user->id,
                 'receiver_id' => $list->user_id,
@@ -596,11 +987,11 @@ class ListController extends Controller
                 'title'       => 'Invitation Accepted',
                 'body'        => $user->full_name . ' accepted your list invitation',
                 'data'        => ['list_id' => $listId],
+                'read_at'     => now(),
             ]);
-
+    
             DB::commit();
-
-            // 🔔 Firebase (outside transaction)
+    
             (new FirebaseNotificationService())->sendToUser(
                 $list->user_id,
                 'Invitation Accepted',
@@ -610,15 +1001,16 @@ class ListController extends Controller
                     'list_id' => (string) $listId,
                 ]
             );
-
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Invitation accepted successfully',
-                 'user'   => $user
+                'user'    => $user,
             ]);
+    
         } catch (\Throwable $e) {
             DB::rollBack();
-
+    
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to accept invitation',
@@ -627,77 +1019,81 @@ class ListController extends Controller
         }
     }
 
-   public function reject(Request $request)
-{
-    $user   = Auth::user();
-    $listId = $request->list_id;
-
-    DB::beginTransaction();
-
-    try {
-        $member = ListMember::where([
-            'list_id' => $listId,
-            'user_id' => $user->id,
-            'status'  => 'invited',
-        ])->first();
-
-        if (!$member) {
-            DB::rollBack();
+    public function reject(Request $request)
+    {
+        $user   = Auth::user();
+        $listId = $request->list_id;
+    
+        DB::beginTransaction();
+    
+        try {
+            $member = ListMember::where([
+                'list_id' => $listId,
+                'user_id' => $user->id,
+                'status'  => 'invited',
+            ])->first();
+    
+            if (!$member) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Invitation not found or already handled',
+                ]);
+            }
+    
+            // Reject invite
+            $member->update(['status' => 'rejected']);
+    
+            // Delete invite notification (same as accept)
+            Notification::where('receiver_id', $user->id)
+                ->where('type', 'list_invite')
+                ->whereJsonContains('data->list_id', $listId)
+                ->update(['read_at' => now()]);
+                //->delete();
+    
+            // Fetch list owner
+            $list = ListModel::with('user')->findOrFail($listId);
+    
+            // Notify owner
+            Notification::create([
+                'sender_id'   => $user->id,
+                'receiver_id' => $list->user_id,
+                'type'        => 'list_invite_rejected',
+                'title'       => 'Invitation Rejected',
+                'body'        => $user->full_name . ' rejected your list invitation',
+                'data'        => ['list_id' => $listId],
+                'read_at'     => now(),
+            ]);
+    
+            DB::commit();
+    
+            // Firebase push
+            (new FirebaseNotificationService())->sendToUser(
+                $list->user_id,
+                'Invitation Rejected',
+                $user->full_name . ' rejected your list invitation',
+                [
+                    'type'    => 'list_invite_rejected',
+                    'list_id' => (string) $listId,
+                ]
+            );
+    
             return response()->json([
                 'success' => true,
-                'message' => 'Invitation not found or already handled',
+                'message' => 'Invitation rejected successfully',
+                'user'    => $user,
             ]);
+    
+        } catch (\Throwable $e) {
+            DB::rollBack();
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to reject invitation',
+                'error'   => $e->getMessage(),
+            ], 500);
         }
-
-        // Reject invite
-        $member->update(['status' => 'rejected']);
-
-        // Mark invite notification as read
-        Notification::where('receiver_id', $user->id)
-            ->where('type', 'list_invite')
-            ->whereJsonContains('data->list_id', $listId)
-            ->update(['read_at' => now()]);
-
-        // Fetch list owner
-        $list = ListModel::findOrFail($listId);
-
-        // 🔔 Notify owner about rejection
-        Notification::create([
-            'sender_id'   => $user->id,
-            'receiver_id' => $list->user_id,
-            'type'        => 'list_invite_rejected',
-            'title'       => 'Invitation Rejected',
-            'body'        => $user->full_name . ' rejected your list invitation',
-            'data'        => ['list_id' => $listId],
-        ]);
-
-        DB::commit();
-
-        // Firebase push
-        (new FirebaseNotificationService())->sendToUser(
-            $list->user_id,
-            'Invitation Rejected',
-            $user->full_name . ' rejected your list invitation',
-            [
-                'type'    => 'list_invite_rejected',
-                'list_id' => (string) $listId,
-            ]
-        );
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Invitation rejected successfully',
-            'user'   => $user
-        ]);
-    } catch (\Throwable $e) {
-        DB::rollBack();
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to reject invitation',
-            'error'   => $e->getMessage(),
-        ], 500);
     }
-}
+
 
 }

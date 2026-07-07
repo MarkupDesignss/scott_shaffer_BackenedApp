@@ -4,6 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\CatalogItem;
+use App\Models\Intrest;
+use App\Models\ListModel;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RecommenededItemsController extends Controller
@@ -13,36 +16,80 @@ class RecommenededItemsController extends Controller
         try {
             $user = Auth::user();
 
-            $interestIds = $user->interests()
-                ->where('is_active', true)
-                ->pluck('interests.id');
+            $lists = ListModel::where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhereHas('members', function ($m) use ($user) {
+                        $m->where('user_id', $user->id)
+                            ->where('status', 'accepted');
+                    });
+            })
+                ->with([
+                    'items.catalogItem',
+                    'user:id,full_name'
+                ])
+                ->withCount([
+                    // 🔹 reuse featured tables using list_id
+                    'likes as likes_count' => function ($q) {
+                        $q->whereNotNull('list_id');
+                    },
+                    'shares as shares_count' => function ($q) {
+                        $q->whereNotNull('list_id');
+                    },
+                ])
+                ->withExists([
+                    'likes as is_liked' => function ($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    },
+                ])
+                ->latest()
+                ->get()
+                ->map(function ($list) {
 
-            $items = CatalogItem::whereHas('category', function ($q) use ($interestIds) {
-                    $q->whereIn('interest_id', $interestIds)
-                      ->where('status', '1');
-                })
-                ->where('status', '1')
-                ->get();
+                    return [
+                        'id'           => $list->id,
+                        'user_id'      => $list->user_id,
+                        'title'        => $list->title,
+                        'category_id'  => $list->category_id,
+                        'list_size'    => $list->list_size,
+                        'is_group'     => $list->is_group,
+                        'status'       => $list->status,
+                        'visibility'   => $list->visibility,
+                        'created_at'   => $list->created_at,
 
-            // 🔹 ONLY CHANGE: image_url ko full URL banana
-            $items->transform(function ($item) {
-                $item->image_url = $item->image_url
-                    ? asset('storage/' . $item->image_url)
-                    : null;
-                return $item;
-            });
+                        // ✅ LIKE / SHARE DATA
+                        'likes_count'  => (int) $list->likes_count,
+                        'shares_count' => (int) $list->shares_count,
+                        'is_liked'     => (bool) $list->is_liked,
+
+                        // ✅ ITEMS WITH FULL IMAGE URL
+                        'items' => $list->items->map(function ($item) {
+                            return [
+                                'id' => $item->id,
+                                'catalog_item' => $item->catalogItem ? [
+                                    'id'          => $item->catalogItem->id,
+                                    'name'        => $item->catalogItem->name,
+                                    'description' => $item->catalogItem->description,
+                                    'image_url'   => $item->catalogItem->image_url
+                                        ? asset('storage/' . $item->catalogItem->image_url)
+                                        : null,
+                                ] : null,
+                            ];
+                        }),
+
+                        'user' => $list->user,
+                    ];
+                });
 
             return response()->json([
                 'success' => true,
-                'message' => 'Recommended items fetched successfully',
-                'data'    => $items
-            ], 200);
-
-        } catch (\Throwable $th) {
+                'message' => 'Recommended lists fetched successfully',
+                'data'    => $lists,
+            ]);
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unable to fetch recommended items',
-                'error'   => $th->getMessage()
+                'message' => 'Unable to fetch recommended lists',
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }

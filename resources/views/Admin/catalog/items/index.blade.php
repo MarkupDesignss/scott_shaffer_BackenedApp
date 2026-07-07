@@ -85,7 +85,7 @@
                                                     if (!empty($item->image_url)) {
                                                         $imgSrc = Str::startsWith($item->image_url, ['http://', 'https://'])
                                                             ? $item->image_url
-                                                            : asset($item->image_url);
+                                                            : asset('storage/' .$item->image_url);
                                                     }
                                                 @endphp
                                             

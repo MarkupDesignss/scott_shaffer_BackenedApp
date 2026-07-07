@@ -87,7 +87,7 @@
                             </td>
                             <td>
                                 @if($campaign->image_url)
-                                    <img src="{{ asset($campaign->image_url) }}"
+                                    <img src="{{ asset('storage/' .$campaign->image_url) }}"
                                         width="60"
                                         class="rounded">
                                 @else

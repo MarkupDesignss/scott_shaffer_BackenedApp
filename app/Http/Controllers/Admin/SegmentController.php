@@ -61,7 +61,7 @@ class SegmentController extends Controller
     {
         $segment = Segment::findOrFail($id);
         $intrest = Intrest::get();
-
+        // dd($segment);
         return view('admin.segments.edit', compact('segment', 'intrest'));
     }
 

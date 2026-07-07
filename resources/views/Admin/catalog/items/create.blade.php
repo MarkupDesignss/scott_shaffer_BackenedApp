@@ -1,327 +1,362 @@
 @extends('layouts.admin')
-
 @section('content')
 <div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white border-bottom py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="mb-0" style="font-size: 1.5rem;font-weight:800">
-                                <i class="fas fa-plus-circle me-2 text-primary"></i>Create New Catalog Item
-                            </h5>
-                            <p class="text-muted mb-0">Add a new item to your catalog</p>
-                        </div>
-                        <a href="{{ route('admin.catalog-items.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Back to List
-                        </a>
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <form method="POST" action="{{ route('admin.catalog-items.store') }}" class="needs-validation"
-                        novalidate enctype="multipart/form-data">
-                        @csrf
-
-                        <div class="row">
-                            <div class="col-lg-8">
-                                <div class="card border mb-4">
-                                    <div class="card-header bg-light py-3">
-                                        <h6 class="mb-0 fw-semibold">Basic Information</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-4">
-                                            <label for="name" class="form-label fw-semibold">
-                                                Item Name <span class="text-danger">*</span>
-                                            </label>
-                                            <div class="input-group">
-                                                <span class="input-group-text bg-light border-end-0">
-                                                    <i class="fas fa-tag text-muted"></i>
-                                                </span>
-                                                <input type="text"
-                                                    class="form-control @error('name') is-invalid @enderror" id="name"
-                                                    name="name" value="{{ old('name') }}" placeholder="Enter item name"
-                                                    required>
-                                                @error('name')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                            <div class="form-text">Enter a descriptive name for your item.</div>
-                                        </div>
-
-                                        <div class="mb-4">
-                                            <label for="category_id" class="form-label fw-semibold">
-                                                Category <span class="text-danger">*</span>
-                                            </label>
-                                            <select class="form-select @error('category_id') is-invalid @enderror"
-                                                id="category_id" name="category_id" required>
-                                                <option value="">Select a category</option>
-                                                @foreach($categories as $category)
-                                                <option value="{{ $category->id }}"
-                                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                                    {{ $category->name }}
-                                                </option>
-                                                @endforeach
-                                            </select>
-                                            @error('category_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                            <div class="form-text">
-                                                Choose a category for this item.
-                                                <a href="{{ route('admin.catalog-categories.create') }}"
-                                                    class="text-decoration-none ms-2">
-                                                    <i class="fas fa-plus"></i> Add new category
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-4">
-                                            <label for="description" class="form-label fw-semibold">
-                                                Description
-                                            </label>
-                                            <textarea class="form-control @error('description') is-invalid @enderror"
-                                                id="description" name="description" rows="4"
-                                                placeholder="Enter item description">{{ old('description') }}</textarea>
-                                            @error('description')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                            <div class="form-text">
-                                                <span id="charCount">0</span> characters
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="card border mb-4">
-                                    <div class="card-header bg-light py-3">
-                                        <h6 class="mb-0 fw-semibold">Media</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-4">
-                                            <label class="form-label fw-semibold">Image</label>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Image URL</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text bg-light border-end-0">
-                                                                <i class="fas fa-link text-muted"></i>
-                                                            </span>
-                                                            <input type="text"
-                                                                class="form-control @error('image_url') is-invalid @enderror"
-                                                                name="image_url" value="{{ old('image_url') }}"
-                                                                placeholder="https://example.com/image.jpg">
-                                                        </div>
-                                                        @error('image_url')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Or Upload Image</label>
-                                                    <div class="input-group">
-                                                        <input type="file"
-                                                            class="form-control @error('image_upload') is-invalid @enderror"
-                                                            name="image_upload" accept="image/*">
-                                                    </div>
-                                                    @error('image_upload')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="form-text">Provide either an image URL or upload an image file.
-                                            </div>
-
-                                            <div class="mt-3">
-                                                <div class="image-preview rounded border p-3 text-center"
-                                                    id="imagePreview" style="display: none;">
-                                                    <img id="previewImage" class="img-fluid rounded"
-                                                        style="max-height: 200px;">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-4">
-                                <div class="card border mb-4">
-                                    <div class="card-header bg-light py-3">
-                                        <h6 class="mb-0 fw-semibold">Settings</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-4">
-                                            <label for="status" class="form-label fw-semibold">Status</label>
-                                            <select class="form-select @error('status') is-invalid @enderror"
-                                                id="status" name="status" required>
-                                                <option value="1"
-                                                    {{ old('status', 'active') == '1' ? 'selected' : '' }}>
-                                                    <i class="fas fa-circle text-success me-2"></i>Active
-                                                </option>
-                                                <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>
-                                                    <i class="fas fa-circle text-secondary me-2"></i>Inactive
-                                                </option>
-                                            </select>
-                                            @error('status')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                            <div class="form-text">Active items are visible to customers.</div>
-                                        </div>
-
-                                        <div class="d-grid gap-2 mt-4">
-                                            <button type="submit" class="btn btn-primary btn-lg">
-                                                <i class="fas fa-save me-2"></i>Create Item
-                                            </button>
-                                            <button type="reset" class="btn btn-outline-secondary">
-                                                <i class="fas fa-redo me-2"></i>Reset Form
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                            </div>
-                        </div>
-                    </form>
-                </div>
+   <div class="row">
+      <div class="col-12">
+         <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom py-3">
+               <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                     <h5 class="mb-0" style="font-size: 1.5rem;font-weight:800">
+                        <i class="fas fa-plus-circle me-2 text-primary"></i>Create New Catalog Item
+                     </h5>
+                     <p class="text-muted mb-0">Add a new item to your catalog</p>
+                  </div>
+                  <a href="{{ route('admin.catalog-items.index') }}" class="btn btn-outline-secondary">
+                  <i class="fas fa-arrow-left me-2"></i>Back to List
+                  </a>
+               </div>
             </div>
-        </div>
-    </div>
+            <div class="card-body">
+               <form method="POST" action="{{ route('admin.catalog-items.store') }}" class="needs-validation"
+                  novalidate enctype="multipart/form-data">
+                  @csrf
+                  <div class="row">
+                     <div class="col-lg-8">
+                        <div class="card border mb-4">
+                           <div class="card-header bg-light py-3">
+                              <h6 class="mb-0 fw-semibold">Basic Information</h6>
+                           </div>
+                           <div class="card-body">
+                              <div class="mb-4">
+                                 <label for="name" class="form-label fw-semibold">
+                                 Item Name <span class="text-danger">*</span>
+                                 </label>
+                                 <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-tag text-muted"></i>
+                                    </span>
+                                    <input type="text"
+                                       class="form-control @error('name') is-invalid @enderror"
+                                       id="name" name="name" value="{{ old('name') }}"
+                                       placeholder="Enter item name" required>
+                                    @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                 </div>
+                                 <div class="form-text">Enter a descriptive name for your item.</div>
+                              </div>
+                              <div class="mb-4">
+                                 <label for="category_id" class="form-label fw-semibold">
+                                 Category <span class="text-danger">*</span>
+                                 </label>
+                                 <select class="form-select @error('category_id') is-invalid @enderror"
+                                    id="category_id" name="category_id" required>
+                                    <option value="">Select a category</option>
+                                    @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}"
+                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                    </option>
+                                    @endforeach
+                                 </select>
+                                 @error('category_id')
+                                 <div class="invalid-feedback">{{ $message }}</div>
+                                 @enderror
+                                 <div class="form-text">
+                                    Choose a category for this item.
+                                    <a href="{{ route('admin.catalog-categories.create') }}"
+                                       class="text-decoration-none ms-2">
+                                    <i class="fas fa-plus"></i> Add new category
+                                    </a>
+                                 </div>
+                              </div>
+                              <div class="mb-4">
+                                 <label for="sub_category_id" class="form-label fw-semibold">
+                                 Sub Category <span class="text-danger">*</span>
+                                 </label>
+                                 <select class="form-select @error('sub_category_id') is-invalid @enderror"
+                                    id="sub_category_id" name="sub_category_id" required>
+                                    <option value="">Select sub category</option>
+                                 </select>
+                                 @error('sub_category_id')
+                                 <div class="invalid-feedback">{{ $message }}</div>
+                                 @enderror
+                                 <div class="form-text">
+                                    Sub-categories load based on selected category.
+                                    <a href="{{ route('admin.sub-categories.create') }}"
+                                       class="text-decoration-none ms-2">
+                                    <i class="fas fa-plus"></i> Add new sub-category
+                                    </a>
+                                 </div>
+                              </div>
+                              <div class="mb-4">
+                                 <label for="description" class="form-label fw-semibold">
+                                 Description
+                                 </label>
+                                 <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description"
+                                    rows="4" placeholder="Enter item description">{{ old('description') }}</textarea>
+                                 @error('description')
+                                 <div class="invalid-feedback">{{ $message }}</div>
+                                 @enderror
+                                 <div class="form-text">
+                                    <span id="charCount">0</span> characters
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="card border mb-4">
+                           <div class="card-header bg-light py-3">
+                              <h6 class="mb-0 fw-semibold">Media</h6>
+                           </div>
+                           <div class="card-body">
+                              <div class="mb-4">
+                                 <label class="form-label fw-semibold">Image</label>
+                                 <div class="row">
+                                    <!--<div class="col-md-6">-->
+                                    <!--   <div class="mb-3">-->
+                                    <!--      <label class="form-label">Image URL       </label>-->
+                                    <!--      <div class="input-group">-->
+                                    <!--         <span class="input-group-text bg           -light border-end-0">-->
+                                    <!--             <i class="fas fa-link text-muted"></i>-->
+                                    <!--             </span>-->
+                                    <!--             <input type="text"-->
+                                    <!--                class="form-control @error('image_url') is-invalid @enderror"-->
+                                    <!--                name="image_url" value="{{ old('image_url') }}"-->
+                                    <!--                placeholder="https://example.com/image.jpg">-->
+                                    <!--          </div>-->
+                                    <!--          @error('image_url')-->
+                                    <!--          <div class="invalid-feedback">{{ $message }}</div>-->
+                                    <!--          @enderror-->
+                                    <!--   </div>-->
+                                    <!--</div>-->
+                                    <div class="col-md-6">
+                                       <label class="form-label">Or Upload Image</label>
+                                       <div class="input-group">
+                                          <input type="file"
+                                             class="form-control @error('image_upload') is-invalid @enderror"
+                                             name="image_upload" accept="image/*">
+                                       </div>
+                                       @error('image_upload')
+                                       <div class="invalid-feedback">{{ $message }}</div>
+                                       @enderror
+                                    </div>
+                                 </div>
+                                 <div class="form-text">Provide either an image URL or upload an image file.
+                                 </div>
+                                 <div class="mt-3">
+                                    <div class="image-preview rounded border p-3 text-center"
+                                       id="imagePreview" style="display: none;">
+                                       <img id="previewImage" class="img-fluid rounded"
+                                          style="max-height: 200px;">
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="col-lg-4">
+                        <div class="card border mb-4">
+                           <div class="card-header bg-light py-3">
+                              <h6 class="mb-0 fw-semibold">Settings</h6>
+                           </div>
+                           <div class="card-body">
+                              <div class="mb-4">
+                                 <label for="status" class="form-label fw-semibold">Status</label>
+                                 <select class="form-select @error('status') is-invalid @enderror"
+                                    id="status" name="status" required>
+                                 <option value="1"
+                                 {{ old('status', 'active') == '1' ? 'selected' : '' }}>
+                                 <i class="fas fa-circle text-success me-2"></i>Active
+                                 </option>
+                                 <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>
+                                 <i class="fas fa-circle text-secondary me-2"></i>Inactive
+                                 </option>
+                                 </select>
+                                 @error('status')
+                                 <div class="invalid-feedback">{{ $message }}</div>
+                                 @enderror
+                                 <div class="form-text">Active items are visible to customers.</div>
+                              </div>
+                              <div class="d-grid gap-2 mt-4">
+                                 <button type="submit" class="btn btn-primary btn-lg">
+                                 <i class="fas fa-save me-2"></i>Create Item
+                                 </button>
+                                 <button type="reset" class="btn btn-outline-secondary">
+                                 <i class="fas fa-redo me-2"></i>Reset Form
+                                 </button>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
 </div>
 @endsection
-
 <style>
-.preview-card {
-    background-color: #f8f9fa;
-    border: 2px dashed #dee2e6;
-}
-
-.bg-light-primary {
-    background-color: rgba(13, 110, 253, 0.1) !important;
-}
-
-.bg-success-soft {
-    background-color: rgba(25, 135, 84, 0.1) !important;
-}
-
-.bg-secondary-soft {
-    background-color: rgba(108, 117, 125, 0.1) !important;
-}
-
-.text-success {
-    color: #198754 !important;
-}
-
-.form-label {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
-.input-group-text {
-    background-color: #f8f9fa;
-    border-color: #dee2e6;
-}
-
-.image-preview {
-    background-color: #f8f9fa;
-}
-
-.needs-validation .form-control:valid,
-.needs-validation .form-select:valid {
-    border-color: #198754;
-}
-
-.needs-validation .form-control:invalid,
-.needs-validation .form-select:invalid {
-    border-color: #dc3545;
-}
+   .preview-card {
+   background-color: #f8f9fa;
+   border: 2px dashed #dee2e6;
+   }
+   .bg-light-primary {
+   background-color: rgba(13, 110, 253, 0.1) !important;
+   }
+   .bg-success-soft {
+   background-color: rgba(25, 135, 84, 0.1) !important;
+   }
+   .bg-secondary-soft {
+   background-color: rgba(108, 117, 125, 0.1) !important;
+   }
+   .text-success {
+   color: #198754 !important;
+   }
+   .form-label {
+   font-weight: 500;
+   margin-bottom: 0.5rem;
+   }
+   .input-group-text {
+   background-color: #f8f9fa;
+   border-color: #dee2e6;
+   }
+   .image-preview {
+   background-color: #f8f9fa;
+   }
+   .needs-validation .form-control:valid,
+   .needs-validation .form-select:valid {
+   border-color: #198754;
+   }
+   .needs-validation .form-control:invalid,
+   .needs-validation .form-select:invalid {
+   border-color: #dc3545;
+   }
 </style>
-
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-
-    /* ===============================
-       FORM VALIDATION
-    ================================ */
-    const forms = document.querySelectorAll('.needs-validation');
-    forms.forEach(form => {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-        });
-    });
-
-    /* ===============================
-       CHARACTER COUNT
-    ================================ */
-    const descriptionInput = document.getElementById('description');
-    const charCount = document.getElementById('charCount');
-
-    if (descriptionInput && charCount) {
-        charCount.textContent = descriptionInput.value.length;
-        descriptionInput.addEventListener('input', function() {
-            charCount.textContent = this.value.length;
-        });
-    }
-
-    /* ===============================
-       IMAGE LOGIC (IMPORTANT FIX)
-       - URL OR Upload (not both)
-       - Preview works for both
-    ================================ */
-    const imageUrlInput = document.querySelector('input[name="image_url"]');
-    const imageUploadInput = document.querySelector('input[name="image_upload"]');
-    const imagePreview = document.getElementById('imagePreview');
-    const previewImage = document.getElementById('previewImage');
-
-    // When URL is typed → disable file upload
-    imageUrlInput.addEventListener('input', function() {
-        if (this.value.trim() !== '') {
-            imageUploadInput.value = '';
-            imageUploadInput.disabled = true;
-
-            previewImage.src = this.value;
-            imagePreview.style.display = 'block';
-        } else {
-            imageUploadInput.disabled = false;
-            imagePreview.style.display = 'none';
-        }
-    });
-
-    // When file is selected → disable URL input
-    imageUploadInput.addEventListener('change', function() {
-        if (this.files.length > 0) {
-            imageUrlInput.value = '';
-            imageUrlInput.disabled = true;
-
-            const file = this.files[0];
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
-                imagePreview.style.display = 'block';
-            };
-
-            reader.readAsDataURL(file);
-        } else {
-            imageUrlInput.disabled = false;
-            imagePreview.style.display = 'none';
-        }
-    });
-
-    /* ===============================
-       RESET BUTTON FIX
-    ================================ */
-    document.querySelector('button[type="reset"]').addEventListener('click', function() {
-        imageUrlInput.disabled = false;
-        imageUploadInput.disabled = false;
-        imagePreview.style.display = 'none';
-        previewImage.src = '';
-    });
-
-});
+   document.addEventListener('DOMContentLoaded', function() {
+   
+       /* ===============================
+          FORM VALIDATION
+       ================================ */
+       const forms = document.querySelectorAll('.needs-validation');
+       forms.forEach(form => {
+           form.addEventListener('submit', function(event) {
+               if (!form.checkValidity()) {
+                   event.preventDefault();
+                   event.stopPropagation();
+               }
+               form.classList.add('was-validated');
+           });
+       });
+   
+       /* ===============================
+          CHARACTER COUNT
+       ================================ */
+       const descriptionInput = document.getElementById('description');
+       const charCount = document.getElementById('charCount');
+   
+       if (descriptionInput && charCount) {
+           charCount.textContent = descriptionInput.value.length;
+           descriptionInput.addEventListener('input', function() {
+               charCount.textContent = this.value.length;
+           });
+       }
+   
+       /* ===============================
+          IMAGE LOGIC (IMPORTANT FIX)
+          - URL OR Upload (not both)
+          - Preview works for both
+       ================================ */
+       const imageUrlInput = document.querySelector('input[name="image_url"]');
+       const imageUploadInput = document.querySelector('input[name="image_upload"]');
+       const imagePreview = document.getElementById('imagePreview');
+       const previewImage = document.getElementById('previewImage');
+   
+       // When URL is typed → disable file upload
+       imageUrlInput.addEventListener('input', function() {
+           if (this.value.trim() !== '') {
+               imageUploadInput.value = '';
+               imageUploadInput.disabled = true;
+   
+               previewImage.src = this.value;
+               imagePreview.style.display = 'block';
+           } else {
+               imageUploadInput.disabled = false;
+               imagePreview.style.display = 'none';
+           }
+       });
+   
+       // When file is selected → disable URL input
+       imageUploadInput.addEventListener('change', function() {
+           if (this.files.length > 0) {
+               imageUrlInput.value = '';
+               imageUrlInput.disabled = true;
+   
+               const file = this.files[0];
+               const reader = new FileReader();
+   
+               reader.onload = function(e) {
+                   previewImage.src = e.target.result;
+                   imagePreview.style.display = 'block';
+               };
+   
+               reader.readAsDataURL(file);
+           } else {
+               imageUrlInput.disabled = false;
+               imagePreview.style.display = 'none';
+           }
+       });
+   
+       /* ===============================
+          RESET BUTTON FIX
+       ================================ */
+       document.querySelector('button[type="reset"]').addEventListener('click', function() {
+           imageUrlInput.disabled = false;
+           imageUploadInput.disabled = false;
+           imagePreview.style.display = 'none';
+           previewImage.src = '';
+       });
+   
+   
+       /* ===============================
+   CATEGORY → SUB CATEGORY (AJAX)
+   ================================ */
+       const categorySelect = document.getElementById('category_id');
+       const subCategorySelect = document.getElementById('sub_category_id');
+   
+       categorySelect.addEventListener('change', function() {
+           const categoryId = this.value;
+   
+           subCategorySelect.innerHTML = '<option value="">Loading...</option>';
+   
+           if (!categoryId) {
+               subCategorySelect.innerHTML = '<option value="">Select sub category</option>';
+               return;
+           }
+   
+           fetch(`/scott-shafer/admin/get-subcategories/${categoryId}`)
+               .then(response => response.json())
+               .then(data => {
+                   subCategorySelect.innerHTML = '<option value="">Select sub category</option>';
+   
+                   if (data.length === 0) {
+                       subCategorySelect.innerHTML =
+                           '<option value="">No sub-categories found</option>';
+                   }
+   
+                   data.forEach(sub => {
+                       subCategorySelect.innerHTML +=
+                           `<option value="${sub.id}">${sub.name}</option>`;
+                   });
+               })
+               .catch(() => {
+                   subCategorySelect.innerHTML =
+                       '<option value="">Error loading sub-categories</option>';
+               });
+       });
+   
+   
+   });
 </script>

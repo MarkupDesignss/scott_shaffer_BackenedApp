@@ -21,8 +21,8 @@ class InterestController extends Controller
                     'id'         => $interest->id,
                     'name'       => $interest->name,
                     'icon'       => $interest->icon
-                        // ? url('storage/' . $interest->icon)
-                        ? url($interest->icon)
+                        ? url('storage/' . $interest->icon)
+                        // ? url($interest->icon)
                         : null,
                     'is_active'  => $interest->is_active,
                 ];
@@ -107,7 +107,8 @@ class InterestController extends Controller
                     'id'        => $interest->id,
                     'name'      => $interest->name,
                     'icon'      => $interest->icon
-                        ? url($interest->icon)
+                    ? url('storage/' . $interest->icon)
+                        // ? url($interest->icon)
                         : null,
                     'is_active' => $interest->is_active,
                 ];

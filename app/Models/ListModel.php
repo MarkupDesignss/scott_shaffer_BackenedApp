@@ -3,27 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ListModel extends Model
 {
-    use SoftDeletes;
 
     protected $table = 'lists';
 
-    protected $fillable = [
-        'user_id',
-        'title',
-        'category_id',
-        'list_size',
-        'is_group',
-        'status',
-        'visibility',
-        'cloned_from_id'
-    ];
+    protected $guarded = [];
+    // protected $fillable = [
+    //     'user_id',
+    //     'title',
+    //     'category_id',
+    //     'sub_category_id',
+    //     'list_size',
+    //     'is_group',
+    //     'status',
+    //     'visibility',
+    //     'cloned_from_id'
+    // ];
 
     protected $casts = [
     'is_group' => 'boolean',
+    'sub_category_id' => 'array',
     ];
 
     public function items()
@@ -49,5 +50,18 @@ class ListModel extends Model
         public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+        public function likes()
+    {
+        return $this->hasMany(FeaturedItemLike::class, 'list_id');
+    }
+
+    public function shares()
+    {
+        return $this->hasMany(FeaturedItemShare::class, 'list_id');
+    }
+        public function subCategory()
+    {
+        return $this->belongsTo(SubCategory::class, 'sub_category_id');
     }
 }

@@ -24,7 +24,7 @@
                          style="width:80px;height:80px;margin:0 auto;">
                         @if($interest->icon)
                             <img id="imagePreview"
-                                 src="{{ asset($interest->icon) }}"
+                                 src="{{ asset('storage/' .$interest->icon) }}"
                                  style="width:40px;height:40px;">
                         @else
                             <span id="iconPlaceholder" class="text-muted fs-3">+</span>
