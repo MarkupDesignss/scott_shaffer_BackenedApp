@@ -26,13 +26,12 @@
     @endif
 
     <!-- Segments Card -->
-    <div class="card border-0 shadow-sm">
         <div class="card-header bg-white py-3">
             <h5 class="card-title mb-0">All Segments</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-bordered table-hover mb-0">
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4 py-3 border-0">
@@ -153,7 +152,6 @@
                 {{ $segments->links() }}
             </div>
         @endif
-    </div>
 </div>
 
 <style>

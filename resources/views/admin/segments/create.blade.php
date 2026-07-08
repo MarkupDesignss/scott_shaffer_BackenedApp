@@ -49,10 +49,10 @@
                             <label class="form-label fw-semibold">Status</label>
                             <select name="status" class="form-select">
                                 <option value="active" selected>
-                                    <i class="fas fa-pencil-alt me-2"></i>active
+                                    <i class="fas fa-pencil-alt me-2"></i>Active
                                 </option>
                                 <option value="inactive">
-                                    <i class="fas fa-play-circle me-2"></i>inactive
+                                    <i class="fas fa-play-circle me-2"></i>Inactive
                                 </option>
                             </select>
                         </div>

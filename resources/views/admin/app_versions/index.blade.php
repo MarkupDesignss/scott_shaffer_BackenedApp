@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
 
-    <h3 class="mb-4" style="font-weight: 700 !important;">App Versions</h3>
+    <h3 class="mb-4 fw-bold"style="font-size:1.5rem;font-weight:800">App Versions</h3>
 
     @if(session('success'))
         <div class="alert alert-success">
@@ -14,7 +14,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Sr.No.</th>
                 <th>Latest Version</th>
                 <th>Min Required Version</th>
                 <th>Force Update</th>

@@ -43,7 +43,7 @@
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h3 class="h3 mb-0 text-gray-800">Featured List Items</h3>
+                    <h3 class="h3 mb-0 text-gray-800"style="font-size:1.5rem;font-weight:800">Featured List Items</h3>
                     <p class="text-muted mb-0">Manage your featured catalog items</p>
                 </div>
                 <a href="{{ route('admin.featured-list-items.create') }}"
@@ -54,17 +54,17 @@
             </div>
 
             <div class="table-responsive rounded border">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover table-bordered mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4 py-3 text-uppercase text-muted fw-semibold small" style="width: 80px">
+                            <th class="ps-4 py-3" style="width: 80px">
                                 S.No.
                             </th>
-                            <th class="py-3 text-uppercase text-muted fw-semibold small">Item Name</th>
-                            <th class="py-3 text-uppercase text-muted fw-semibold small">List Name</th>
-                            <th class="py-3 text-uppercase text-muted fw-semibold small">Status</th>
-                            <th class="py-3 text-uppercase text-muted fw-semibold small" style="width: 120px">Position</th>
-                            <th class="pe-4 py-3 text-uppercase text-muted fw-semibold small" style="width: 150px">Actions</th>
+                            <th class="py-3">Item Name</th>
+                            <th class="py-3">List Name</th>
+                            <th class="py-3">Status</th>
+                            <th class="py-3" style="width: 120px">Position</th>
+                            <th class="pe-4 py-3" style="width: 150px">Actions</th>
                         </tr>
                     </thead>
                     <tbody>

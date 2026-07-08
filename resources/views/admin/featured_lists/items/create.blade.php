@@ -92,7 +92,7 @@
                                     {{-- <button type="button" class="btn btn-outline-secondary" onclick="changePosition(-1)">
                                         <i class="fas fa-chevron-left"></i>
                                     </button> --}}
-                                    <input name="position" type="number"
+                                    <input name="position" min="0" type="number"
                                         id="positionSelect"
                                         class="form-control text-start @error('position') is-invalid @enderror"
                                         required>

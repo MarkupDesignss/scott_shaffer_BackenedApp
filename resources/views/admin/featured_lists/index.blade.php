@@ -12,7 +12,7 @@
     <!-- Page Header -->
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="h3 mb-0 text-gray-800">Featured Lists</h1>
+            <h1 class="h3 mb-0 text-gray-800"style="font-size:1.5rem;font-weight:800">Featured Lists</h1>
             <p class="text-muted mb-0">Manage your featured content lists</p>
         </div>
         <a href="{{ route('admin.featured-lists.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
@@ -60,10 +60,8 @@
     </div>
 
     <!-- Table Card -->
-    <div class="card shadow border-0">
         <div class="card-header bg-white py-3">
             <div class="d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">All Featured Lists</h6>
                 {{-- <div class="d-flex gap-2">
                     <select class="form-select form-select-sm w-auto">
                         <option>All Status</option>
@@ -76,7 +74,7 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover table-bordered mb-0">
                     <thead class="table-light">
                         <tr>
                             <th width="60">S.No.</th>
@@ -205,7 +203,6 @@
                 {{ $lists->links() }}
             </div>
         @endif --}}
-    </div>
 
 </div>
 

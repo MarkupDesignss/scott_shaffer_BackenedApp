@@ -12,9 +12,9 @@
         <div class="card">
             <div class="card-body">
                 <table class="table table-bordered">
-                    <thead>
+                    <thead class="table-light">
                         <tr>
-                            <th>#</th>
+                            <th>Sr.No.</th>
                             <th>Category</th>
                             <th>Name</th>
                             <th>Status</th>
