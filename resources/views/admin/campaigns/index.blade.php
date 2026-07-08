@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="mb-0 fw-bold">Campaign Management</h4>
+            <h4 class="mb-0 fw-bold"style="font-size:1.5rem;font-weight:800">Campaign Management</h4>
             <p class="text-muted mb-0">Manage your marketing campaigns</p>
         </div>
         <a href="{{ route('admin.campaigns.create') }}" class="btn btn-primary">
@@ -54,10 +54,10 @@
     <div class="card shadow-sm">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-bordered table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">#ID</th>
+                            <th class="ps-4">Sr.No.</th>
                             <th>Campaign Details</th>
                             <th>Campaign Image</th>
                             <th>Segments</th>
@@ -199,8 +199,8 @@
         font-size: 0.85rem;
         font-weight: 500;
     }
-    
-    
+
+
 <style>
 .category-icon {
     width: 40px;

@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container-fluid">
-        <h4>Add Sub Category</h4>
+        <h4 style="font-size: 1.5rem;font-weight:800">Add Sub Category</h4>
 
         <div class="card">
             <div class="card-body">

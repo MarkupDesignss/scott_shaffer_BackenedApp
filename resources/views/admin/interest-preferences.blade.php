@@ -54,7 +54,7 @@
     {{-- Header --}}
     <div class="ip-header">
         <div>
-            <h1 class="ip-title">Interest preferences — {{ $interestName }}</h1>
+            <h1 class="h2 mb-2">Interest preferences — {{ $interestName }}</h1>
             <p class="ip-subtitle">Manage and review user-defined ordering per list</p>
         </div>
         <a href="{{ route('admin.interest.index') }}" class="ip-back-btn">← Back to interests</a>

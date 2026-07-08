@@ -48,10 +48,10 @@
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0" id="categoriesTable">
+                <table class="table table-hover table-bordered mb-0" id="categoriesTable">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4" width="60">#</th>
+                            <th class="ps-4" width="60">Sr.No.</th>
                             <th>Category Name</th>
                             <th>Slug</th>
                             <th>Intrest</th>
@@ -64,7 +64,7 @@
                             <tr class="align-middle">
                                 <td class="ps-4 fw-semibold text-muted">{{ $loop->iteration }}</td>
                                 <td>
-                                    <div class="d-flex align-items-center">                  
+                                    <div class="d-flex align-items-center">
                                         <div>
                                             <h6 class="mb-0 fw-semibold">{{ $category->name }}</h6>
                                             @if($category->parent_id)

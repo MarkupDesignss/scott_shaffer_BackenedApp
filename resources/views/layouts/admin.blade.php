@@ -365,7 +365,7 @@
 
         /* Buttons */
         .btn {
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1rem;
             border-radius: 10px;
             font-weight: 600;
             border: none;
@@ -374,7 +374,6 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
         }
 
         .btn-primary {
@@ -467,7 +466,6 @@
             }
 
             .header-left {
-                width: 100%;
                 justify-content: space-between;
             }
         }
@@ -622,8 +620,8 @@
                 <span></span>
             </button>
            <div class="logo-container">
-                <img 
-                    src="https://www.markupdesigns.net/scott-shafer/favicon.png" 
+                <img
+                    src="https://www.markupdesigns.net/scott-shafer/favicon.png"
                     alt="Scott Shafer Logo"
                     class="logo"
                 >
@@ -700,7 +698,7 @@
                     </li>
                 </ul>
             </li>
-            
+
                         {{-- Subcatagory mnagement --}}
             <li class="sidebar-item has-submenu
 
@@ -722,13 +720,13 @@
                         </a>
                     </li>
 
-                    <li>
-                        <a href="{{ route('admin.catalog-items.index') }}"
-                            class="{{ request()->routeIs('admin.catalog-items.*') ? 'active' : '' }}">
-                            <i class="bi bi-box-seam"></i>
-                            <span>SubCategory Items</span>
-                        </a>
-                    </li>
+                        {{-- <li>
+                            <a href="{{ route('admin.catalog-items.index') }}"
+                                class="{{ request()->routeIs('admin.catalog-items.*') ? 'active' : '' }}">
+                                <i class="bi bi-box-seam"></i>
+                                <span>SubCategory Items</span>
+                            </a>
+                        </li> --}}
                 </ul>
             </li>
 

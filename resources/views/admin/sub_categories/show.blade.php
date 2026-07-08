@@ -5,61 +5,69 @@
 
         {{-- Header --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold mb-0">Sub-Category Details</h4>
+            <h4 class="h3 mb-2">Sub-Category Details</h4>
 
             <div>
-                <a href="{{ route('admin.sub-categories.edit', $subCategory->id) }}" class="btn btn-sm btn-primary">
-                    <i class="fas fa-edit"></i> Edit
+                <a href="{{ route('admin.sub-categories.edit', $subCategory->id) }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-edit me-1"></i> Edit
                 </a>
 
-                <a href="{{ route('admin.sub-categories.index') }}" class="btn btn-sm btn-secondary">
-                    Back
+                <a href="{{ route('admin.sub-categories.index') }}" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Back
                 </a>
             </div>
         </div>
 
-        {{-- Details Card --}}
+        {{-- Details Table --}}
         <div class="card shadow-sm">
-            <div class="card-body">
+            <div class="card-body p-0">
 
-                <div class="row mb-3">
-                    <div class="col-md-3 fw-semibold">ID</div>
-                    <div class="col-md-9">{{ $subCategory->id }}</div>
-                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0">
 
-                <div class="row mb-3">
-                    <div class="col-md-3 fw-semibold">Category</div>
-                    <div class="col-md-9">
-                        {{ $subCategory->category?->name ?? '-' }}
-                    </div>
-                </div>
+                        <tbody>
 
-                <div class="row mb-3">
-                    <div class="col-md-3 fw-semibold">Sub-Category Name</div>
-                    <div class="col-md-9">{{ $subCategory->name }}</div>
-                </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-3 fw-semibold">Slug</div>
-                    <div class="col-md-9 text-muted">{{ $subCategory->slug }}</div>
-                </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-3 fw-semibold">Status</div>
-                    <div class="col-md-9">
-                        @if ($subCategory->status)
-                            <span class="badge bg-success">Active</span>
-                        @else
-                            <span class="badge bg-danger">Inactive</span>
-                        @endif
-                    </div>
-                </div>
+                            <tr>
+                                <th class="bg-light fw-bold">Category</th>
+                                <td>{{ $subCategory->category?->name ?? '-' }}</td>
+                            </tr>
 
-                <div class="row mb-0">
-                    <div class="col-md-3 fw-semibold">Created At</div>
-                    <div class="col-md-9">
-                        {{ $subCategory->created_at->format('d M Y, h:i A') }}
-                    </div>
+                            <tr>
+                                <th class="bg-light fw-bold">Sub-Category Name</th>
+                                <td>{{ $subCategory->name }}</td>
+                            </tr>
+
+                            <tr>
+                                <th class="bg-light fw-bold">Slug</th>
+                                <td>{{ $subCategory->slug }}</td>
+                            </tr>
+
+                            <tr>
+                                <th class="bg-light fw-bold">Status</th>
+                                <td>
+                                    @if ($subCategory->status)
+                                        <span class="badge bg-success px-3 py-2">Active</span>
+                                    @else
+                                        <span class="badge bg-danger px-3 py-2">Inactive</span>
+                                    @endif
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th class="bg-light fw-bold">Created At</th>
+                                <td>{{ $subCategory->created_at->format('d M Y, h:i A') }}</td>
+                            </tr>
+
+                            <tr>
+                                <th class="bg-light fw-bold">Updated At</th>
+                                <td>{{ $subCategory->updated_at->format('d M Y, h:i A') }}</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
                 </div>
 
             </div>

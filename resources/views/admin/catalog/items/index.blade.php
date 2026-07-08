@@ -61,10 +61,10 @@
 
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover mb-0" id="itemsTable">
+            <table class="table table-hover table-bordered mb-0" id="itemsTable">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-4" width="60">#</th>
+                        <th class="ps-4" width="60">Sr.No.</th>
                         <th>Item</th>
                         <th>Category</th>
                         <th>Status</th>
@@ -88,7 +88,7 @@
                                                             : asset('storage/' .$item->image_url);
                                                     }
                                                 @endphp
-                                            
+
                                                 <img
                                                     src="{{ $imgSrc }}"
                                                     alt="{{ $item->name }}"
